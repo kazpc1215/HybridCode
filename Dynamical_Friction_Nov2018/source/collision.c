@@ -3,12 +3,12 @@
 
 
 #if COLLISION
-bool Collision_Judgement(int i_sys,CONST struct orbital_elements *ele_p,CONST double x_p[][4],double abs_r[],int *i_col,int *j_col){
+bool Collision_Judgement(int i_sys, CONST struct orbital_elements *ele_p, CONST double x_p[][4], double abs_r[], int *i_col, int *j_col){
 
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
-  struct timeval realtime_start,realtime_end;
-  struct rusage usage_start,usage_end;
+  struct timeval realtime_start, realtime_end;
+  struct rusage usage_start, usage_end;
   gettimeofday(&realtime_start,NULL);
   getrusage(RUSAGE_SELF,&usage_start);
 #endif
@@ -51,29 +51,40 @@ bool Collision_Judgement(int i_sys,CONST struct orbital_elements *ele_p,CONST do
 
 
 #if COLLISION
-void Energy_Correction(int i_col,int j_col,CONST double x_0[][4],CONST double v_0[][4],CONST struct orbital_elements *ele_p,double *dE_heat,double *dE_grav,double *dE_c,double *v_imp){
+void Energy_Correction(int i_col, int j_col, CONST double x_0[][4], CONST double v_0[][4], CONST struct orbital_elements *ele_p, double *dE_heat, double *dE_grav, double *dE_c, double *v_imp
+#if FRAGMENTATION
+		       , double t_dyn
+		       , CONST struct fragmentation *frag_p
+#endif
+		       ){
 
-  double m_1 = ((ele_p+i_col)->mass);
-  double m_2 = ((ele_p+j_col)->mass);
+  double m_1, m_2;
   double abs_v2 = SquareOfRelativeVelocity(i_col,j_col,v_0);  //相対速度2乗.
   double r_p12 = RelativeDistance(i_col,j_col,x_0);  //2粒子間の距離.
   double r_g12 = RadiusFromCenter(0,x_0);  //2粒子の重心と中心星との距離.
   double r_1 = RadiusFromCenter(i_col,x_0);
   double r_2 = RadiusFromCenter(j_col,x_0);
 
+#if FRAGMENTATION
+  m_1 = MassDepletion(i_col,((ele_p+i_col)->mass),t_dyn,frag_p);
+  m_2 = MassDepletion(j_col,((ele_p+j_col)->mass),t_dyn,frag_p);
+#else
+  m_1 = ((ele_p+i_col)->mass);
+  m_2 = ((ele_p+j_col)->mass);
+#endif
 
-  (*dE_heat) = - 0.5*m_1*m_2/(m_1+m_2)*abs_v2;  //完全合体することで、相対速度分の運動エネルギーが熱エネルギーとなって散逸する.
+  (*dE_heat) = - 0.5 * m_1 * m_2 / (m_1 + m_2) * abs_v2;  //完全合体することで、相対速度分の運動エネルギーが熱エネルギーとなって散逸する.
 
 #ifndef G
-  (*dE_grav) = m_1*m_2/r_p12;  //2粒子間の距離に対応する相互重力エネルギーがなくなっている.
+  (*dE_grav) = m_1 * m_2 / r_p12;  //2粒子間の距離に対応する相互重力エネルギーがなくなっている.
 #else
-  (*dE_grav) = G*m_1*m_2/r_p12;  //2粒子間の距離に対応する相互重力エネルギーがなくなっている.
+  (*dE_grav) = G * m_1 * m_2 / r_p12;  //2粒子間の距離に対応する相互重力エネルギーがなくなっている.
 #endif
 
 #if !defined(G) && !defined(M_0)
-  (*dE_c) = (- (m_1+m_2)/r_g12 + m_1/r_1 + m_2/r_2);  //中心星ポテンシャルエネルギーが変わる.
+  (*dE_c) = - (m_1 + m_2) / r_g12 + m_1 / r_1 + m_2 / r_2;  //中心星ポテンシャルエネルギーが変わる.
 #else
-  (*dE_c) = G*M_0*(- (m_1+m_2)/r_g12 + m_1/r_1 + m_2/r_2);  //中心星ポテンシャルエネルギーが変わる.
+  (*dE_c) = G * M_0 * (- (m_1 + m_2) / r_g12 + m_1 / r_1 + m_2 / r_2);  //中心星ポテンシャルエネルギーが変わる.
 #endif
 
   (*v_imp) = sqrt(abs_v2);
@@ -87,16 +98,17 @@ void Energy_Correction(int i_col,int j_col,CONST double x_0[][4],CONST double v_
 
 #if COLLISION
 #if COALESCENCE
-void Coalescence(int i_col,int j_col,double x_0[][4],double v_0[][4],struct orbital_elements *ele_p
+void Coalescence(int i_col, int j_col, double x_0[][4], double v_0[][4], struct orbital_elements *ele_p
 #if FRAGMENTATION
-		 ,struct fragmentation *frag_p
+		 , double t_dyn
+		 , struct fragmentation *frag_p
 #endif
 		 ){
 
   int k;
 
   //i_colを新しい合体粒子の番号にする.
-  ((ele_p+i_col)->mass) = ((ele_p+i_col)->mass) + ((ele_p+j_col)->mass);
+  ((ele_p+i_col)->mass) = MassDepletion(i_col,((ele_p+i_col)->mass),t_dyn,frag_p) + MassDepletion(j_col,((ele_p+j_col)->mass),t_dyn,frag_p);
   ((ele_p+i_col)->radius) = cbrt(3.0/4.0/M_PI*((ele_p+i_col)->mass)*1.989E33/PLANET_DENSITY)/1.496E13;
   for(k=1;k<=3;++k){
     x_0[i_col][k] = x_0[0][k];

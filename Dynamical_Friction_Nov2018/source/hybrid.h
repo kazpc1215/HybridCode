@@ -9,6 +9,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include <mpi.h>
+#include "SFMTdir/SFMT.h"
 
 
 #ifdef _OPENMP
@@ -20,16 +21,13 @@
 #if __GNUC__ == 7
 #define CONST const
 #define ALWAYS_INLINE __attribute__((always_inline))
-#elif __GNUC__ == 4
-#define CONST
-#define ALWAYS_INLINE
 #else
 #define CONST
 #define ALWAYS_INLINE
 #endif
 
 
-#define DIRECTORY ../data/Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc5E-2_frag_acc/  //ディレクトリ.
+#define DIRECTORY ../data/Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_frag_acc/  //ディレクトリ.
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
 
 #define STR_(str) #str
@@ -43,26 +41,32 @@
 
 
 //////////////////////////////////////////////////
-#define N_tr 100  //初期のトレーサーの数.
-#define N_p 1  //初期の原始惑星の数.
-#define ECC_RATIO 5.0  //ecc=0.01の何倍か. inc=ecc/2.
-//#define RAND_SEED 1  //乱数の種.
-#define STEP_INTERVAL 1.0E7  //何ステップごとに標準出力するか.
+#define N_tr 3000  //初期のトレーサーの数.
+#define N_p 3  //初期の原始惑星の数.
+#define ECC_RATIO 1.0  //ecc=0.01の何倍か. inc=ecc/2.
+#define STEP_INTERVAL 1.0E5  //何ステップごとに標準出力するか.
 #define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.
 //#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.
 
-#define FRAGMENTATION true  //破壊 近傍粒子探索と質量フラックス計算.  <--
+
+#define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.
+
+#define FRAGMENTATION true  //破壊 近傍粒子探索と質量フラックス計算.
 #define COLLISION true  //衝突.
 #if COLLISION
-#define COALESCENCE true  //衝突後に合体.  <--どっちか.
-#define RELOCATE_PARTICLE false  //衝突後に粒子を再配置.  <--どっちか.
+#define COALESCENCE true  //衝突後に合体.
+#else
+#define SOFTENING true  //衝突しないようソフトニング.
 #endif
 
 
 
 EXTERN int global_n;  //グローバル変数.
 EXTERN int global_n_p;
+EXTERN int global_myid;
+EXTERN sfmt_t sfmt;
 EXTERN FILE *fplog;
+
 //////////////////////////////////////////////////
 
 
@@ -88,19 +92,17 @@ EXTERN FILE *fplog;
 #define INDIRECT_TERM true  //中心星が動く効果を補正.
 #define EJECTION false  //初期に破片（トレーサー）を放出する.
 #define ORBITING_SMALL_PARTICLE true  //初期に微惑星をケプラー運動させておく.
-#define ELIMINATE_PARTICLE true  //太陽に飲みこまれるか系外へ出て行くかで粒子を消す.
+#define ELIMINATE_PARTICLE false  //太陽に飲みこまれるか系外へ出て行くかで粒子を消す.
 //////////////////////////////////////////////////
 
 
 //////////////////////////////////////////////////
 //#define G 1.0  //重力定数.
 //#define M_0 1.0  //主星の質量.
-#if COLLISION
-//#define EPSILON 0.0  //ソフトニングパラメーター.
-#else
-#define EPSILON 5.21495378928615e-05  //ソフトニングパラメーター. (3.0/4.0/pi*3.0E-6*1.989E33/3.0)**(1.0/3.0)/1.496E13.
+#if SOFTENING
+#define EPSILON 5.21495378928615e-05   //ソフトニングパラメーター.
 #endif
-#define ETA 3.0E-2  //刻み幅調整.
+#define ETA 1.0E-2  //刻み幅調整.
 #define ITE_MAX 2  //イテレーション回数（修正子計算の回数はITE_MAX+1）.
 //////////////////////////////////////////////////
 
@@ -134,7 +136,7 @@ Mean Longitude (deg)               100.46435
 
 #if N_tr != 0
 //////////////////////////////////////////////////
-#define M_TOT (3.0E-7*N_p)  //0.1M_E * N_p  //トレーサーの総質量.
+#define M_TOT (3.0E-5*N_p)  //10M_E * N_p  //トレーサーの総質量.
 
 #if EJECTION
 #define PLANET_OF_EJECTION 1
@@ -145,32 +147,33 @@ Mean Longitude (deg)               100.46435
 #define ECC_RMS (0.01*ECC_RATIO)  //トレーサーの離心率の二乗平均平方根.  //Rayleigh分布.
 #define INC_RMS (ECC_RMS*0.5)  //トレーサーの軌道傾斜角の二乗平均平方根.  //Rayleigh分布.
 #define DELTA_HILL 10.0  //惑星を「相互」ヒル半径の何倍離すか（軌道長半径）.
-#define SEPARATE_HILL 3.0  //初期に惑星とトレーサーをヒル半径の何倍以上離すか（相対距離）.
+#define SEPARATE_HILL 5.0  //初期に惑星とトレーサーをヒル半径の何倍以上離すか（相対距離）.
 #endif
 
 #if FRAGMENTATION
-#define DELTA_R 0.010  //Hill 近傍粒子探索用.
-#define DELTA_THETA 1.0*M_PI  //近傍粒子探索用.
+#define DELTA_R 0.01  //Hill 近傍粒子探索用.
+#define DELTA_THETA 0.125*M_PI  //近傍粒子探索用.
+//#define DELTA_THETA 1.0*M_PI  //近傍粒子探索用.
 #define NEIGHBOR_MAX 200  //近傍粒子リスト配列の最大値.
 /* t_fragcheck = 初項 DT_FRAGCHECK，公比 GEOMETRIC_RATIO_FRAG の等比数列 */
 #define DT_FRAGCHECK 2.0*M_PI*0.1  //0.1yr
 #define GEOMETRIC_RATIO_FRAG pow(10.0,1.0/8.0) //10**(1/8)
-#define DEPLETION_TIME_EXPLICIT false  //true: 質量減少タイムスケールの計算でexplicit *(1-XI)を使う. false: implicit /(1+XI)を使う.
+
 #define RHO 3.0  // [g/cc]  微惑星の物質密度.
 #define EPSILON_FRAG 0.2
 #define B_FRAG (5.0/3.0)
 #define Q_0_FRAG 9.5E8 // [erg/g]  Q_D = Q_0*(rho/3[g/cc])^0.55*(m/10^21[g])^p
 #define P_FRAG 0.453
-#define XI 0.01 //統計的計算のタイムステップがタイムスケールの"XI"倍.
-#define M_MAX 5.00E-15  //最大微惑星質量. 1E19 g = 10kmサイズ.
-//#define M_MAX 5.00E-18  //最大微惑星質量. 1E16 g = 1kmサイズ.
+#define XI 0.01 //面密度減少タイムスケールを自身のXI倍間隔で更新する.
+#define M_MAX 5.00E-15  //最大微惑星質量. 1E19 g ~10kmサイズ.
+//#define M_MAX 5.00E-18  //最大微惑星質量. 1E16 g ~1kmサイズ.
 #endif
 //////////////////////////////////////////////////
 #endif  /*N_tr != 0*/
 
 
 //////////////////////////////////////////////////
-#define T_MAX (2.0*M_PI*1.0E8)  //10^8yr 全計算時間.
+#define T_MAX (2.0*M_PI*1.0E3)  //10^3yr 全計算時間.
 #define DT_LOG true  //true: t_eneをlogでとる. false: t_eneをlinearでとる.
 
 /* linear では 初項 DT_ENE，公差 DT_ENE の等差数列 */

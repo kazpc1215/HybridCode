@@ -6,7 +6,9 @@
 //グローバル変数初期化
 int global_n = N_p + N_tr;  //全粒子数.
 int global_n_p = N_p;  //原始惑星の数.
-FILE *fplog;
+int global_myid = 0;  //CPU番号.
+sfmt_t sfmt;  //メルセンヌ・ツイスタの状態保存用構造体.
+FILE *fplog;  //ログファイルポインタ.
 
 
 #if EXECUTION_TIME
@@ -46,7 +48,8 @@ int main(int argc, char **argv){
   struct stat st;  //ファイル存在確認用.
 
 
-  int i=0,j=0,i_sys=0,k=0,ite=0,i_col=0,j_col=0,n_col=0,myid=0,numprocs=0;
+  int i=0,j=0,i_sys=0,k=0,n_ite=0,i_col=0,j_col=0,n_col=0;
+  int numprocs=0;
   double t_sys=0.0,t_tmp=0.0,step=0.0;
   static double t_[N_p+N_tr+1]={},dt_[N_p+N_tr+1]={},Dt[N_p+N_tr+1]={};
   static double x_0[N_p+N_tr+1][4]={},r_0[N_p+N_tr+1]={},v_0[N_p+N_tr+1][4]={},v2_0[N_p+N_tr+1]={};
@@ -62,6 +65,8 @@ int main(int argc, char **argv){
 
   double t_ene=DT_ENE;
 
+  int tracerlist[N_p][N_tr+1] = {};  //各部分のトレーサーの数. 0 : 内側, 1 : 中央, 2 : 外側.
+  int tracerlistnumber[N_p] = {};
 
 #if INDIRECT_TERM
   double x_G[4]={},v_G[4]={};
@@ -73,11 +78,11 @@ int main(int argc, char **argv){
 
 #if FRAGMENTATION
   static struct fragmentation frag[N_p+N_tr+1]={};
-  int n_fragcheck=0,n_center=0;
+  int n_fragcheck=0,n_center=0,n_inner=0,n_outer=0;
   double t_fragcheck=DT_FRAGCHECK;
-  double sigma_center=0.0,flux_center=0.0,v_ave=0.0,tau_dep_center=0.0;
-  double orbital_r_min=0.0,orbital_r_max=0.0;
-  double mass_tot_all=0.0,mass_tot_center=0.0;
+  double sigma_center=0.0,sigma_inner=0.0,sigma_outer=0.0,flux_center=0.0,v_ave=0.0,tau_dep_center=0.0;
+  double orbital_r=0.0,orbital_r_min=0.0,orbital_r_max=0.0;
+  double mass_tot_all=0.0,mass_tot_center=0.0,mass_tot_inner=0.0,mass_tot_outer=0.0;
   struct parameter para;
   FILE *fpfrag;  //初期総質量をファイルへ書き出し.
   char fragfile[200]={};
@@ -85,6 +90,10 @@ int main(int argc, char **argv){
   char posimassfile[200]={};
   FILE *fptempfragread;
   char tempfragreadfile[200]={};
+  FILE *fptaudep;
+  char taudepfile[200]={};
+  FILE *fptracerlist;
+  char tracerlistfile[200]={};
 #endif  /*FRAGMENTATION*/
 
 
@@ -143,16 +152,14 @@ int main(int argc, char **argv){
 
   //////////////////////////////ここまで変数宣言//////////////////////////////////
 
-
   MPI_Init(&argc,&argv);  //MPI並列の始まり.
   MPI_Comm_size(MPI_COMM_WORLD,&numprocs);  //使えるCPUの数.
-  MPI_Comm_rank(MPI_COMM_WORLD,&myid);  //myidにそれぞれのCPU番号を書き込む.
+  MPI_Comm_rank(MPI_COMM_WORLD,&global_myid);  //myidにそれぞれのCPU番号を書き込む.
 
   /////////////////////////////ここまでOpenMpとMPIの準備//////////////////////////////
 
 
-  srand(myid+1);  //乱数の種をmyidで決める.
-
+  sfmt_init_gen_rand(&sfmt, global_myid);  //乱数の種をmyidで決める.
 
 #ifdef DIRECTORY
   mkdir(STR(DIRECTORY), 0755);  //ディレクトリを作成. 755 = rwxr-xr-x.
@@ -160,7 +167,7 @@ int main(int argc, char **argv){
 
 
 #ifdef SUBDIRECTORY
-  sprintf(dirname,"%s%s%02d/",STR(DIRECTORY),STR(SUBDIRECTORY),myid+1);
+  sprintf(dirname,"%s%s%02d/",STR(DIRECTORY),STR(SUBDIRECTORY),global_myid+1);
   mkdir(dirname, 0755);  //子ディレクトリを作成. 755 = rwxr-xr-x.
 #endif  /*SUBDIRECTORY*/
 
@@ -217,6 +224,24 @@ int main(int argc, char **argv){
 #endif
 	  );
 
+
+  sprintf(taudepfile,"%sTau_dep.dat",
+#ifdef SUBDIRECTORY
+	  dirname
+#else
+	  STR(DIRECTORY)
+#endif
+	  );
+
+
+  sprintf(tracerlistfile,"%stracerlist.dat",
+#ifdef SUBDIRECTORY
+	  dirname
+#else
+	  STR(DIRECTORY)
+#endif
+	  );
+
 #endif  /*FRAGMENTATION*/
 
 
@@ -249,7 +274,7 @@ int main(int argc, char **argv){
 
   fplog = fopen(logfile,"a");
 
-  fprintf(fplog,"myid = %d\tnumprocs = %d\n",myid,numprocs);
+  fprintf(fplog,"myid = %d\tnumprocs = %d\n",global_myid,numprocs);
 
 #ifdef _OPENMP
   fprintf(fplog,"OMP_NUM_THREADS: %s\n",getenv("OMP_NUM_THREADS"));
@@ -315,11 +340,11 @@ int main(int argc, char **argv){
 	       &ele[i].mass
 	       );
 
-	t_[i] = 2.0*M_PI*t_[i];
-	dt_[i] = 2.0*M_PI*dt_[i];
+	t_[i] = 2.0 * M_PI * t_[i];
+	dt_[i] = 2.0 * M_PI * dt_[i];
 
 
-	ele[i].radius = cbrt(3.0/4.0/M_PI*ele[i].mass*1.989E33/PLANET_DENSITY)/1.496E13;
+	ele[i].radius = cbrt(3.0 / 4.0 / M_PI * ele[i].mass * 1.989E33 / PLANET_DENSITY) / 1.496E13;
 
 	r_0[i] = RadiusFromCenter(i,x_0);  //中心星からの距離.
 	v2_0[i] = SquareOfVelocity(i,v_0);  //速度の2乗.
@@ -393,6 +418,45 @@ int main(int argc, char **argv){
 
       fclose(fptempfragread);
     }
+
+
+    /*
+    if(stat(tracerlistfile,&st)==0){  //読み込むファイル（トレーサーリスト）の存在確認.
+      fprintf(fplog,"file: '%s' exists.\n",tracerlistfile);
+
+      fptracerlist = fopen(tracerlistfile,"r");
+      if(fptracerlist==NULL){
+	fprintf(fplog,"tracerlistfile error\n");
+	return -1;
+      }
+
+      tracerlistnumber[0] = 1;
+      tracerlistnumber[1] = 1;
+      tracerlistnumber[2] = 1;
+
+      fgets(buf,sizeof(buf),fptracerlist);  //読み飛ばし.
+      while(fgets(buf,sizeof(buf),fptracerlist)!=NULL){
+
+	sscanf(buf,"%d\t%d\t%d\n",
+	       &tracerlist[0][tracerlistnumber[0]],
+	       &tracerlist[1][tracerlistnumber[1]],
+	       &tracerlist[2][tracerlistnumber[2]]
+	       );
+
+	if(tracerlist[0][tracerlistnumber[0]]!=0){
+	  tracerlistnumber[0]++;
+	}
+	if(tracerlist[1][tracerlistnumber[1]]!=0){
+	  tracerlistnumber[1]++;
+	}
+	if(tracerlist[1][tracerlistnumber[1]]!=0){
+	  tracerlistnumber[1]++;
+	}
+      }
+
+      fclose(fptracerlist);
+    }
+    */
 #endif  /*FRAGMENTATION*/
 
   }else{
@@ -500,6 +564,7 @@ int main(int argc, char **argv){
     ///////////////////////////////ここまで初期処理//////////////////////////////////
 
 
+#if N_tr != 0
 
 #if N_p == 3
     ele[1].axis = PLANET_AXIS / MutualHillRadius_to_SemimajorAxis(DELTA_HILL) ;  //惑星2を中心に相互DELTA_HILLヒル内側へ離す.
@@ -513,6 +578,7 @@ int main(int argc, char **argv){
       InitialOrbitalElements_Planet(i,ele);  //初期軌道要素.
       InitialCondition(i,x_0,v_0,v2_0,r_dot_v,r_0,ele);  //初期位置、速度計算.
     }
+#endif  /*N_p != 0*/
 
 
 #if N_tr != 0
@@ -531,12 +597,12 @@ int main(int argc, char **argv){
 
 
 #if FRAGMENTATION
-    para.alpha = (11.0 + 3.0*P_FRAG)/(6.0 + 3.0*P_FRAG);
+    para.alpha = (11.0 + 3.0 * P_FRAG) / (6.0 + 3.0 * P_FRAG);
     para.s_1 = s_1_FRAG(&para);
     para.s_2 = s_2_FRAG(&para);
     para.s_3 = s_3_FRAG(&para);
-    para.h_0 = 0.061*17.3*pow(1.68E6*RHO,-2.0/3.0);  // g/cc = 1.68E6 M_0/AU^3, F(I) = 17.3 として.
-    para.Q_D = Q_0_FRAG*1.13E-13*pow(RHO/3.0,0.55)*pow(M_MAX*1.989E12,P_FRAG);  //erg/g = 1.13E-13 AU^2/(yr/2pi)^2 として.
+    para.h_0 = 0.061 * 17.3 * pow(1.68E6 * RHO, - 2.0 / 3.0);  // g/cc = 1.68E6 M_0/AU^3, F(I) = 17.3 として.
+    para.Q_D = Q_0_FRAG * 1.13E-13 * pow(RHO / 3.0, 0.55) * pow(M_MAX * 1.989E12, P_FRAG);  //erg/g = 1.13E-13 AU^2/(yr/2pi)^2 として.
 
     fprintf(fplog,"alpha=%g\ts_1=%g\ts_2=%g\ts_3=%g\th_0=%g\tQ_D=%g\n",
 	   para.alpha,
@@ -629,7 +695,7 @@ int main(int argc, char **argv){
 	    ele[PLANET_NO].r_h
 	    );
     fclose(fpposi_rot);
-#endif
+#endif  /*POSI_VELO_ROT_FILE*/
 
 
 #if ORBITALELEMENTS_FILE
@@ -714,7 +780,11 @@ int main(int argc, char **argv){
 #if ENERGY_FILE
 
 #if INDIRECT_TERM
-    CenterOfGravity(x_0,v_0,x_G,v_G,ele);  //重心計算.
+    CenterOfGravity(x_0,v_0,x_G,v_G,ele
+#if FRAGMENTATION
+		    ,(t_sys+t_tmp),frag
+#endif
+		    );  //重心計算.
 #endif
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
@@ -729,7 +799,11 @@ int main(int argc, char **argv){
 #else
 			       v2_0,
 #endif
-			       r_0);
+			       r_0
+#if FRAGMENTATION
+			       ,(t_sys+t_tmp),frag
+#endif
+			       );
 
     //初期エネルギーをファイルへ書き出し.
     fpEne = fopen(Ene,"w");
@@ -749,7 +823,11 @@ int main(int argc, char **argv){
 
     //角運動量の大きさ計算.
     abs_L_0 = 0.0;
-    abs_L_0 = AngularMomentum(i,ele,x_0,v_0);
+    abs_L_0 = AngularMomentum(i,ele,x_0,v_0
+#if FRAGMENTATION
+			      ,(t_sys+t_tmp),frag
+#endif
+			      );
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
     gettimeofday(&realtime_end,NULL);
     getrusage(RUSAGE_SELF,&usage_end);
@@ -759,6 +837,51 @@ int main(int argc, char **argv){
 #endif
 
 #endif  /*ENERGY_FILE*/
+
+
+    //#pragma omp parallel for private(j,k,abs_r,r_dot_v_ij)
+    for(i=1;i<=global_n;++i){
+      for(j=1;j<=
+#if INTERACTION_ALL
+	    global_n
+#elif INTERACTION_PLANET_TRACER
+	    global_n
+#elif INTERACTION_TEST_PARTICLE
+	    global_n_p
+#endif
+	    ;++j){
+	if(i!=j){
+	  abs_r[j] = RelativeDistance(i,j,x_0);  //絶対値.
+	  r_dot_v_ij[j] = RelativeInnerProduct(i,j,x_0,v_0);  //r_ij,v_ijの内積.
+	}else{
+	  abs_r[i] = 0.0;
+	  r_dot_v_ij[i] = 0.0;
+	}
+      }  //j loop
+
+      for(k=1;k<=3;++k){
+	a_0[i][k] = All_Acceleration(i,k,ele,x_0,r_0,abs_r
+#if FRAGMENTATION
+				     ,(t_sys+t_tmp),frag
+#endif
+				     );  //初期の加速度.
+	adot_0[i][k] = All_dAcceleration(i,k,ele,x_0,v_0,r_dot_v,r_dot_v_ij,r_0,abs_r
+#if FRAGMENTATION
+					 ,(t_sys+t_tmp),frag
+#endif
+					 );
+	//fprintf(fplog,"a_0[%d][%d]=%f\tadot_0[%d][%d]=%f\n",i,k,a_0[i][k],i,k,adot_0[i][k]);
+      }
+    }
+
+
+    for(i=1;i<=global_n;++i){
+      //初期のタイムステップ計算.
+      dt_[i] = Timestep_i_0(i,a_0,adot_0);
+      //fprintf(fplog,"initial dt_[%d]=%e\n",i,dt_[i]);
+    }
+
+    /////////////////////////////ここまでで加速度，タイムステップ計算//////////////////////////////
 
 
 #if N_tr != 0
@@ -772,38 +895,117 @@ int main(int argc, char **argv){
 
     n_fragcheck = 0;
 
-    orbital_r_min = PLANET_AXIS / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
-    orbital_r_max = PLANET_AXIS * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#if N_p == 3
+    orbital_r_min = ele[2].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+    orbital_r_max = ele[2].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#elif N_p == 1
+    orbital_r_min = ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+    orbital_r_max = ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#endif
 
     mass_tot_all = 0.0;
-    mass_tot_center = 0.0;
-    n_center = 0;
+
     for(i=global_n_p+1;i<=global_n;++i){
 
       frag[i].fragtimes = 0;
-      NeighborSearch(i,ele,frag,x_0);  //近傍(扇形領域に入った)粒子探索.
+      frag[i].t_frag = 0.0;
+      NeighborSearch(i,(t_sys+t_tmp),ele,frag,x_0);  //近傍(扇形領域に入った)粒子探索.
       MassFlux(i,ele,frag,&para);  //質量フラックス計算.
-      frag[i].dt_frag = Depletion_Time(i,frag);  //統計的計算のタイムスケール.
-      frag[i].t_frag = frag[i].dt_frag;
+      frag[i].dt_frag = Depletion_Time(i,frag);  //統計的計算のタイムスケールのXI倍. 統計的計算のタイミングの目安.
 
-      if(r_0[i]>orbital_r_min && r_0[i]<orbital_r_max){
-	mass_tot_center += ele[i].mass;
-	n_center++;
-      }
       mass_tot_all += ele[i].mass;
+
+      orbital_r = RadiusFromCenter(i,x_0);
+
+      if(orbital_r > ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)
+	 &&
+	 orbital_r < ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //innerにいる場合
+	tracerlistnumber[0] += 1;
+	tracerlist[0][tracerlistnumber[0]] = i;
+      }
+
+      if(orbital_r > orbital_r_min && orbital_r < orbital_r_max){  //centerにいる場合
+	tracerlistnumber[1] += 1;
+	tracerlist[1][tracerlistnumber[1]] = i;
+      }
+
+      if(orbital_r > ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)
+	 &&
+	 orbital_r < ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //outerにいる場合
+	tracerlistnumber[2] += 1;
+	tracerlist[2][tracerlistnumber[2]] = i;
+      }
     }
 
-    //統計的計算で破壊タイムスケールの見積もり.
+
+    mass_tot_inner = 0.0;
+    n_inner = 0;
+    for(i=1;i<=tracerlistnumber[0];++i){
+      mass_tot_inner += ele[tracerlist[0][i]].mass;
+      n_inner++;
+    }
+    sigma_inner = mass_tot_inner / (M_PI * (ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) - ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)));
+
+
+    mass_tot_center = 0.0;
+    n_center = 0;
+    for(i=1;i<=tracerlistnumber[1];++i){
+      mass_tot_center += ele[tracerlist[1][i]].mass;
+      n_center++;
+    }
     sigma_center = mass_tot_center / (M_PI * (orbital_r_max*orbital_r_max - orbital_r_min*orbital_r_min));
+
+
+    mass_tot_outer = 0.0;
+    n_outer = 0;
+    for(i=1;i<=tracerlistnumber[2];++i){
+      mass_tot_outer += ele[tracerlist[2][i]].mass;
+      n_outer++;
+    }
+    sigma_outer = mass_tot_outer / (M_PI * (ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) - ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)));
+
+
+    fprintf(fplog,"inner = %d,\tcenter = %d,\touter = %d,\ttotal = %d\n",tracerlistnumber[0],tracerlistnumber[1],tracerlistnumber[2],global_n-global_n_p);
+
+
+    //統計的計算で破壊タイムスケールの見積もり.
 #if !defined(G) && !defined(M_0)
-    v_ave = sqrt(2.0*(ECC_RMS*ECC_RMS + INC_RMS*INC_RMS) / PLANET_AXIS);
-    flux_center = - (2.0 - para.alpha)*(2.0 - para.alpha) / cbrt(M_MAX) * sigma_center*sigma_center * sqrt(1.0/PLANET_AXIS/PLANET_AXIS/PLANET_AXIS) * para.h_0 * pow(v_ave*v_ave*0.5/para.Q_D,para.alpha-1.0) * ((- log(EPSILON_FRAG) + 1.0/(2.0-B_FRAG))*para.s_1 + para.s_2 + para.s_3);
+    v_ave = sqrt(2.0 * (ECC_RMS * ECC_RMS + INC_RMS * INC_RMS) / PLANET_AXIS);
+    flux_center = - (2.0 - para.alpha) * (2.0 - para.alpha) / cbrt(M_MAX) * sigma_center * sigma_center * sqrt(1.0 / PLANET_AXIS / PLANET_AXIS / PLANET_AXIS) * para.h_0 * pow(v_ave * v_ave * 0.5 / para.Q_D, para.alpha - 1.0) * ((- log(EPSILON_FRAG) + 1.0 / (2.0 - B_FRAG)) * para.s_1 + para.s_2 + para.s_3);
 #else
-    v_ave = sqrt(2.0*(ECC_RMS*ECC_RMS + INC_RMS*INC_RMS) * G*M_0/PLANET_AXIS);
-    flux_center = - (2.0 - para.alpha)*(2.0 - para.alpha) / cbrt(M_MAX) * sigma_center*sigma_center * sqrt(G*M_0/PLANET_AXIS/PLANET_AXIS/PLANET_AXIS) * para.h_0 * pow(v_ave*v_ave*0.5/para.Q_D,para.alpha-1.0) * ((- log(EPSILON_FRAG) + 1.0/(2.0-B_FRAG))*para.s_1 + para.s_2 + para.s_3);
+    v_ave = sqrt(2.0 * (ECC_RMS * ECC_RMS + INC_RMS * INC_RMS) * G * M_0 /PLANET_AXIS);
+    flux_center = - (2.0 - para.alpha) * (2.0 - para.alpha) / cbrt(M_MAX) * sigma_center * sigma_center * sqrt(G * M_0 / PLANET_AXIS / PLANET_AXIS / PLANET_AXIS) * para.h_0 * pow(v_ave * v_ave * 0.5 / para.Q_D, para.alpha - 1.0) * ((- log(EPSILON_FRAG) + 1.0 / (2.0 - B_FRAG)) * para.s_1 + para.s_2 + para.s_3);
 #endif
     tau_dep_center = - sigma_center / flux_center;
     fprintf(fplog,"initial mass depletion timescale =%e [yr] (center)\n",tau_dep_center/2.0/M_PI);
+
+
+    fptaudep = fopen(taudepfile,"w");
+    if(fptaudep==NULL){
+      fprintf(fplog,"taudepfile 0 error\n");
+      return -1;
+    }
+    fprintf(fptaudep,"#initial mass depletion timescale [yr]\n");
+    fprintf(fptaudep,"%e\n",tau_dep_center/2.0/M_PI);
+    fclose(fptaudep);
+
+
+    fptracerlist = fopen(tracerlistfile,"w");
+    if(fptracerlist==NULL){
+      fprintf(fplog,"tracerlistfile 0 error\n");
+      return -1;
+    }
+    fprintf(fptracerlist,"# inner\tcenter\touter\t(initial tracer list)\n");
+    for(i=1;
+	i<=Max_int(Max_int(n_inner,n_center),n_outer);  //n_inner, n_center, n_outerの中の最大値.
+	++i){
+      fprintf(fptracerlist,"%d\t%d\t%d\n",
+	      tracerlist[0][i],
+	      tracerlist[1][i],
+	      tracerlist[2][i]
+	      );
+    }
+    fclose(fptracerlist);
 
 
     fpfrag = fopen(fragfile,"w");
@@ -813,13 +1015,19 @@ int main(int argc, char **argv){
     }
     fprintf(fpfrag,"#initial mass depletion timescale = %e [yr] (center)\n",tau_dep_center/2.0/M_PI);
     fprintf(fpfrag,"#mass_tot_all_0 = %.15e\tmass_tot_center_0 = %.15e\tsigma_center_0 = %.15e\tn_center_0 = %d\n",mass_tot_all,mass_tot_center,sigma_center,n_center);
-    fprintf(fpfrag,"#t[yr]\tmass_tot_all\tmass_tot_center\tsigma_center\tn_center\n");
-    fprintf(fpfrag,"%.15e\t%.15e\t%.15e\t%.15e\t%d\n",
+    fprintf(fpfrag,"#t[yr]\tmass_tot_all\tmass_tot_inner\tmass_tot_center\tmass_tot_outer\tsigma_inner\tsigma_center\tsigma_outer\t\tn_inner\tn_center\tn_outer\n");
+    fprintf(fpfrag,"%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%d\t%d\t%d\n",
 	    0.0,
 	    mass_tot_all,
+	    mass_tot_inner,
 	    mass_tot_center,
+	    mass_tot_outer,
+	    sigma_inner,
 	    sigma_center,
-	    n_center
+	    sigma_outer,
+	    n_inner,
+	    n_center,
+	    n_outer
 	    );
     fclose(fpfrag);
 
@@ -867,47 +1075,11 @@ int main(int argc, char **argv){
     exetime.Fragmentation[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
 #endif
 
+    ////////////////////////////////ここまで破壊計算の初期設定//////////////////////////////
+
 #endif  /*FRAGMENTATION*/
 
 #endif  /*N_tr != 0 */
-
-
-
-    //#pragma omp parallel for private(j,k,abs_r,r_dot_v_ij)
-    for(i=1;i<=global_n;++i){
-      for(j=1;j<=
-#if INTERACTION_ALL
-	    global_n
-#elif INTERACTION_PLANET_TRACER
-	    global_n
-#elif INTERACTION_TEST_PARTICLE
-	    global_n_p
-#endif
-	    ;++j){
-	if(i!=j){
-	  abs_r[j] = RelativeDistance(i,j,x_0);  //絶対値.
-	  r_dot_v_ij[j] = RelativeInnerProduct(i,j,x_0,v_0);  //r_ij,v_ijの内積.
-	}else{
-	  abs_r[i] = 0.0;
-	  r_dot_v_ij[i] = 0.0;
-	}
-      }  //j loop
-
-      for(k=1;k<=3;++k){
-	a_0[i][k] = All_Acceleration(i,k,ele,x_0,r_0,abs_r);  //初期の加速度.
-	adot_0[i][k] = All_dAcceleration(i,k,ele,x_0,v_0,r_dot_v,r_dot_v_ij,r_0,abs_r);
-	//fprintf(fplog,"a_0[%d][%d]=%f\tadot_0[%d][%d]=%f\n",i,k,a_0[i][k],i,k,adot_0[i][k]);
-      }
-    }
-
-
-    for(i=1;i<=global_n;++i){
-      //初期のタイムステップ計算.
-      dt_[i] = Timestep_i_0(i,a_0,adot_0);
-      //fprintf(fplog,"initial dt_[%d]=%e\n",i,dt_[i]);
-    }
-
-    /////////////////////////////ここまでで加速度，タイムステップ計算//////////////////////////////
 
 
     fpinitial = fopen(initialfile,"w");
@@ -999,7 +1171,7 @@ int main(int argc, char **argv){
 
   while(t_sys + t_tmp <= T_MAX){
 
-    step+=1.0;
+    step += 1.0;
 
     t_sys = t_[1] + dt_[1];
     i_sys = 1;
@@ -1019,7 +1191,8 @@ int main(int argc, char **argv){
       gettimeofday(&realtime_start,NULL);
       getrusage(RUSAGE_SELF,&usage_start);
 #endif
-      //#pragma omp parallel for schedule(runtime)
+
+#pragma omp parallel for schedule(runtime)
       for(i=1;i<=global_n;++i){
 	Dt[i] = t_sys - t_[i];
 	Predictor(i,x_0,v_0,a_0,adot_0,x_p,v_p,r_p,v2_p,r_dot_v,Dt);  //予測子 t_sysにおけるすべての粒子を計算.
@@ -1063,8 +1236,13 @@ int main(int argc, char **argv){
 	gettimeofday(&realtime_start,NULL);
 	getrusage(RUSAGE_SELF,&usage_start);
 #endif
+	n_ite = 0;
 	for(i=1;i<=global_n;++i){
-	  Corrector_sys(i,ele,x_p,v_p,r_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,Dt);  //修正子 すべての粒子.
+	  Corrector_sys(n_ite,i,ele,x_p,v_p,r_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,Dt
+#if FRAGMENTATION
+			,(t_sys+t_tmp),frag
+#endif
+			);  //修正子 すべての粒子.
 	}
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
 	gettimeofday(&realtime_end,NULL);
@@ -1079,9 +1257,13 @@ int main(int argc, char **argv){
 	gettimeofday(&realtime_start,NULL);
 	getrusage(RUSAGE_SELF,&usage_start);
 #endif
-	for(ite=1;ite<=ITE_MAX;++ite){  //iteration.
+	for(n_ite=1;n_ite<=ITE_MAX;++n_ite){  //iteration.
 	  for(i=1;i<=global_n;++i){
-	    Iteration_sys(i,ele,x_p,v_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,Dt);  //すべての粒子.
+	    Corrector_sys(n_ite,i,ele,x_p,v_p,r_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,Dt
+#if FRAGMENTATION
+			  ,(t_sys+t_tmp),frag
+#endif
+			  );  //すべての粒子.
 	  }
 	}
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
@@ -1114,7 +1296,11 @@ int main(int argc, char **argv){
 	getrusage(RUSAGE_SELF,&usage_start);
 #endif
 	//衝突合体する際のエネルギーの補正量を計算
-	Energy_Correction(i_col,j_col,x_0,v_0,ele,&dE_heat,&dE_grav,&dE_c,&v_imp);
+	Energy_Correction(i_col,j_col,x_0,v_0,ele,&dE_heat,&dE_grav,&dE_c,&v_imp
+#if FRAGMENTATION
+			  ,(t_sys+t_tmp),frag
+#endif
+			  );
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
 	gettimeofday(&realtime_end,NULL);
 	getrusage(RUSAGE_SELF,&usage_end);
@@ -1179,20 +1365,9 @@ int main(int argc, char **argv){
 #if COALESCENCE
 	Coalescence(i_col,j_col,x_0,v_0,ele
 #if FRAGMENTATION
-		    ,frag
+		    ,(t_sys+t_tmp),frag
 #endif
 		    );  //合体後の操作.
-#endif
-
-
-#if RELOCATE_PARTICLE
-	if(j_col>global_n_p){  //惑星i_colに衝突後に，その周りに粒子を再配置.
-	  //InitialOrbitalElements_Tracer(j_col,x_0,ele);
-          ele[j_col].u = rand_func()*2.0*M_PI;
-          ele[j_col].omega = rand_func()*2.0*M_PI;
-          ele[j_col].Omega = rand_func()*2.0*M_PI;
-          InitialCondition(j_col,x_0,v_0,v2_0,r_dot_v,r_0,ele);
-	}
 #endif
 
 
@@ -1222,23 +1397,30 @@ int main(int argc, char **argv){
 #if ENERGY_FILE
 
 #if INDIRECT_TERM
-	CenterOfGravity(x_0,v_0,x_G,v_G,ele);  //重心計算.
-	//fprintf(fplog,"x_G=%.15e\ty_G=%.15e\tz_G=%.15e\tvx_G=%.15e\tvy_G=%.15e\tvz_G=%.15e\n",x_G[1],x_G[2],x_G[3],v_G[1],v_G[2],v_G[3]);
+	CenterOfGravity(x_0,v_0,x_G,v_G,ele
+#if FRAGMENTATION
+			,(t_sys+t_tmp),frag
+#endif
+			);  //重心計算.
 #endif
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
 	gettimeofday(&realtime_start,NULL);
 	getrusage(RUSAGE_SELF,&usage_start);
 #endif
-	E_tot = Calculate_Energy(ele,x_0,
+	E_tot = Calculate_Energy(ele,x_0
 #if INDIRECT_TERM
-				 v_0,v_G,
+				 ,v_0,v_G
 #else
-				 v2_0,
+				 ,v2_0
 #endif
-				 r_0);  //エネルギー計算.
-	dE_correct += - dE_heat - dE_grav - dE_c;  //エネルギー補正計算
-	E_tot += dE_correct;  //補正をする
+				 ,r_0
+#if FRAGMENTATION
+				 ,(t_sys+t_tmp),frag
+#endif
+				 );  //エネルギー計算.
+	dE_correct += - dE_heat - dE_grav - dE_c;  //エネルギー補正計算.
+	E_tot += dE_correct;  //補正をする.
 
 
 	fpEne = fopen(Ene,"a");
@@ -1265,7 +1447,11 @@ int main(int argc, char **argv){
 		);
 	fclose(fpEne);
 
-	abs_L = AngularMomentum(i,ele,x_0,v_0);
+	abs_L = AngularMomentum(i,ele,x_0,v_0
+#if FRAGMENTATION
+				,(t_sys+t_tmp),frag
+#endif
+				);
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
 	gettimeofday(&realtime_end,NULL);
@@ -1299,9 +1485,16 @@ int main(int argc, char **argv){
 	  }  //j loop
 
 	  for(k=1;k<=3;++k){
-	    a_0[i][k] = All_Acceleration(i,k,ele,x_0,r_0,abs_r);  //加速度.
-	    adot_0[i][k] = All_dAcceleration(i,k,ele,x_0,v_0,r_dot_v,r_dot_v_ij,r_0,abs_r);
-	    //fprintf(fplog,"a_0[%d][%d]=%f\tadot_0[%d][%d]=%f\n",i,k,a_0[i][k],i,k,adot_0[i][k]);
+	    a_0[i][k] = All_Acceleration(i,k,ele,x_0,r_0,abs_r
+#if FRAGMENTATION
+					 ,(t_sys+t_tmp),frag
+#endif
+					 );  //加速度.
+	    adot_0[i][k] = All_dAcceleration(i,k,ele,x_0,v_0,r_dot_v,r_dot_v_ij,r_0,abs_r
+#if FRAGMENTATION
+					     ,(t_sys+t_tmp),frag
+#endif
+					     );
 	  }
 	}
 	//////////////////////////////////////////////////////////////
@@ -1315,7 +1508,7 @@ int main(int argc, char **argv){
 	getrusage(RUSAGE_SELF,&usage_start);
 #endif
 
-	//#pragma omp parallel for private(k) schedule(runtime)
+#pragma omp parallel for private(k) schedule(runtime)
 	for(i=1;i<=global_n;++i){
 	  if(i!=i_sys){
 	    //i_sys以外の粒子は予測子を使う.
@@ -1329,7 +1522,12 @@ int main(int argc, char **argv){
 	  }
 	}
 
-	Corrector_sys(i_sys,ele,x_p,v_p,r_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,dt_);  //修正子. i_sys のみ.
+	n_ite = 0;
+	Corrector_sys(n_ite,i_sys,ele,x_p,v_p,r_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,dt_
+#if FRAGMENTATION
+			,(t_sys+t_tmp),frag
+#endif
+			);  //修正子. i_sys のみ.
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
 	gettimeofday(&realtime_end,NULL);
 	getrusage(RUSAGE_SELF,&usage_end);
@@ -1343,8 +1541,12 @@ int main(int argc, char **argv){
 	gettimeofday(&realtime_start,NULL);
 	getrusage(RUSAGE_SELF,&usage_start);
 #endif
-	for(ite=1;ite<=ITE_MAX;++ite){  //iteration.
-	  Iteration_sys(i_sys,ele,x_p,v_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,dt_);  //i_sysのみ.
+	for(n_ite=1;n_ite<=ITE_MAX;++n_ite){  //iteration.
+	  Corrector_sys(n_ite,i_sys,ele,x_p,v_p,r_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,dt_
+#if FRAGMENTATION
+			,(t_sys+t_tmp),frag
+#endif
+			);  //i_sysのみ.
 	}
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
 	gettimeofday(&realtime_end,NULL);
@@ -1356,6 +1558,88 @@ int main(int argc, char **argv){
 
 	////////////////////////////////////////////////////////////////
       }
+
+
+#if FRAGMENTATION
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+      gettimeofday(&realtime_start,NULL);
+      getrusage(RUSAGE_SELF,&usage_start);
+#endif
+
+
+      if(t_[i_sys] + t_tmp + dt_[i_sys] > frag[i_sys].t_frag + frag[i_sys].dt_frag && i_sys > global_n_p){
+
+	frag[i_sys].fragtimes++;
+
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+	gettimeofday(&realtime_start_2,NULL);
+	getrusage(RUSAGE_SELF,&usage_start_2);
+#endif
+	Calculate_OrbitalElements(i_sys,x_c,v_c,ele,r_c,v2_c,r_dot_v);  //軌道要素計算.
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+	gettimeofday(&realtime_end_2,NULL);
+	getrusage(RUSAGE_SELF,&usage_end_2);
+	exetime.Energy[0] += Cal_time(realtime_start_2,realtime_end_2);
+	exetime.Energy[1] += Cal_time(usage_start_2.ru_utime,usage_end_2.ru_utime);
+	exetime.Energy[2] += Cal_time(usage_start_2.ru_stime,usage_end_2.ru_stime);
+#endif
+
+
+	ele[i_sys].mass = MassDepletion(i_sys,ele[i_sys].mass,(t_sys+t_tmp),frag);  //トレーサー質量の減少を計算.
+
+	frag[i_sys].t_frag = t_[i_sys] + t_tmp + dt_[i_sys];  //力学的時間に揃える.
+
+	NeighborSearch(i_sys,(t_sys+t_tmp),ele,frag,x_c);  //近傍(扇形領域に入った)粒子探索.
+
+	MassFlux(i_sys,ele,frag,&para);  //質量フラックス計算.
+
+	frag[i_sys].dt_frag = Depletion_Time(i_sys,frag);  //統計的計算のタイムスケールのXI倍. 統計的計算のタイミングの目安.
+
+	if(isnan(frag[i_sys].dt_frag)){
+	  fprintf(fplog,"time=%.15e[yr]\tfrag[%d].neighbornumber=%d\n",
+		  (t_sys+t_tmp)/2.0/M_PI,
+		  i_sys,
+		  frag[i_sys].neighbornumber
+		  );
+	  fprintf(fplog,"i=%d\tv_ave=%f\tsigma=%f\tecc=%f\tr_c=%f\tdelta_r_out=%f\tdelta_r_in=%f\n",
+		  i_sys,
+		  frag[i_sys].v_ave,
+		  frag[i_sys].sigma,
+		  ele[i_sys].ecc,
+		  r_c[i_sys],
+		  frag[i_sys].delta_r_out,
+		  frag[i_sys].delta_r_in
+		  );
+	  fprintf(fplog,"axis=%e\tecc=%e\tinc=%e\tu=%e\tOmega=%e\tomega=%e\n",
+		  ele[i_sys].axis,
+		  ele[i_sys].ecc,
+		  ele[i_sys].inc,
+		  ele[i_sys].u,
+		  ele[i_sys].Omega,
+		  ele[i_sys].omega
+		  );
+	  fprintf(fplog,"x=%f\ty=%f\tz=%f\n",
+		  x_c[i_sys][1],
+		  x_c[i_sys][2],
+		  x_c[i_sys][3]
+		  );
+	  return -1;
+	}
+
+      }
+
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+      gettimeofday(&realtime_end,NULL);
+      getrusage(RUSAGE_SELF,&usage_end);
+      exetime.Fragmentation[0] += Cal_time(realtime_start,realtime_end);
+      exetime.Fragmentation[1] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
+      exetime.Fragmentation[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
+#endif
+
+#endif  /*FRAGMENTATION*/
 
 
     }else{
@@ -1394,8 +1678,13 @@ int main(int argc, char **argv){
       gettimeofday(&realtime_start,NULL);
       getrusage(RUSAGE_SELF,&usage_start);
 #endif
+      n_ite = 0;
       for(i=1;i<=global_n;++i){
-	Corrector_sys(i,ele,x_p,v_p,r_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,dt_);
+	Corrector_sys(n_ite,i,ele,x_p,v_p,r_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,Dt
+#if FRAGMENTATION
+		      ,(t_sys+t_tmp),frag
+#endif
+		      );  //修正子 すべての粒子.
       }
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
       gettimeofday(&realtime_end,NULL);
@@ -1410,9 +1699,13 @@ int main(int argc, char **argv){
       gettimeofday(&realtime_start,NULL);
       getrusage(RUSAGE_SELF,&usage_start);
 #endif
-      for(ite=1;ite<=ITE_MAX;++ite){  //iteration.
+      for(n_ite=1;n_ite<=ITE_MAX;++n_ite){  //iteration.
 	for(i=1;i<=global_n;++i){
-	  Iteration_sys(i,ele,x_p,v_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,dt_);
+	  Corrector_sys(n_ite,i,ele,x_p,v_p,r_p,x_c,v_c,r_c,v2_c,r_dot_v,a_0,adot_0,a,adot,adot2_dt2,adot3_dt3,Dt
+#if FRAGMENTATION
+			,(t_sys+t_tmp),frag
+#endif
+			);
 	}
       }
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
@@ -1455,7 +1748,11 @@ int main(int argc, char **argv){
 #if ENERGY_FILE
 
 #if INDIRECT_TERM
-      CenterOfGravity(x_c,v_c,x_G,v_G,ele);  //重心計算
+      CenterOfGravity(x_c,v_c,x_G,v_G,ele
+#if FRAGMENTATION
+		      ,(t_sys+t_tmp),frag
+#endif
+		      );  //重心計算
 #endif
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
@@ -1463,15 +1760,19 @@ int main(int argc, char **argv){
       getrusage(RUSAGE_SELF,&usage_start);
 #endif
       E_tot = 0.0;
-      E_tot = Calculate_Energy(ele,x_c,
+      E_tot = Calculate_Energy(ele,x_c
 #if INDIRECT_TERM
-			       v_c,v_G,
+			       ,v_c,v_G
 #else
-			       v2_c,
+			       ,v2_c
 #endif
-			       r_c);  //エネルギー計算.
+			       ,r_c
+#if FRAGMENTATION
+			       ,(t_sys+t_tmp),frag
+#endif
+			       );  //エネルギー計算.
 
-      E_tot += dE_correct;  //補正を常にする
+      E_tot += dE_correct;  //補正を常にする.
 
 
       fpEne = fopen(Ene,"a");
@@ -1488,7 +1789,11 @@ int main(int argc, char **argv){
 	      );
       fclose(fpEne);
 
-      abs_L = AngularMomentum(i,ele,x_c,v_c);
+      abs_L = AngularMomentum(i,ele,x_c,v_c
+#if FRAGMENTATION
+			      ,(t_sys+t_tmp),frag
+#endif
+			      );
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
       gettimeofday(&realtime_end,NULL);
       getrusage(RUSAGE_SELF,&usage_end);
@@ -1674,6 +1979,7 @@ int main(int argc, char **argv){
     }
 
 
+
 #if FRAGMENTATION
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
@@ -1681,100 +1987,104 @@ int main(int argc, char **argv){
     getrusage(RUSAGE_SELF,&usage_start);
 #endif
 
-    for(i=global_n_p+1;i<=global_n;++i){
-
-      //if(t_sys + t_tmp > frag[i].t_frag){
-      if(t_[i] + t_tmp > frag[i].t_frag){
-	frag[i].t_frag += frag[i].dt_frag;
-	frag[i].fragtimes++;
-
-
-#if EXECUTION_TIME && EXECUTION_TIME_FUNC
-	gettimeofday(&realtime_start_2,NULL);
-	getrusage(RUSAGE_SELF,&usage_start_2);
-#endif
-	Calculate_OrbitalElements(i,x_c,v_c,ele,r_c,v2_c,r_dot_v);  //軌道要素計算.
-#if EXECUTION_TIME && EXECUTION_TIME_FUNC
-	gettimeofday(&realtime_end_2,NULL);
-	getrusage(RUSAGE_SELF,&usage_end_2);
-	exetime.Energy[0] += Cal_time(realtime_start_2,realtime_end_2);
-	exetime.Energy[1] += Cal_time(usage_start_2.ru_utime,usage_end_2.ru_utime);
-	exetime.Energy[2] += Cal_time(usage_start_2.ru_stime,usage_end_2.ru_stime);
-#endif
-
-
-	NeighborSearch(i,ele,frag,x_c);  //近傍(扇形領域に入った)粒子探索.
-
-	MassFlux(i,ele,frag,&para);  //質量フラックス計算.
-	frag[i].dt_frag = Depletion_Time(i,frag);  //統計的計算のタイムスケール.
-
-	if(isnan(frag[i].dt_frag)){
-	  fprintf(fplog,"time=%.15e[yr]\tfrag[%d].neighbornumber=%d\n",
-		 (t_sys+t_tmp)/2.0/M_PI,
-		 i,
-		 frag[i].neighbornumber
-		 );
-	  fprintf(fplog,"i=%d\tv_ave=%f\tsigma=%f\tecc=%f\tr_c=%f\tdelta_r_out=%f\tdelta_r_in=%f\n",
-		 i,
-		 frag[i].v_ave,
-		 frag[i].sigma,
-		 ele[i].ecc,
-		 r_c[i],
-		 frag[i].delta_r_out,
-		 frag[i].delta_r_in
-		 );
-	  fprintf(fplog,"axis=%e\tecc=%e\tinc=%e\tu=%e\tOmega=%e\tomega=%e\n",
-		 ele[i].axis,
-		 ele[i].ecc,
-		 ele[i].inc,
-		 ele[i].u,
-		 ele[i].Omega,
-		 ele[i].omega
-		 );
-	  fprintf(fplog,"x=%f\ty=%f\tz=%f\n",
-		 x_c[i][1],
-		 x_c[i][2],
-		 x_c[i][3]
-		 );
-	  return -1;
-	}
-
-
-	ele[i].mass = MassDepletion(i,ele);  //トレーサー質量の減少を計算.
-      }
-    }
-
 
     if(t_sys + t_tmp > t_fragcheck){
       n_fragcheck++;
 
-      orbital_r_min = PLANET_AXIS / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
-      orbital_r_max = PLANET_AXIS * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#if N_p == 3
+      orbital_r_min = ele[2].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+      orbital_r_max = ele[2].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#elif N_p == 1
+      orbital_r_min = ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+      orbital_r_max = ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#endif
 
       mass_tot_all = 0.0;
-      mass_tot_center = 0.0;
-      n_center = 0;
-      for(i=global_n_p+1;i<=global_n;++i){
-	if(r_c[i]>orbital_r_min && r_c[i]<orbital_r_max){
-	  mass_tot_center += ele[i].mass;
-	  n_center++;
-	}
-	mass_tot_all += ele[i].mass;
+
+      tracerlistnumber[0] = 0;
+      tracerlistnumber[1] = 0;
+      tracerlistnumber[2] = 0;
+
+      for(i=0;i<=N_tr;++i){
+	tracerlist[0][i] = 0;
+	tracerlist[1][i] = 0;
+	tracerlist[2][i] = 0;
       }
 
+      for(i=global_n_p+1;i<=global_n;++i){
+	//mass_tot_all += ele[i].mass;
+	mass_tot_all += MassDepletion(i,ele[i].mass,(t_sys+t_tmp),frag);  //質量を予測してから足す.
+
+	orbital_r = RadiusFromCenter(i,x_c);
+
+	if(orbital_r > ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)
+	   &&
+	   orbital_r < ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //innerにいる場合
+	  tracerlistnumber[0] += 1;
+	  tracerlist[0][tracerlistnumber[0]] = i;
+	}
+
+	if(orbital_r > orbital_r_min && orbital_r < orbital_r_max){  //centerにいる場合
+	  tracerlistnumber[1] += 1;
+	  tracerlist[1][tracerlistnumber[1]] = i;
+	}
+
+	if(orbital_r > ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)
+	   &&
+	   orbital_r < ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //outerにいる場合
+	  tracerlistnumber[2] += 1;
+	  tracerlist[2][tracerlistnumber[2]] = i;
+	}
+      }
+
+
+      mass_tot_inner = 0.0;
+      n_inner = 0;
+      for(i=1;i<=tracerlistnumber[0];++i){
+	//mass_tot_inner += ele[tracerlist[0][i]].mass;
+	mass_tot_inner += MassDepletion(tracerlist[0][i],ele[tracerlist[0][i]].mass,(t_sys+t_tmp),frag);  //質量を予測してから足す.
+	n_inner++;
+      }
+      sigma_inner = mass_tot_inner / (M_PI * (ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) - ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)));
+
+
+      mass_tot_center = 0.0;
+      n_center = 0;
+      for(i=1;i<=tracerlistnumber[1];++i){
+	//mass_tot_center += ele[tracerlist[1][i]].mass;
+	mass_tot_center += MassDepletion(tracerlist[1][i],ele[tracerlist[1][i]].mass,(t_sys+t_tmp),frag);  //質量を予測してから足す.
+	n_center++;
+      }
       sigma_center = mass_tot_center / (M_PI * (orbital_r_max*orbital_r_max - orbital_r_min*orbital_r_min));
+
+
+      mass_tot_outer = 0.0;
+      n_outer = 0;
+      for(i=1;i<=tracerlistnumber[0];++i){
+	//mass_tot_outer += ele[tracerlist[2][i]].mass;
+	mass_tot_outer += MassDepletion(tracerlist[2][i],ele[tracerlist[2][i]].mass,(t_sys+t_tmp),frag);  //質量を予測してから足す.
+	n_outer++;
+      }
+      sigma_outer = mass_tot_outer / (M_PI * (ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) - ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)));
+
 
       fpfrag = fopen(fragfile,"a");  //総質量をファイルへ書き出し.
       if(fpfrag==NULL){
 	fprintf(fplog,"fragfile error\n");
 	return -1;
       }
-      fprintf(fpfrag,"%.15e\t%.15e\t%.15e\t%.15e\t%d\n",
+      fprintf(fpfrag,"%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%d\t%d\t%d\n",
 	      (t_sys+t_tmp)/2.0/M_PI,
 	      mass_tot_all,
+	      mass_tot_inner,
 	      mass_tot_center,
+	      mass_tot_outer,
+	      sigma_inner,
 	      sigma_center,
-	      n_center
+	      sigma_outer,
+	      n_inner,
+	      n_center,
+	      n_outer
 	      );
       fclose(fpfrag);
 
@@ -1814,7 +2124,7 @@ int main(int argc, char **argv){
       fclose(fpposimass);
 
 
-      t_fragcheck *= GEOMETRIC_RATIO_FRAG;
+      t_fragcheck *= sqrt(sqrt(sqrt(10.0)));  //logでは10を8分割.
     }
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
@@ -1825,7 +2135,7 @@ int main(int argc, char **argv){
     exetime.Fragmentation[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
 #endif
 
-#endif
+#endif  /*FRAGMENTATION*/
 
 
 #if POSI_VELO_ROT_FILE
@@ -1983,11 +2293,7 @@ int main(int argc, char **argv){
 
       for(i=1;i<=global_n;++i){
 	t_[i] += Dt[i];  //すべての粒子の時間はt_sysに揃う.
-
-	//fprintf(fplog,"t_sys=%.16e\tt_[%d]=%.16e\n",t_sys,i,t_[i]);
-
 	dt_[i] = Timestep_i_0(i,a_0,adot_0);  //すべての粒子のタイムステップ計算.
-	//fprintf(fplog,"initial dt_[%d]=%e\n",i,dt_[i]);
       }
       i_col = 0;  //リセット
       j_col = 0;  //リセット
@@ -1995,7 +2301,6 @@ int main(int argc, char **argv){
     }else if((i_col == 0) && (j_col == 0)){  //衝突しない場合.
 
       t_[i_sys] += dt_[i_sys];  //i_sys のみ時間更新.
-
       dt_[i_sys] = Timestep_i_sys(i_sys,a,adot,adot2_dt2,adot3_dt3,dt_);  //i_sys のみタイムステップ計算.
 
       for(k=1;k<=3;++k){  //i_sys のみ更新.

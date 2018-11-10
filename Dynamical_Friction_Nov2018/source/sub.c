@@ -3,24 +3,24 @@
 
 
 double rand_func(){
-  return ((double)rand())/((double)RAND_MAX+1.0);
+  return sfmt_genrand_real2(&sfmt);  //generates a random number on [0,1)-real-interval.
 }
 
 
-void Rotation_3D_xaxis(int i,double x_eject[][4],double theta){
+void Rotation_3D_xaxis(int i, double x_eject[][4], double theta){
   double tmp_y = x_eject[i][2];
   double tmp_z = x_eject[i][3];
-  x_eject[i][2] = cos(theta)*tmp_y - sin(theta)*tmp_z;
-  x_eject[i][3] = sin(theta)*tmp_y + cos(theta)*tmp_z;
+  x_eject[i][2] = cos(theta) * tmp_y - sin(theta) * tmp_z;
+  x_eject[i][3] = sin(theta) * tmp_y + cos(theta) * tmp_z;
   return;
 }
 
 
-void Rotation_3D_yaxis(int i,double x_eject[][4],double theta){
+void Rotation_3D_yaxis(int i, double x_eject[][4], double theta){
   double tmp_x = x_eject[i][1];
   double tmp_z = x_eject[i][3];
-  x_eject[i][1] = cos(theta)*tmp_x + sin(theta)*tmp_z;
-  x_eject[i][3] = - sin(theta)*tmp_x + cos(theta)*tmp_z;
+  x_eject[i][1] = cos(theta) * tmp_x + sin(theta) * tmp_z;
+  x_eject[i][3] = - sin(theta) * tmp_x + cos(theta) * tmp_z;
   return;
 }
 
@@ -28,14 +28,19 @@ void Rotation_3D_yaxis(int i,double x_eject[][4],double theta){
 void Rotation_3D_zaxis(int i,double x_eject[][4],double theta){
   double tmp_x = x_eject[i][1];
   double tmp_y = x_eject[i][2];
-  x_eject[i][1] = cos(theta)*tmp_x - sin(theta)*tmp_y;
-  x_eject[i][2] = sin(theta)*tmp_x + cos(theta)*tmp_y;
+  x_eject[i][1] = cos(theta) * tmp_x - sin(theta) * tmp_y;
+  x_eject[i][2] = sin(theta) * tmp_x + cos(theta) * tmp_y;
   return;
 }
 
 
-void CenterOfGravity(CONST double x_0[][4],CONST double v_0[][4],double x_G[],double v_G[],CONST struct orbital_elements *ele_p){
-  int i,k;
+void CenterOfGravity(CONST double x_0[][4], CONST double v_0[][4], double x_G[], double v_G[], CONST struct orbital_elements *ele_p
+#if FRAGMENTATION
+			 , double t_dyn
+			 , CONST struct fragmentation *frag_p
+#endif
+		     ){
+  int i, k;
   double M;
 
 #ifndef M_0
@@ -50,7 +55,12 @@ void CenterOfGravity(CONST double x_0[][4],CONST double v_0[][4],double x_G[],do
 	global_n_p
 #endif
 	;++i){
+
+#if FRAGMENTATION
+    M += MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p);
+#else
     M += ((ele_p+i)->mass);
+#endif
   }
 
   for(k=1;k<=3;++k){
@@ -63,11 +73,17 @@ void CenterOfGravity(CONST double x_0[][4],CONST double v_0[][4],double x_G[],do
 	global_n_p
 #endif
 	  ;++i){
-      x_G[k] += ((ele_p+i)->mass)*x_0[i][k];
-      v_G[k] += ((ele_p+i)->mass)*v_0[i][k];
+
+#if FRAGMENTATION
+      x_G[k] += MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p) * x_0[i][k];
+      v_G[k] += MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p) * v_0[i][k];
+#else
+      x_G[k] += ((ele_p+i)->mass) * x_0[i][k];
+      v_G[k] += ((ele_p+i)->mass) * v_0[i][k];
+#endif
     }
-    x_G[k] = x_G[k]/M;
-    v_G[k] = v_G[k]/M;
+    x_G[k] = x_G[k] / M;
+    v_G[k] = v_G[k] / M;
   }
 
   return;
@@ -75,12 +91,12 @@ void CenterOfGravity(CONST double x_0[][4],CONST double v_0[][4],double x_G[],do
 
 
 double MutualHillRadius_to_SemimajorAxis(double ratio){
-  return (1.0/ratio + 0.5*cbrt(2.0*PLANET_MASS/3.0))/(1.0/ratio - 0.5*cbrt(2.0*PLANET_MASS/3.0));
+  return (1.0 / ratio + 0.5 * cbrt(2.0 * PLANET_MASS / 3.0)) / (1.0 / ratio - 0.5 * cbrt(2.0 * PLANET_MASS / 3.0));
 }
 
 
 #if EXECUTION_TIME
-void Sort_Exetime(struct timeval realtime_start_main,struct timeval realtime_end_main){
+void Sort_Exetime(struct timeval realtime_start_main, struct timeval realtime_end_main){
 
   int i,j;
   double exetime_main = Cal_time(realtime_start_main,realtime_end_main);
