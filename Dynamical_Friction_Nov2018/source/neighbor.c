@@ -71,7 +71,7 @@ void NeighborSearch(int i, double t_dyn, CONST struct orbital_elements *ele_p, s
     for(j=1;j<=((frag_p+i)->neighbornumber);j++){
       v2 += SquareRandomVelocity(i,((frag_p+i)->neighborlist[j]),ele_p);
 
-      M += MassDepletion(j,((ele_p+((frag_p+i)->neighborlist[j]))->mass),t_dyn,frag_p);  //領域iの総質量. 周りのトレーサーjの質量を予測してから足す.
+      M += MassDepletion(((frag_p+i)->neighborlist[j]),((ele_p+((frag_p+i)->neighborlist[j]))->mass),t_dyn,frag_p);  //領域iの総質量. 周りのトレーサーjの質量を予測してから足す.
 
       if(isnan(SquareRandomVelocity(i,((frag_p+i)->neighborlist[j]),ele_p))){
 	fprintf(fplog,"i=%d,j=%d\tvij is nan.\n",i,((frag_p+i)->neighborlist[j]));

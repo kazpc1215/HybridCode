@@ -63,11 +63,13 @@ define generate_shell_script_1
 	while [ -z "$$NUMNODES" ]; do \
         read -e -r -p "Type any numbers to set number of nodes. : " NUMNODES; \
         echo "$$NUMNODES"; \
+	hitsory -s "$$NUMNODES"; \
         done; \
 	echo "#PBS -l nodes=$$NUMNODES" >> "$$JOBFILE.sh"; \
 	while [ -z "$$QUEUENAME" ]; do \
 	read -e -r -p "Select the queue name. ('large', 'bulk', 'test', 'debug') (*****-md) : " QUEUENAME; \
 	echo "$$QUEUENAME"; \
+	history -s "$$QUEUENAME"; \
 	done; \
 	echo "#PBS -q $$QUEUENAME-md" >> "$$JOBFILE.sh"; \
 	echo '#PBS -j oe' >> "$$JOBFILE.sh"; \
@@ -80,6 +82,7 @@ define generate_shell_script_1
 	while [ -z "$$THREADS" ]; do \
 	read -e -r -p "Type any numbers to set OMP_NUM_THREADS. (1,...,40) : " THREADS; \
 	echo "$$THREADS"; \
+	history -s "$$THREADS"; \
 	done; \
 	echo "export OMP_NUM_THREADS=$$THREADS" >> "$$JOBFILE.sh"; \
 	fi
@@ -96,24 +99,29 @@ define generate_shell_script_2
 	echo '------------------'; \
 	echo ''; \
 	echo 'The shell script file has generated.'; \
-	echo ''
+	echo ''; \
+	history -w .input_history
 endef
 
 
 all: $(OBJS)
 	@$(call show_macro)
-	@while [ -z "$$JOBFILE" ]; do \
+	@history -r .input_history; \
+	while [ -z "$$JOBFILE" ]; do \
 	read -e -r -p "Type anything to set the 'shell script file name'. (*****.sh) : " JOBFILE; \
 	echo "$$JOBFILE"; \
+	history -s "$$JOBFILE"; \
 	done; \
 	$(call generate_shell_script_1); \
 	while [ -z "$$NUMPROCS" ]; do \
         read -e -r -p "Type any numbers to set MPI process number. (1,...,40 * numnodes) : " NUMPROCS; \
         echo "$$NUMPROCS"; \
+	history -s "$$NUMPROCS"; \
         done; \
 	while [ -z "$$EXENAME" ]; do \
 	read -e -r -p "Type anything to set the 'execution file name'. (*****.exe) : " EXENAME; \
 	echo "$$EXENAME"; \
+	history -s "$$EXENAME"; \
 	done; \
 	$(CC) $(CFLAGS) -o $$EXENAME.exe $(OBJS); \
 	$(call generate_shell_script_2)

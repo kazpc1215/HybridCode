@@ -238,14 +238,29 @@ void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[],
 
 
 /*軌道要素計算*/
-void Calculate_OrbitalElements(int i, CONST double x_c[][4], CONST double v_c[][4], struct orbital_elements *ele_p, CONST double r_c[], CONST double v2_c[], CONST double r_dot_v[]){
+void Calculate_OrbitalElements(int i, CONST double x_c[][4], CONST double v_c[][4], struct orbital_elements *ele_p, CONST double r_c[], CONST double v2_c[], CONST double r_dot_v[]
+#if FRAGMENTATION
+			       , double t_dyn
+			       , CONST struct fragmentation *frag_p
+#endif
+			       ){
+
+
+  double m_i;
+
+#if FRAGMENTATION
+  m_i = MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p);
+#else
+  m_i = ((ele_p+i)->mass);
+#endif
+
 
 #if INDIRECT_TERM
 
 #if !defined(G) && !defined(M_0)
-  double mu = 1.0 + ((ele_p+i)->mass);
+  double mu = 1.0 + m_i;
 #else
-  double mu = G * (M_0 + ((ele_p+i)->mass));
+  double mu = G * (M_0 + m_i);
 #endif
 
 #else
@@ -271,22 +286,6 @@ void Calculate_OrbitalElements(int i, CONST double x_c[][4], CONST double v_c[][
   static double P[N_p+N_tr+1][4]={}, Q[N_p+N_tr+1][4]={};
 
 
-  if(isnan(x_c[i][1])||isnan(x_c[i][2])||isnan(x_c[i][3])){
-    fprintf(fplog,"i=%d\tx is nan.\t[1]=%f\t[2]=%f\t[3]=%f\n",i,x_c[i][1],x_c[i][2],x_c[i][3]);
-  }
-  if(isnan(v_c[i][1])||isnan(v_c[i][2])||isnan(v_c[i][3])){
-    fprintf(fplog,"i=%d\tx is nan.\t[1]=%f\t[2]=%f\t[3]=%f\n",i,v_c[i][1],v_c[i][2],v_c[i][3]);
-  }
-  if(isnan(r_c[i])){
-    fprintf(fplog,"i=%d\tr is nan.\n",i);
-  }
-  if(isnan(v2_c[i])){
-    fprintf(fplog,"i=%d\tv2 is nan.\n",i);
-  }
-  if(isnan(r_dot_v[i])){
-    fprintf(fplog,"i=%d\tr_dot_v is nan.\n",i);
-  }
-  
   ((ele_p+i)->axis) = 1.0 / (2.0 / r_c[i] - v2_c[i] / mu);
 
 
@@ -384,9 +383,9 @@ void Calculate_OrbitalElements(int i, CONST double x_c[][4], CONST double v_c[][
 
 
 #ifndef M_0
-  ((ele_p+i)->r_h) = ((ele_p+i)->axis) * cbrt(((ele_p+i)->mass) / 3.0);
+  ((ele_p+i)->r_h) = ((ele_p+i)->axis) * cbrt(m_i / 3.0);
 #else
-  ((ele_p+i)->r_h) = ((ele_p+i)->axis) * cbrt(((ele_p+i)->mass) / M_0 / 3.0);
+  ((ele_p+i)->r_h) = ((ele_p+i)->axis) * cbrt(m_i / M_0 / 3.0);
 #endif
 
 

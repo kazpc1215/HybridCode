@@ -108,7 +108,11 @@ void Coalescence(int i_col, int j_col, double x_0[][4], double v_0[][4], struct 
   int k;
 
   //i_colを新しい合体粒子の番号にする.
+#if FRAGMENTATION
   ((ele_p+i_col)->mass) = MassDepletion(i_col,((ele_p+i_col)->mass),t_dyn,frag_p) + MassDepletion(j_col,((ele_p+j_col)->mass),t_dyn,frag_p);
+#else
+  ((ele_p+i_col)->mass) = ((ele_p+i_col)->mass) + ((ele_p+j_col)->mass);
+#endif
   ((ele_p+i_col)->radius) = cbrt(3.0/4.0/M_PI*((ele_p+i_col)->mass)*1.989E33/PLANET_DENSITY)/1.496E13;
   for(k=1;k<=3;++k){
     x_0[i_col][k] = x_0[0][k];

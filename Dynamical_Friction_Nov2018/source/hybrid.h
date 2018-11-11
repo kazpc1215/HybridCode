@@ -27,7 +27,7 @@
 #endif
 
 
-#define DIRECTORY ../data/Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_frag_acc/  //ディレクトリ.
+#define DIRECTORY ../data/Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_nofrag_acc/  //ディレクトリ.
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
 
 #define STR_(str) #str
@@ -51,7 +51,7 @@
 
 #define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.
 
-#define FRAGMENTATION true  //破壊 近傍粒子探索と質量フラックス計算.
+#define FRAGMENTATION false  //破壊 近傍粒子探索と質量フラックス計算.
 #define COLLISION true  //衝突.
 #if COLLISION
 #define COALESCENCE true  //衝突後に合体.
@@ -155,10 +155,6 @@ Mean Longitude (deg)               100.46435
 #define DELTA_THETA 0.125*M_PI  //近傍粒子探索用.
 //#define DELTA_THETA 1.0*M_PI  //近傍粒子探索用.
 #define NEIGHBOR_MAX 200  //近傍粒子リスト配列の最大値.
-/* t_fragcheck = 初項 DT_FRAGCHECK，公比 GEOMETRIC_RATIO_FRAG の等比数列 */
-#define DT_FRAGCHECK 2.0*M_PI*0.1  //0.1yr
-#define GEOMETRIC_RATIO_FRAG pow(10.0,1.0/8.0) //10**(1/8)
-
 #define RHO 3.0  // [g/cc]  微惑星の物質密度.
 #define EPSILON_FRAG 0.2
 #define B_FRAG (5.0/3.0)
@@ -184,6 +180,10 @@ Mean Longitude (deg)               100.46435
 #define GEOMETRIC_RATIO pow(10.0,1.0/8.0) //10**(1/8)
 #define GEOMETRIC_RATIO_LONGTERM pow(10.0,1.0/128.0) //10**(1/128) 10^6yrを超える時用.
 #endif
+
+/* t_fragcheck : 初項 DT_FRAGCHECK，公比 GEOMETRIC_RATIO_FRAG の等比数列 */
+#define DT_FRAGCHECK 2.0*M_PI*0.1  //0.1yr
+#define GEOMETRIC_RATIO_FRAG pow(10.0,1.0/8.0) //10**(1/8)
 //////////////////////////////////////////////////
 
 

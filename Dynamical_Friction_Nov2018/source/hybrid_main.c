@@ -64,9 +64,18 @@ int main(int argc, char **argv){
 
 
   double t_ene=DT_ENE;
+  double t_fragcheck=DT_FRAGCHECK;
 
+#if N_tr != 0
   int tracerlist[N_p][N_tr+1] = {};  //各部分のトレーサーの数. 0 : 内側, 1 : 中央, 2 : 外側.
   int tracerlistnumber[N_p] = {};
+  double orbital_r=0.0,orbital_r_min=0.0,orbital_r_max=0.0;
+  FILE *fptracerlist;
+  char tracerlistfile[200]={};
+  FILE *fptracerlistnumber;
+  char tracerlistnumberfile[200]={};
+#endif
+
 
 #if INDIRECT_TERM
   double x_G[4]={},v_G[4]={};
@@ -79,9 +88,7 @@ int main(int argc, char **argv){
 #if FRAGMENTATION
   static struct fragmentation frag[N_p+N_tr+1]={};
   int n_fragcheck=0,n_center=0,n_inner=0,n_outer=0;
-  double t_fragcheck=DT_FRAGCHECK;
   double sigma_center=0.0,sigma_inner=0.0,sigma_outer=0.0,flux_center=0.0,v_ave=0.0,tau_dep_center=0.0;
-  double orbital_r=0.0,orbital_r_min=0.0,orbital_r_max=0.0;
   double mass_tot_all=0.0,mass_tot_center=0.0,mass_tot_inner=0.0,mass_tot_outer=0.0;
   struct parameter para;
   FILE *fpfrag;  //初期総質量をファイルへ書き出し.
@@ -92,9 +99,8 @@ int main(int argc, char **argv){
   char tempfragreadfile[200]={};
   FILE *fptaudep;
   char taudepfile[200]={};
-  FILE *fptracerlist;
-  char tracerlistfile[200]={};
 #endif  /*FRAGMENTATION*/
+
 
 
 #ifdef SUBDIRECTORY
@@ -233,6 +239,9 @@ int main(int argc, char **argv){
 #endif
 	  );
 
+#endif  /*FRAGMENTATION*/
+
+
 
   sprintf(tracerlistfile,"%stracerlist.dat",
 #ifdef SUBDIRECTORY
@@ -242,7 +251,14 @@ int main(int argc, char **argv){
 #endif
 	  );
 
-#endif  /*FRAGMENTATION*/
+
+  sprintf(tracerlistnumberfile,"%stracerlistnumber.dat",
+#ifdef SUBDIRECTORY
+	  dirname
+#else
+	  STR(DIRECTORY)
+#endif
+	    );
 
 
   sprintf(initialfile,"%sinitial.dat",
@@ -466,30 +482,36 @@ int main(int argc, char **argv){
 
     fprintf(fplog,"-----\n");
     fprintf(fplog,"DIRECTORY\t%s\n",STR(DIRECTORY));
+    fprintf(fplog,"SUBDIRECTORY\t%s\n",STR(SUBDIRECTORY));
     fprintf(fplog,"N_tr\t%s\n",STR(N_tr));
     fprintf(fplog,"N_p\t%s\n",STR(N_p));
-    fprintf(fplog,"RAND_SEED\t%s\n",STR(RAND_SEED));
+    fprintf(fplog,"ECC_RATIO\t%s\n",STR(ECC_RATIO));
     fprintf(fplog,"STEP_INTERVAL\t%s\n",STR(STEP_INTERVAL));
     fprintf(fplog,"BREAK_TIME\t%s\n",STR(BREAK_TIME));
+    fprintf(fplog,"RAYLEIGH_DISTRIBUTION\t%s\n",STR(RAYLEIGH_DISTRIBUTION));
+    fprintf(fplog,"FRAGMENTATION\t%s\n",STR(FRAGMENTATION));
+    fprintf(fplog,"COLLISION\t%s\n",STR(COLLISION));
+#if COLLISION
+    fprintf(fplog,"COALESCENCE\t%s\n",STR(COALESCENCE));
+    fprintf(fplog,"SOFTENING\t%s\n",STR(SOFTENING));
+#endif
     fprintf(fplog,"ENERGY_FILE\t%s\n",STR(ENERGY_FILE));
     fprintf(fplog,"ORBITALELEMENTS_FILE\t%s\n",STR(ORBITALELEMENTS_FILE));
     fprintf(fplog,"POSI_VELO_FILE\t%s\n",STR(POSI_VELO_FILE));
     fprintf(fplog,"POSI_VELO_ROT_FILE\t%s\n",STR(POSI_VELO_ROT_FILE));
     fprintf(fplog,"COLLISION_FILE\t%s\n",STR(COLLISION_FILE));
     fprintf(fplog,"EXECUTION_TIME\t%s\n",STR(EXECUTION_TIME));
+    fprintf(fplog,"EXECUTION_TIME_FUNC\t%s\n",STR(EXECUTION_TIME_FUNC));
     fprintf(fplog,"INTERACTION_ALL\t%s\n",STR(INTERACTION_ALL));
     fprintf(fplog,"INTERACTION_PLANET_TRACER\t%s\n",STR(INTERACTION_PLANET_TRACER));
     fprintf(fplog,"INTERACTION_TEST_PARTICLE\t%s\n",STR(INTERACTION_TEST_PARTICLE));
     fprintf(fplog,"INDIRECT_TERM\t%s\n",STR(INDIRECT_TERM));
-    fprintf(fplog,"FRAGMENTATION\t%s\n",STR(FRAGMENTATION));
-    fprintf(fplog,"COLLISION\t%s\n",STR(COLLISION));
-#if COLLISION
-    fprintf(fplog,"COALESCENCE\t%s\n",STR(COALESCENCE));
-    fprintf(fplog,"RELOCATE_PARTICLE\t%s\n",STR(RELOCATE_PARTICLE));
-#endif
     fprintf(fplog,"EJECTION\t%s\n",STR(EJECTION));
     fprintf(fplog,"ORBITING_SMALL_PARTICLE\t%s\n",STR(ORBITING_SMALL_PARTICLE));
     fprintf(fplog,"ELIMINATE_PARTICLE\t%s\n",STR(ELIMINATE_PARTICLE));
+#if SOFTENING
+    fprintf(fplog,"EPSILON\t%s\n",STR(EPSILON));
+#endif
     fprintf(fplog,"ETA\t%s\n",STR(ETA));
     fprintf(fplog,"ITE_MAX\t%s\n",STR(ITE_MAX));
 #if ELIMINATE_PARTICLE
@@ -511,6 +533,7 @@ int main(int argc, char **argv){
     fprintf(fplog,"ECC_RMS\t%s\n",STR(ECC_RMS));
     fprintf(fplog,"INC_RMS\t%s\n",STR(INC_RMS));
     fprintf(fplog,"DELTA_HILL\t%s\n",STR(DELTA_HILL));
+    fprintf(fplog,"SEPARATE_HILL\t%s\n",STR(SEPARATE_HILL));
 #endif
 #if FRAGMENTATION
     fprintf(fplog,"DELTA_R\t%s\n",STR(DELTA_R));
@@ -531,7 +554,9 @@ int main(int argc, char **argv){
     fprintf(fplog,"DT_ENE\t%s\n",STR(DT_ENE));
 #if DT_LOG
     fprintf(fplog,"GEOMETRIC_RATIO\t%s\n",STR(GEOMETRIC_RATIO));
+    fprintf(fplog,"GEOMETRIC_RATIO_LONGTERM\t%s\n",STR(GEOMETRIC_RATIO_LONGTERM));
 #endif
+    fprintf(fplog,"GEOMETRIC_RATIO_FRAG\t%s\n",STR(GEOMETRIC_RATIO_FRAG));
     fprintf(fplog,"-----\n");
 
 
@@ -886,15 +911,6 @@ int main(int argc, char **argv){
 
 #if N_tr != 0
 
-#if FRAGMENTATION
-
-#if EXECUTION_TIME && EXECUTION_TIME_FUNC
-    gettimeofday(&realtime_start,NULL);
-    getrusage(RUSAGE_SELF,&usage_start);
-#endif
-
-    n_fragcheck = 0;
-
 #if N_p == 3
     orbital_r_min = ele[2].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
     orbital_r_max = ele[2].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
@@ -903,17 +919,7 @@ int main(int argc, char **argv){
     orbital_r_max = ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
 #endif
 
-    mass_tot_all = 0.0;
-
     for(i=global_n_p+1;i<=global_n;++i){
-
-      frag[i].fragtimes = 0;
-      frag[i].t_frag = 0.0;
-      NeighborSearch(i,(t_sys+t_tmp),ele,frag,x_0);  //近傍(扇形領域に入った)粒子探索.
-      MassFlux(i,ele,frag,&para);  //質量フラックス計算.
-      frag[i].dt_frag = Depletion_Time(i,frag);  //統計的計算のタイムスケールのXI倍. 統計的計算のタイミングの目安.
-
-      mass_tot_all += ele[i].mass;
 
       orbital_r = RadiusFromCenter(i,x_0);
 
@@ -935,6 +941,64 @@ int main(int argc, char **argv){
 	tracerlistnumber[2] += 1;
 	tracerlist[2][tracerlistnumber[2]] = i;
       }
+    }
+
+    fprintf(fplog,"inner = %d,\tcenter = %d,\touter = %d,\ttotal = %d\n",tracerlistnumber[0],tracerlistnumber[1],tracerlistnumber[2],global_n-global_n_p);
+
+
+    fptracerlist = fopen(tracerlistfile,"w");
+    if(fptracerlist==NULL){
+      fprintf(fplog,"tracerlistfile 0 error\n");
+      return -1;
+    }
+    fprintf(fptracerlist,"#inner\tcenter\touter\t(initial tracer list)\n");
+    for(i=1;
+	i<=Max_int(Max_int(tracerlistnumber[0],tracerlistnumber[1]),tracerlistnumber[2]);  //inner, center, outerの中の最大値.
+	++i){
+      fprintf(fptracerlist,"%d\t%d\t%d\n",
+	      tracerlist[0][i],
+	      tracerlist[1][i],
+	      tracerlist[2][i]
+	      );
+    }
+    fclose(fptracerlist);
+
+
+    fptracerlistnumber = fopen(tracerlistnumberfile,"w");
+    if(fptracerlistnumber==NULL){
+      fprintf(fplog,"tracerlistnumberfile 0 error\n");
+      return -1;
+    }
+    fprintf(fptracerlistnumber,"#t[yr]\tn_inner\tn_center\tn_outer\n");
+    fprintf(fptracerlistnumber,"%.15e\t%d\t%d\t%d\n",
+	    (t_sys+t_tmp)/2.0/M_PI,
+	    tracerlistnumber[0],
+	    tracerlistnumber[1],
+	    tracerlistnumber[2]
+	    );
+    fclose(fptracerlistnumber);
+
+
+#if FRAGMENTATION
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+    gettimeofday(&realtime_start,NULL);
+    getrusage(RUSAGE_SELF,&usage_start);
+#endif
+
+    n_fragcheck = 0;
+
+    mass_tot_all = 0.0;
+
+    for(i=global_n_p+1;i<=global_n;++i){
+
+      frag[i].fragtimes = 0;
+      frag[i].t_frag = 0.0;
+      NeighborSearch(i,(t_sys+t_tmp),ele,frag,x_0);  //近傍(扇形領域に入った)粒子探索.
+      MassFlux(i,ele,frag,&para);  //質量フラックス計算.
+      frag[i].dt_frag = Depletion_Time(i,frag);  //統計的計算のタイムスケールのXI倍. 統計的計算のタイミングの目安.
+
+      mass_tot_all += ele[i].mass;
     }
 
 
@@ -965,8 +1029,6 @@ int main(int argc, char **argv){
     sigma_outer = mass_tot_outer / (M_PI * (ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) - ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)));
 
 
-    fprintf(fplog,"inner = %d,\tcenter = %d,\touter = %d,\ttotal = %d\n",tracerlistnumber[0],tracerlistnumber[1],tracerlistnumber[2],global_n-global_n_p);
-
 
     //統計的計算で破壊タイムスケールの見積もり.
 #if !defined(G) && !defined(M_0)
@@ -988,24 +1050,6 @@ int main(int argc, char **argv){
     fprintf(fptaudep,"#initial mass depletion timescale [yr]\n");
     fprintf(fptaudep,"%e\n",tau_dep_center/2.0/M_PI);
     fclose(fptaudep);
-
-
-    fptracerlist = fopen(tracerlistfile,"w");
-    if(fptracerlist==NULL){
-      fprintf(fplog,"tracerlistfile 0 error\n");
-      return -1;
-    }
-    fprintf(fptracerlist,"# inner\tcenter\touter\t(initial tracer list)\n");
-    for(i=1;
-	i<=Max_int(Max_int(n_inner,n_center),n_outer);  //n_inner, n_center, n_outerの中の最大値.
-	++i){
-      fprintf(fptracerlist,"%d\t%d\t%d\n",
-	      tracerlist[0][i],
-	      tracerlist[1][i],
-	      tracerlist[2][i]
-	      );
-    }
-    fclose(fptracerlist);
 
 
     fpfrag = fopen(fragfile,"w");
@@ -1284,10 +1328,20 @@ int main(int argc, char **argv){
 
 
 #if COALESCENCE
-	//新しい合体粒子を作る. 0番目の要素はコピーに使うだけ.
-	for(k=1;k<=3;++k){
-	  x_0[0][k] = (ele[i_col].mass*x_0[i_col][k] + ele[j_col].mass*x_0[j_col][k])/(ele[i_col].mass + ele[j_col].mass);
-	  v_0[0][k] = (ele[i_col].mass*v_0[i_col][k] + ele[j_col].mass*v_0[j_col][k])/(ele[i_col].mass + ele[j_col].mass);
+
+	double m_i, m_j;
+
+#if FRAGMENTATION
+	m_i = MassDepletion(i_col,ele[i_col].mass,(t_sys+t_tmp),frag);
+	m_j = MassDepletion(j_col,ele[j_col].mass,(t_sys+t_tmp),frag);
+#else
+	m_i = ele[i_col].mass;
+	m_j = ele[j_col].mass;
+#endif
+
+	for(k=1;k<=3;++k){  //新しい合体粒子を作る. 0番目の要素はコピーに使うだけ.
+	  x_0[0][k] = (m_i * x_0[i_col][k] + m_j * x_0[j_col][k]) / (m_i + m_j);
+	  v_0[0][k] = (m_i * v_0[i_col][k] + m_j * v_0[j_col][k]) / (m_i + m_j);
 	}
 
 
@@ -1836,7 +1890,11 @@ int main(int argc, char **argv){
 		ele[i].omega,
 		ele[i].r_h,
 		ele[i].radius,
+#if FRAGMENTATION
+		MassDepletion(i,ele[i].mass,(t_sys+t_tmp),frag)
+#else
 		ele[i].mass
+#endif
 		);
 
 	fclose(fporbit);
@@ -1979,17 +2037,9 @@ int main(int argc, char **argv){
     }
 
 
-
-#if FRAGMENTATION
-
-#if EXECUTION_TIME && EXECUTION_TIME_FUNC
-    gettimeofday(&realtime_start,NULL);
-    getrusage(RUSAGE_SELF,&usage_start);
-#endif
-
+#if N_tr != 0
 
     if(t_sys + t_tmp > t_fragcheck){
-      n_fragcheck++;
 
 #if N_p == 3
       orbital_r_min = ele[2].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
@@ -1999,7 +2049,6 @@ int main(int argc, char **argv){
       orbital_r_max = ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
 #endif
 
-      mass_tot_all = 0.0;
 
       tracerlistnumber[0] = 0;
       tracerlistnumber[1] = 0;
@@ -2012,8 +2061,6 @@ int main(int argc, char **argv){
       }
 
       for(i=global_n_p+1;i<=global_n;++i){
-	//mass_tot_all += ele[i].mass;
-	mass_tot_all += MassDepletion(i,ele[i].mass,(t_sys+t_tmp),frag);  //質量を予測してから足す.
 
 	orbital_r = RadiusFromCenter(i,x_c);
 
@@ -2035,6 +2082,38 @@ int main(int argc, char **argv){
 	  tracerlistnumber[2] += 1;
 	  tracerlist[2][tracerlistnumber[2]] = i;
 	}
+      }
+
+
+      fptracerlistnumber = fopen(tracerlistnumberfile,"a");
+      if(fptracerlistnumber==NULL){
+	fprintf(fplog,"tracerlistnumberfile error\n");
+	return -1;
+      }
+      fprintf(fptracerlistnumber,"%.15e\t%d\t%d\t%d\n",
+	      (t_sys+t_tmp)/2.0/M_PI,
+	      tracerlistnumber[0],
+	      tracerlistnumber[1],
+	      tracerlistnumber[2]
+	      );
+      fclose(fptracerlistnumber);
+
+
+
+#if FRAGMENTATION
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+    gettimeofday(&realtime_start,NULL);
+    getrusage(RUSAGE_SELF,&usage_start);
+#endif
+
+      n_fragcheck++;
+
+      mass_tot_all = 0.0;
+
+      for(i=global_n_p+1;i<=global_n;++i){
+	//mass_tot_all += ele[i].mass;
+	mass_tot_all += MassDepletion(i,ele[i].mass,(t_sys+t_tmp),frag);  //質量を予測してから足す.
       }
 
 
@@ -2060,7 +2139,7 @@ int main(int argc, char **argv){
 
       mass_tot_outer = 0.0;
       n_outer = 0;
-      for(i=1;i<=tracerlistnumber[0];++i){
+      for(i=1;i<=tracerlistnumber[2];++i){
 	//mass_tot_outer += ele[tracerlist[2][i]].mass;
 	mass_tot_outer += MassDepletion(tracerlist[2][i],ele[tracerlist[2][i]].mass,(t_sys+t_tmp),frag);  //質量を予測してから足す.
 	n_outer++;
@@ -2112,7 +2191,11 @@ int main(int argc, char **argv){
 		x_c[i][3],
 		r_c[i],
 		sqrt(x_c[i][1]*x_c[i][1]+x_c[i][2]*x_c[i][2]),
+#if FRAGMENTATION
+		MassDepletion(i,ele[i].mass,(t_sys+t_tmp),frag),
+#else
 		ele[i].mass,
+#endif
 		frag[i].delta_r_out,
 		frag[i].delta_r_in,
 		frag[i].sigma,
@@ -2124,18 +2207,20 @@ int main(int argc, char **argv){
       fclose(fpposimass);
 
 
-      t_fragcheck *= sqrt(sqrt(sqrt(10.0)));  //logでは10を8分割.
-    }
-
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
-    gettimeofday(&realtime_end,NULL);
-    getrusage(RUSAGE_SELF,&usage_end);
-    exetime.Fragmentation[0] += Cal_time(realtime_start,realtime_end);
-    exetime.Fragmentation[1] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
-    exetime.Fragmentation[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
+      gettimeofday(&realtime_end,NULL);
+      getrusage(RUSAGE_SELF,&usage_end);
+      exetime.Fragmentation[0] += Cal_time(realtime_start,realtime_end);
+      exetime.Fragmentation[1] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
+      exetime.Fragmentation[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
 #endif
 
 #endif  /*FRAGMENTATION*/
+
+      t_fragcheck *= sqrt(sqrt(sqrt(10.0)));  //logでは10を8分割.
+    }
+
+#endif  /*N_tr != 0*/
 
 
 #if POSI_VELO_ROT_FILE

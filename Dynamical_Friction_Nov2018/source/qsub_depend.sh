@@ -17,14 +17,14 @@ echo "$YESNO"
 history -s "$YESNO"
 
 if [ $YESNO = 'y' ] ; then
-    
+
     while [ -z $JOBID ]
     do
         read -e -r -p "Type a number to set the dependent job ID. (ex. *****.sdb) : " JOBID
     done
     echo "$JOBID"
     history -s "$JOBID"
-    
+
     while [ -z $NRUN ]
     do
 	read -e -r -p "Type a number to decide how many times to execute the job.: " NRUN
@@ -45,7 +45,7 @@ if [ $YESNO = 'y' ] ; then
         echo ""
 	echo ""
     done
-    
+
 elif [ $YESNO = 'n' ] ; then
 
     while [ -z $NRUN ]
@@ -54,7 +54,7 @@ elif [ $YESNO = 'n' ] ; then
     done
     echo "$NRUN"
     history -s "$NRUN"
-    
+
     for i in `seq 1 $NRUN` ; do
 	if [ $i = 1 ] ; then
 	    qsub $SCRIPT | tee tmp.txt
@@ -74,9 +74,9 @@ elif [ $YESNO = 'n' ] ; then
     done
 
 else
-	    
+
     echo "Input 'y' or 'n'."
-    
+
 fi
 
 history -w .input_history
