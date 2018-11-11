@@ -64,7 +64,7 @@ int main(int argc, char **argv){
 
 
   double t_ene=DT_ENE;
-  double t_fragcheck=DT_FRAGCHECK;
+
 
 #if N_tr != 0
   int tracerlist[N_p][N_tr+1] = {};  //各部分のトレーサーの数. 0 : 内側, 1 : 中央, 2 : 外側.
@@ -88,6 +88,7 @@ int main(int argc, char **argv){
 #if FRAGMENTATION
   static struct fragmentation frag[N_p+N_tr+1]={};
   int n_fragcheck=0,n_center=0,n_inner=0,n_outer=0;
+  double t_fragcheck=DT_FRAGCHECK;
   double sigma_center=0.0,sigma_inner=0.0,sigma_outer=0.0,flux_center=0.0,v_ave=0.0,tau_dep_center=0.0;
   double mass_tot_all=0.0,mass_tot_center=0.0,mass_tot_inner=0.0,mass_tot_outer=0.0;
   struct parameter para;
@@ -537,6 +538,8 @@ int main(int argc, char **argv){
     fprintf(fplog,"SEPARATE_HILL\t%s\n",STR(SEPARATE_HILL));
 #endif
 #if FRAGMENTATION
+    fprintf(fplog,"DT_FRAGCHECK\t%s\n",STR(DT_FRAGCHECK));
+    fprintf(fplog,"GEOMETRIC_RATIO_FRAG\t%s\n",STR(GEOMETRIC_RATIO_FRAG));
     fprintf(fplog,"DELTA_R\t%s\n",STR(DELTA_R));
     fprintf(fplog,"DELTA_THETA\t%s\n",STR(DELTA_THETA));
     fprintf(fplog,"NEIGHBOR_MAX\t%s\n",STR(NEIGHBOR_MAX));
@@ -557,7 +560,6 @@ int main(int argc, char **argv){
     fprintf(fplog,"GEOMETRIC_RATIO\t%s\n",STR(GEOMETRIC_RATIO));
     fprintf(fplog,"GEOMETRIC_RATIO_LONGTERM\t%s\n",STR(GEOMETRIC_RATIO_LONGTERM));
 #endif
-    fprintf(fplog,"GEOMETRIC_RATIO_FRAG\t%s\n",STR(GEOMETRIC_RATIO_FRAG));
     fprintf(fplog,"-----\n");
 
 
@@ -2056,7 +2058,13 @@ int main(int argc, char **argv){
 
 #if N_tr != 0
 
-    if(t_sys + t_tmp > t_fragcheck){
+    if(
+#if FRAGMENTATION
+       t_sys + t_tmp > t_fragcheck
+#else
+       fabs(t_sys) < 1.0E-10
+#endif
+       ){
 
 #if N_p == 3
       orbital_r_min = ele[2].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
@@ -2224,6 +2232,8 @@ int main(int argc, char **argv){
       fclose(fpposimass);
 
 
+      t_fragcheck *= GEOMETRIC_RATIO_FRAG;
+
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
       gettimeofday(&realtime_end,NULL);
       getrusage(RUSAGE_SELF,&usage_end);
@@ -2234,7 +2244,6 @@ int main(int argc, char **argv){
 
 #endif  /*FRAGMENTATION*/
 
-      t_fragcheck *= sqrt(sqrt(sqrt(10.0)));  //logでは10を8分割.
     }
 
 #endif  /*N_tr != 0*/

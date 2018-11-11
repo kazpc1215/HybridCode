@@ -44,14 +44,13 @@
 #define N_tr 3000  //初期のトレーサーの数.
 #define N_p 3  //初期の原始惑星の数.
 #define ECC_RATIO 1.0  //ecc=0.01の何倍か. inc=ecc/2.
-#define STEP_INTERVAL 1.0E5  //何ステップごとに標準出力するか.
+#define STEP_INTERVAL 1.0E6  //何ステップごとに標準出力するか.
 #define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.
 //#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.
 
-
 #define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.
 
-#define FRAGMENTATION true  //破壊 近傍粒子探索と質量フラックス計算.
+#define FRAGMENTATION false  //破壊 近傍粒子探索と質量フラックス計算.
 #define COLLISION true  //衝突.
 #if COLLISION
 #define COALESCENCE true  //衝突後に合体.
@@ -151,6 +150,9 @@ Mean Longitude (deg)               100.46435
 #endif
 
 #if FRAGMENTATION
+/* t_fragcheck : 初項 DT_FRAGCHECK，公比 GEOMETRIC_RATIO_FRAG の等比数列 */
+#define DT_FRAGCHECK 2.0*M_PI*0.1  //0.1yr
+#define GEOMETRIC_RATIO_FRAG pow(10.0,1.0/8.0) //10**(1/8)
 #define DELTA_R 0.01  //Hill 近傍粒子探索用.
 #define DELTA_THETA 0.125*M_PI  //近傍粒子探索用.
 //#define DELTA_THETA 1.0*M_PI  //近傍粒子探索用.
@@ -163,7 +165,7 @@ Mean Longitude (deg)               100.46435
 #define XI 0.01 //面密度減少タイムスケールを自身のXI倍間隔で更新する.
 #define M_MAX 5.00E-15  //最大微惑星質量. 1E19 g ~10kmサイズ.
 //#define M_MAX 5.00E-18  //最大微惑星質量. 1E16 g ~1kmサイズ.
-#endif
+#endif  /*FRAGMENTATION*/
 //////////////////////////////////////////////////
 #endif  /*N_tr != 0*/
 
@@ -180,10 +182,6 @@ Mean Longitude (deg)               100.46435
 #define GEOMETRIC_RATIO pow(10.0,1.0/8.0) //10**(1/8)
 #define GEOMETRIC_RATIO_LONGTERM pow(10.0,1.0/128.0) //10**(1/128) 10^6yrを超える時用.
 #endif
-
-/* t_fragcheck : 初項 DT_FRAGCHECK，公比 GEOMETRIC_RATIO_FRAG の等比数列 */
-#define DT_FRAGCHECK 2.0*M_PI*0.1  //0.1yr
-#define GEOMETRIC_RATIO_FRAG pow(10.0,1.0/8.0) //10**(1/8)
 //////////////////////////////////////////////////
 
 
