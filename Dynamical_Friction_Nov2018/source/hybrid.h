@@ -51,7 +51,7 @@
 
 #define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.
 
-#define FRAGMENTATION false  //破壊 近傍粒子探索と質量フラックス計算.
+#define FRAGMENTATION true  //破壊 近傍粒子探索と質量フラックス計算.
 #define COLLISION true  //衝突.
 #if COLLISION
 #define COALESCENCE true  //衝突後に合体.

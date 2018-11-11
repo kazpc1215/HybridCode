@@ -493,6 +493,7 @@ int main(int argc, char **argv){
     fprintf(fplog,"COLLISION\t%s\n",STR(COLLISION));
 #if COLLISION
     fprintf(fplog,"COALESCENCE\t%s\n",STR(COALESCENCE));
+#else
     fprintf(fplog,"SOFTENING\t%s\n",STR(SOFTENING));
 #endif
     fprintf(fplog,"ENERGY_FILE\t%s\n",STR(ENERGY_FILE));
@@ -1182,7 +1183,11 @@ int main(int argc, char **argv){
   getrusage(RUSAGE_SELF,&usage_start);
 #endif
   for(i=global_n_p+1;i<=global_n;++i){
-    Calculate_OrbitalElements(i,x_0,v_0,ele,r_0,v2_0,r_dot_v);
+    Calculate_OrbitalElements(i,x_0,v_0,ele,r_0,v2_0,r_dot_v
+#if FRAGMENTATION
+			      ,(t_sys+t_tmp),frag
+#endif
+			      );
   }
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
   gettimeofday(&realtime_end,NULL);
@@ -1437,7 +1442,11 @@ int main(int argc, char **argv){
 	getrusage(RUSAGE_SELF,&usage_start);
 #endif
 	for(i=1;i<=global_n;++i){
-	  Calculate_OrbitalElements(i,x_0,v_0,ele,r_0,v2_0,r_dot_v);
+	  Calculate_OrbitalElements(i,x_0,v_0,ele,r_0,v2_0,r_dot_v
+#if FRAGMENTATION
+				    ,(t_sys+t_tmp),frag
+#endif
+				    );
 	}
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
 	gettimeofday(&realtime_end,NULL);
@@ -1631,7 +1640,11 @@ int main(int argc, char **argv){
 	gettimeofday(&realtime_start_2,NULL);
 	getrusage(RUSAGE_SELF,&usage_start_2);
 #endif
-	Calculate_OrbitalElements(i_sys,x_c,v_c,ele,r_c,v2_c,r_dot_v);  //軌道要素計算.
+	Calculate_OrbitalElements(i_sys,x_c,v_c,ele,r_c,v2_c,r_dot_v
+#if FRAGMENTATION
+				  ,(t_sys+t_tmp),frag
+#endif
+				  );  //軌道要素計算.
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
 	gettimeofday(&realtime_end_2,NULL);
 	getrusage(RUSAGE_SELF,&usage_end_2);
@@ -1866,7 +1879,11 @@ int main(int argc, char **argv){
       getrusage(RUSAGE_SELF,&usage_start);
 #endif
       for(i=1;i<=global_n;++i){
-	Calculate_OrbitalElements(i,x_c,v_c,ele,r_c,v2_c,r_dot_v);  //軌道要素計算. ファイルへ書き出し.
+	Calculate_OrbitalElements(i,x_c,v_c,ele,r_c,v2_c,r_dot_v
+#if FRAGMENTATION
+				  ,(t_sys+t_tmp),frag
+#endif
+				  );  //軌道要素計算. ファイルへ書き出し.
 	sprintf(orbit,"%s%s.dat",
 #ifdef SUBDIRECTORY
 	  dirname

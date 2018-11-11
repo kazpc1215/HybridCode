@@ -29,7 +29,12 @@ double All_dAcceleration(int i, int k, CONST struct orbital_elements *ele_p, CON
 #endif
 			 );
 
-void Calculate_OrbitalElements(int i, CONST double x_c[][4], CONST double v_c[][4], struct orbital_elements *ele_p, CONST double r_c[], CONST double v2_c[], CONST double r_dot_v[]);
+void Calculate_OrbitalElements(int i, CONST double x_c[][4], CONST double v_c[][4], struct orbital_elements *ele_p, CONST double r_c[], CONST double v2_c[], CONST double r_dot_v[]
+#if FRAGMENTATION
+			       , double t_dyn
+			       , CONST struct fragmentation *frag_p
+#endif
+			       );
 
 void Calculate_RMS(CONST struct orbital_elements *ele_p, double *ecc_p_rms, double *ecc_tr_rms, double *inc_p_rms, double *inc_tr_rms);
 
