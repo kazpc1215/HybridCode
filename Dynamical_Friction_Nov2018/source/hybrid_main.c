@@ -58,22 +58,23 @@ int main(int argc, char **argv){
   static double abs_r[N_p+N_tr+1]={},r_dot_v_ij[N_p+N_tr+1]={},r_dot_v[N_p+N_tr+1]={};
   static double a_0[N_p+N_tr+1][4]={},adot_0[N_p+N_tr+1][4]={};
   static double a[N_p+N_tr+1][4]={},adot[N_p+N_tr+1][4]={},adot2_dt2[N_p+N_tr+1][4]={},adot3_dt3[N_p+N_tr+1][4]={};
+  double ecc_p_rms=0.0,inc_p_rms=0.0,ecc_tr_rms=0.0,inc_tr_rms=0.0;
+  double t_ene=DT_ENE;
+
   double E_tot=0.0,E_tot_0=0.0,dE_correct=0.0;
   double abs_L=0.0,abs_L_0=0.0;
-  double ecc_p_rms=0.0,inc_p_rms=0.0,ecc_tr_rms=0.0,inc_tr_rms=0.0;
-
-
-  double t_ene=DT_ENE;
 
 
 #if N_tr != 0
   int tracerlist[N_p][N_tr+1] = {};  //各部分のトレーサーの数. 0 : 内側, 1 : 中央, 2 : 外側.
   int tracerlistnumber[N_p] = {};
   double orbital_r=0.0,orbital_r_min=0.0,orbital_r_max=0.0;
+#if TRACERLIST_FILE
   FILE *fptracerlist;
   char tracerlistfile[200]={};
   FILE *fptracerlistnumber;
   char tracerlistnumberfile[200]={};
+#endif
 #endif
 
 
@@ -144,6 +145,9 @@ int main(int argc, char **argv){
   FILE *fpinitial;
   char initialfile[200]={};
 
+  FILE *fpend;
+  char endfile[200]={};
+
   FILE *fptempread;
   char tempreadfile[200]={};
 
@@ -175,7 +179,7 @@ int main(int argc, char **argv){
 
 
 #if ENERGY_FILE
-  sprintf(Ene,"%sENERGY.dat",
+  sprintf(Ene,"%sEnergy.dat",
 #ifdef SUBDIRECTORY
 	  dirname
 #else
@@ -239,6 +243,7 @@ int main(int argc, char **argv){
 
 
 
+#if TRACERLIST_FILE
   sprintf(tracerlistfile,"%stracerlist.dat",
 #ifdef SUBDIRECTORY
 	  dirname
@@ -255,9 +260,19 @@ int main(int argc, char **argv){
 	  STR(DIRECTORY)
 #endif
 	    );
+#endif  /*TRACERLIST_FILE*/
 
 
   sprintf(initialfile,"%sinitial.dat",
+#ifdef SUBDIRECTORY
+	  dirname
+#else
+	  STR(DIRECTORY)
+#endif
+	  );
+
+
+  sprintf(endfile,"%send.dat",
 #ifdef SUBDIRECTORY
 	  dirname
 #else
@@ -275,7 +290,7 @@ int main(int argc, char **argv){
 	  );
 
 
-  sprintf(logfile,"%slog.txt",
+  sprintf(logfile,"%slog.dat",
 #ifdef SUBDIRECTORY
 	  dirname
 #else
@@ -300,8 +315,20 @@ int main(int argc, char **argv){
 #endif  /*_OPENMP*/
 
 
-  if(stat(tempreadfile,&st)==0){  //読み込むファイルの存在確認.
+  if(stat(endfile,&st)==0){  //読み込むファイルの存在確認.
 
+    /* endfileがあるとき */
+    fprintf(fplog,"file: '%s' exists.\n",endfile);
+    fprintf(fplog,"-----\n");
+    fclose(fplog);
+
+    MPI_Finalize();  //MPI並列の終わり.
+
+    return 0;
+
+  }else if(stat(tempreadfile,&st)==0){  //読み込むファイルの存在確認.
+
+    /* endfileが無い、かつtempreadfileがあるとき */
     fprintf(fplog,"file: '%s' exists.\n",tempreadfile);
 
     fptempread = fopen(tempreadfile,"r");
@@ -439,6 +466,7 @@ int main(int argc, char **argv){
     }
 
 
+#if TRACERLIST_FILE
     /*
     if(stat(tracerlistfile,&st)==0){  //読み込むファイル（トレーサーリスト）の存在確認.
       fprintf(fplog,"file: '%s' exists.\n",tracerlistfile);
@@ -476,11 +504,13 @@ int main(int argc, char **argv){
       fclose(fptracerlist);
     }
     */
+#endif  /*TRACERLIST_FILE*/
+
 #endif  /*FRAGMENTATION*/
 
   }else{
 
-
+    /* endfileが無い、かつtempreadfileが無いとき */
     fprintf(fplog,"file: '%s' does not exist. Start the initialization.\n",tempreadfile);
 
     fprintf(fplog,"-----\n");
@@ -503,6 +533,7 @@ int main(int argc, char **argv){
     fprintf(fplog,"ORBITALELEMENTS_FILE\t%s\n",STR(ORBITALELEMENTS_FILE));
     fprintf(fplog,"POSI_VELO_FILE\t%s\n",STR(POSI_VELO_FILE));
     fprintf(fplog,"COLLISION_FILE\t%s\n",STR(COLLISION_FILE));
+    fprintf(fplog,"TRACERLIST_FILE\t%s\n",STR(TRACERLIST_FILE));
     fprintf(fplog,"EXECUTION_TIME\t%s\n",STR(EXECUTION_TIME));
     fprintf(fplog,"EXECUTION_TIME_FUNC\t%s\n",STR(EXECUTION_TIME_FUNC));
     fprintf(fplog,"INTERACTION_ALL\t%s\n",STR(INTERACTION_ALL));
@@ -566,7 +597,7 @@ int main(int argc, char **argv){
 
     char cat_header[200]={};
     char headerfile[10]="hybrid.h";
-    sprintf(cat_header,"cat %s > %sheaderfile.txt",
+    sprintf(cat_header,"cat %s > %sheaderfile.dat",
 	    headerfile,
 #ifdef SUBDIRECTORY
 	  dirname
@@ -579,7 +610,7 @@ int main(int argc, char **argv){
 
     char cat_main[200]={};
     char mainfile[20]="hybrid_main.c";
-    sprintf(cat_main,"cat %s > %smainfile.txt",
+    sprintf(cat_main,"cat %s > %smainfile.dat",
 	    mainfile,
 #ifdef SUBDIRECTORY
 	  dirname
@@ -658,7 +689,7 @@ int main(int argc, char **argv){
     }
     fprintf(fpposivelo,"#1:t[yr]\t2:i\t3:x\t4:y\t5:z\t6:r_0(3D)\t7:r_0(2D)\t8:v_x\t9:v_y\t10:v_z\t11:abs_v\n");
     for(i=1;i<=global_n;i++){
-      fprintf(fpposivelo,"%.15e\t%4d\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\n",
+      fprintf(fpposivelo,"%.15e\t%4d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
 	      0.0,
 	      i,
 	      x_0[i][1],
@@ -906,6 +937,7 @@ int main(int argc, char **argv){
     fprintf(fplog,"inner = %d,\tcenter = %d,\touter = %d,\ttotal = %d\n",tracerlistnumber[0],tracerlistnumber[1],tracerlistnumber[2],global_n-global_n_p);
 
 
+#if TRACERLIST_FILE
     fptracerlist = fopen(tracerlistfile,"w");
     if(fptracerlist==NULL){
       fprintf(fplog,"tracerlistfile 0 error\n");
@@ -937,6 +969,7 @@ int main(int argc, char **argv){
 	    tracerlistnumber[2]
 	    );
     fclose(fptracerlistnumber);
+#endif  /*TRACERLIST_FILE*/
 
 
 #if FRAGMENTATION
@@ -999,7 +1032,7 @@ int main(int argc, char **argv){
     flux_center = - (2.0 - para.alpha) * (2.0 - para.alpha) / cbrt(M_MAX) * sigma_center * sigma_center * sqrt(G * M_0 / PLANET_AXIS / PLANET_AXIS / PLANET_AXIS) * para.h_0 * pow(v_ave * v_ave * 0.5 / para.Q_D, para.alpha - 1.0) * ((- log(EPSILON_FRAG) + 1.0 / (2.0 - B_FRAG)) * para.s_1 + para.s_2 + para.s_3);
 #endif
     tau_dep_center = - sigma_center / flux_center;
-    fprintf(fplog,"initial mass depletion timescale =%e [yr] (center)\n",tau_dep_center/2.0/M_PI);
+    fprintf(fplog,"initial mass depletion timescale =%.15e [yr] (center)\n",tau_dep_center/2.0/M_PI);
 
 
     fptaudep = fopen(taudepfile,"w");
@@ -1008,7 +1041,7 @@ int main(int argc, char **argv){
       return -1;
     }
     fprintf(fptaudep,"#initial mass depletion timescale [yr]\n");
-    fprintf(fptaudep,"%e\n",tau_dep_center/2.0/M_PI);
+    fprintf(fptaudep,"%.15e\n",tau_dep_center/2.0/M_PI);
     fclose(fptaudep);
 
 
@@ -1017,7 +1050,7 @@ int main(int argc, char **argv){
       fprintf(fplog,"fragfile 0 error\n");
       return -1;
     }
-    fprintf(fpfrag,"#initial mass depletion timescale = %e [yr] (center)\n",tau_dep_center/2.0/M_PI);
+    fprintf(fpfrag,"#initial mass depletion timescale = %.15e [yr] (center)\n",tau_dep_center/2.0/M_PI);
     fprintf(fpfrag,"#mass_tot_all_0 = %.15e\tmass_tot_center_0 = %.15e\tsigma_center_0 = %.15e\tn_center_0 = %d\n",mass_tot_all,mass_tot_center,sigma_center,n_center);
     fprintf(fpfrag,"#1:t[yr]\t2:mass_tot_all\t3:mass_tot_inner\t4:mass_tot_center\t5:mass_tot_outer\t6:sigma_inner\t7:sigma_center\t8:sigma_outer\t9:n_inner\t10:n_center\t11:n_outer\n");
     fprintf(fpfrag,"%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%d\t%d\t%d\n",
@@ -1091,7 +1124,7 @@ int main(int argc, char **argv){
       fprintf(fplog,"initialfile error\n");
       return -1;
     }
-    fprintf(fpinitial,"#t_tmp\tt_sys\tt_ene\tglobal_n_p\tglobal_n\ti_sys\tn_col\tstep\tE_tot_0\tabs_L_0\tdE_correct\n");
+    fprintf(fpinitial,"#1:t_tmp\t2:t_sys\t3:t_ene\t4:global_n_p\t5:global_n\t6:i_sys\t7:n_col\t8:step\t9:E_tot_0\t10:abs_L_0\t11:dE_correct\n");
     fprintf(fpinitial,"%.15e\t%.15e\t%.15e\t%6d\t%6d\t%6d\t%d\t%8e\t%.15e\t%.15e\t%.15e\n",
 	    t_tmp,
 	    t_sys,
@@ -1132,7 +1165,7 @@ int main(int argc, char **argv){
     }
     fclose(fpinitial);
 
-  }
+  }  //ファイルの存在確認if文.
 
 
   ////////////////////////////ここまでですべてのファイルを上書きオープン/////////////////////////
@@ -1227,7 +1260,7 @@ int main(int argc, char **argv){
 
 	n_col++;
 
-	fprintf(fplog,"collision No.%d\t%e[yr]\ti=%d, j=%d\tr_ij=%.15e\tradius[%d]+radius[%d]=%.15e\n",
+	fprintf(fplog,"collision No.%d\t%.15e[yr]\ti=%d, j=%d\tr_ij=%.15e\tradius[%d]+radius[%d]=%.15e\n",
 	       n_col,
 	       (t_sys+t_tmp)/2.0/M_PI,
 	       i_col,
@@ -1356,9 +1389,9 @@ int main(int argc, char **argv){
 		dE_c,
 		v_imp
 		);
-	fprintf(fpcollision,"#1:t[yr]\t2:i\t3:x\t4:y\t5:z\t6:r_0(3D)\t7:r_0(2D)\t8:v_x\t9:v_y\t10:v_z\t11:abs_v\t12:R_Hill\t13:Radius\n");
+	fprintf(fpcollision,"#1:t[yr]\t2:i\t3:x\t4:y\t5:z\t6:r_0(3D)\t7:r_0(2D)\t8:v_x\t9:v_y\t10:v_z\t11:abs_v\t12:R_Hill\t13:Radius\t14mass\n");
 	for(i=1;i<=global_n;i++){
-	  fprintf(fpcollision,"%.15e\t%4d\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15e\t%.15e\n",
+	  fprintf(fpcollision,"%.15e\t%4d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
 		  (t_sys+t_tmp)/2.0/M_PI,
 		  i,
 		  x_c[i][1],
@@ -1371,7 +1404,12 @@ int main(int argc, char **argv){
 		  v_c[i][3],
 		  sqrt(v_c[i][1]*v_c[i][1]+v_c[i][2]*v_c[i][2]+v_c[i][3]*v_c[i][3]),
 		  ele[i].r_h,
-		  ele[i].radius
+		  ele[i].radius,
+#if FRAGMENTATION
+		  MassDepletion(i,ele[i].mass,(t_sys+t_tmp),frag)
+#else
+		  ele[i].mass
+#endif
 		  );
 	}
 	fclose(fpcollision);
@@ -1448,7 +1486,7 @@ int main(int argc, char **argv){
 	  fprintf(fplog,"Ene error\n");
 	  return -1;
 	}
-	fprintf(fpEne,"#collision No.%d occur\t%e[yr]\n",
+	fprintf(fpEne,"#collision No.%d occur\t%.15e[yr]\n",
 		n_col,
 		(t_sys+t_tmp)/2.0/M_PI
 		);
@@ -1747,7 +1785,7 @@ int main(int argc, char **argv){
       }
 
       for(i=1;i<=global_n;i++){
-	fprintf(fpposivelo,"%.15e\t%4d\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\n",
+	fprintf(fpposivelo,"%.15e\t%4d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
 		(t_sys+t_tmp)/2.0/M_PI,
 		i,
 		x_c[i][1],
@@ -1910,7 +1948,7 @@ int main(int argc, char **argv){
 	fprintf(fplog,"tempreadfile error\n");
 	return -1;
       }
-      fprintf(fptempread,"#t_tmp\tt_sys\tt_ene\tglobal_n_p\tglobal_n\ti_sys\tn_col\tstep\tE_tot_0\tabs_L_0\tdE_correct\n");
+      fprintf(fptempread,"#1:t_tmp\t2:t_sys\t3:t_ene\t4:global_n_p\t5:global_n\t6:i_sys\t7:n_col\t8:step\t9:E_tot_0\t10:abs_L_0\t11:dE_correct\n");
       fprintf(fptempread,"%.15e\t%.15e\t%.15e\t%6d\t%6d\t%6d\t%d\t%8e\t%.15e\t%.15e\t%.15e\n",
 	      t_tmp,
 	      t_sys,
@@ -1959,8 +1997,8 @@ int main(int argc, char **argv){
 	fprintf(fplog,"tempfragreadfile error\n");
 	return -1;
       }
-      fprintf(fptempfragread,"#t_tmp[yr]\tt_sys[yr]\tn_fragcheck\tt_fragcheck\ts_1\ts_2\ts_3\talpha\th_0\tQ_D\n");
-      fprintf(fptempfragread,"%e\t%e\t%.15e\t%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
+      fprintf(fptempfragread,"#1:t_tmp[yr]\t2:t_sys[yr]\t3:n_fragcheck\t4:t_fragcheck\t5:s_1\t6:s_2\t7:s_3\t8:alpha\t9:h_0\t10:Q_D\n");
+      fprintf(fptempfragread,"%.15e\t%.15e\t%.15e\t%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
 	      t_tmp/2.0/M_PI,
 	      t_sys/2.0/M_PI,
 	      t_fragcheck,
@@ -2063,6 +2101,7 @@ int main(int argc, char **argv){
       }
 
 
+#if TRACERLIST_FILE
       fptracerlistnumber = fopen(tracerlistnumberfile,"a");
       if(fptracerlistnumber==NULL){
 	fprintf(fplog,"tracerlistnumberfile error\n");
@@ -2075,7 +2114,7 @@ int main(int argc, char **argv){
 	      tracerlistnumber[2]
 	      );
       fclose(fptracerlistnumber);
-
+#endif
 
 
 #if FRAGMENTATION
@@ -2207,7 +2246,7 @@ int main(int argc, char **argv){
       //r_c[i]は計算してある
       if(r_c[i]<SOLAR_RADIUS || r_c[i]>SOLAR_SYSTEM_LIMIT){  //太陽に飲みこまれるか系外へ出て行くか.
 
-	fprintf(fplog,"i=%d is eliminated\tr[%d]=%e\tt_sys+t_tmp=%.15e[yr]\n",
+	fprintf(fplog,"i=%d is eliminated\tr[%d]=%.15e\tt_sys+t_tmp=%.15e[yr]\n",
 	       i,
 	       i,
 	       r_c[i],
@@ -2368,7 +2407,13 @@ int main(int argc, char **argv){
     }
 
 
-  }  //t loop
+  }  //time loop
+
+
+  if(t_sys + t_tmp > T_MAX){
+    fpend = fopen(endfile,"w");
+    fprintf(fpend,"T = %.15e[yr]\tFinished.",(t_sys+t_tmp)/2.0/M_PI);
+  }
 
 
   /////////////終了前に位置速度などを記録/////////////
@@ -2377,7 +2422,7 @@ int main(int argc, char **argv){
     fprintf(fplog,"tempreadfile error\n");
     return -1;
   }
-  fprintf(fptempread,"#t_tmp\tt_sys\tt_ene\tglobal_n_p\tglobal_n\ti_sys\tn_col\tstep\tE_tot_0\tabs_L_0\tdE_correct\n");
+  fprintf(fptempread,"#1:t_tmp\t2:t_sys\t3:t_ene\t4:global_n_p\t5:global_n\t6:i_sys\t7:n_col\t8:step\t9:E_tot_0\t10:abs_L_0\t11:dE_correct\n");
   fprintf(fptempread,"%.15e\t%.15e\t%.15e\t%6d\t%6d\t%6d\t%6d\t%8e\t%.15e\t%.15e\t%.15e\n",
 	  t_tmp,
 	  t_sys,
@@ -2425,8 +2470,8 @@ int main(int argc, char **argv){
     fprintf(fplog,"tempfragreadfile error\n");
     return -1;
   }
-  fprintf(fptempfragread,"#t_tmp[yr]\tt_sys[yr]\tt_fragcheck\tn_fragcheck\ts_1\ts_2\ts_3\talpha\th_0\tQ_D\n");
-  fprintf(fptempfragread,"%e\t%e\t%.15e\t%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
+  fprintf(fptempfragread,"#1:t_tmp[yr]\t2:t_sys[yr]\t3:t_fragcheck\t4:n_fragcheck\t5:s_1\t6:s_2\t7:s_3\t8:alpha\t9:h_0\t10:Q_D\n");
+  fprintf(fptempfragread,"%.15e\t%.15e\t%.15e\t%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
 	  t_tmp/2.0/M_PI,
 	  t_sys/2.0/M_PI,
 	  t_fragcheck,
@@ -2463,7 +2508,7 @@ int main(int argc, char **argv){
 
 #if ENERGY_FILE
   fprintf(fplog,"-----\n");
-  fprintf(fplog,"dt_[%d]\t= %e\nE_error\t= %.15e\nL_error\t= %.15e\ndE_correct\t= %.15e\n",
+  fprintf(fplog,"dt_[%d]\t= %.15e\nE_error\t= %.15e\nL_error\t= %.15e\ndE_correct\t= %.15e\n",
 	 i_sys,
 	 dt_[i_sys],
 	 (E_tot-E_tot_0)/fabs(E_tot_0),
@@ -2476,9 +2521,9 @@ int main(int argc, char **argv){
 
 
 #if DT_LOG
-  fprintf(fplog,"dt_ene\t= %e[yr]\ngeometric ratio\t= %s\n",DT_ENE/2.0/M_PI,STR(GEOMETRIC_RATIO));
+  fprintf(fplog,"dt_ene\t= %.15e[yr]\ngeometric ratio\t= %s\n",DT_ENE/2.0/M_PI,STR(GEOMETRIC_RATIO));
 #else
-  fprintf(fplog,"dt_ene\t= %e[yr]\n",DT_ENE/2.0/M_PI);
+  fprintf(fplog,"dt_ene\t= %.15e[yr]\n",DT_ENE/2.0/M_PI);
 #endif
 
 

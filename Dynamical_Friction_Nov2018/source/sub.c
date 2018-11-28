@@ -100,8 +100,6 @@ void Sort_Exetime(struct timeval realtime_start_main, struct timeval realtime_en
 
   int i,j;
   double exetime_main = Cal_time(realtime_start_main,realtime_end_main);
-  double exetime_others = 0.0;
-
   int exetime_num[7]={0,1,2,3,4,5,6};
 
   double exetime_array[7]={
@@ -114,6 +112,10 @@ void Sort_Exetime(struct timeval realtime_start_main, struct timeval realtime_en
     exetime.Fragmentation[0]
   };
 
+
+#if EXECUTION_TIME_FUNC
+  double exetime_others = 0.0;
+
   char exetime_name[7][30]={
     "Energy\t\t\t",
     "Orbital_Elements\t",
@@ -123,6 +125,7 @@ void Sort_Exetime(struct timeval realtime_start_main, struct timeval realtime_en
     "Collision_Judgement\t",
     "Fragmentation\t\t"
   };
+#endif
 
   for(i=0;i<7;++i){
     for(j=i+1;j<7;++j){
@@ -134,12 +137,15 @@ void Sort_Exetime(struct timeval realtime_start_main, struct timeval realtime_en
   }
 
   fprintf(fplog,"Execution Time\t(total\t= %e [s])\n",exetime_main);
+
+#if EXECUTION_TIME_FUNC
   for(i=0;i<7;++i){
     fprintf(fplog,"%s= %e [s]\t%5.2f [%%]\n",exetime_name[exetime_num[i]],exetime_array[i],exetime_array[i]/exetime_main*100.0);
     exetime_others += exetime_array[i];
   }
   exetime_others = exetime_main - exetime_others;
   fprintf(fplog,"Others\t\t\t= %e [s]\t%5.2f [%%]\n",exetime_others,exetime_others/exetime_main*100.0);
+#endif
 
   return;
 }

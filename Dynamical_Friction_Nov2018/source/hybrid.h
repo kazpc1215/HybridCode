@@ -26,8 +26,8 @@
 #define ALWAYS_INLINE
 #endif
 
-
-#define DIRECTORY ../data/Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_nofrag_acc/  //ディレクトリ.
+#define DIRECTORY ../data/test/
+//#define DIRECTORY ../data/Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_nofrag_acc/  //ディレクトリ.
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
 
 #define STR_(str) #str
@@ -41,7 +41,7 @@
 
 
 //////////////////////////////////////////////////
-#define N_tr 3000  //初期のトレーサーの数.
+#define N_tr 30  //初期のトレーサーの数.
 #define N_p 3  //初期の原始惑星の数.
 #define ECC_RATIO 1.0  //ecc=0.01の何倍か. inc=ecc/2.
 #define STEP_INTERVAL 1.0E6  //何ステップごとに標準出力するか.
@@ -74,6 +74,7 @@ EXTERN FILE *fplog;
 #define ORBITALELEMENTS_FILE true  //軌道要素計算&ファイル作成.
 #define POSI_VELO_FILE true  //位置速度ファイル作成.
 #define COLLISION_FILE true  //衝突直前の位置速度ファイル作成.
+#define TRACERLIST_FILE true  //トレーサーリストのファイル作成.
 #define EXECUTION_TIME true  //mainの実行時間測定.
 #define EXECUTION_TIME_FUNC false  //mainかつ関数ごとの実行時間測定.
 #if EXECUTION_TIME

@@ -101,7 +101,7 @@ double AngularMomentum(CONST struct orbital_elements *ele_p, CONST double x_0[][
   double m_i;
 
 
-  for(i=1;i<=global_n_p;++i){
+  for(i=1;i<=global_n;++i){
 
 #if FRAGMENTATION
     m_i = MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p);
@@ -113,6 +113,7 @@ double AngularMomentum(CONST struct orbital_elements *ele_p, CONST double x_0[][
     L[i][2] = m_i * (x_0[i][3]*v_0[i][1] - x_0[i][1]*v_0[i][3]);
     L[i][3] = m_i * (x_0[i][1]*v_0[i][2] - x_0[i][2]*v_0[i][1]);
     //fprintf(fplog,"i=%d\t(ele_p+i)->mass=%e\n",i,(ele_p+i)->mass);
+    //fprintf(fplog,"L[%d][1] = %e\t[2] = %e\t[3] = %e\n",i,L[i][1],L[i][2],L[i][3]);
   }
 
   for(k=1;k<=3;++k){
