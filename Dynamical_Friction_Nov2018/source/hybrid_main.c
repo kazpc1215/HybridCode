@@ -1243,7 +1243,7 @@ int main(int argc, char **argv){
       getrusage(RUSAGE_SELF,&usage_start);
 #endif
 
-#pragma omp parallel for schedule(runtime)
+      //#pragma omp parallel for schedule(runtime)
       for(i=1;i<=global_n;++i){
 	Dt[i] = t_sys - t_[i];
 	Predictor(i,x_0,v_0,a_0,adot_0,x_p,v_p,r_p,v2_p,r_dot_v,Dt);  //予測子 t_sysにおけるすべての粒子を計算.
@@ -1573,7 +1573,7 @@ int main(int argc, char **argv){
 	getrusage(RUSAGE_SELF,&usage_start);
 #endif
 
-#pragma omp parallel for private(k) schedule(runtime)
+	//#pragma omp parallel for private(k) schedule(runtime)
 	for(i=1;i<=global_n;++i){
 	  if(i!=i_sys){
 	    //i_sys以外の粒子は予測子を使う.

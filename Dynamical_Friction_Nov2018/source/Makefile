@@ -63,7 +63,7 @@ define generate_shell_script_1
 	while [ -z "$$NUMNODES" ]; do \
         read -e -r -p "Type any numbers to set number of nodes. : " NUMNODES; \
         echo "$$NUMNODES"; \
-	hitsory -s "$$NUMNODES"; \
+	history -s "$$NUMNODES"; \
         done; \
 	echo "#PBS -l nodes=$$NUMNODES" >> "$$JOBFILE.sh"; \
 	while [ -z "$$QUEUENAME" ]; do \
