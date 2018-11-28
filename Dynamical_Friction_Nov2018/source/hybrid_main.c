@@ -81,6 +81,9 @@ int main(int argc, char **argv){
   double x_G[4]={},v_G[4]={};
 #endif
 
+#if COALESCENCE
+  double m_i, m_j;
+#endif
 
   static struct orbital_elements ele[N_p+N_tr+1]={};
 
@@ -118,14 +121,6 @@ int main(int argc, char **argv){
 #if POSI_VELO_FILE
   FILE *fpposivelo;
   char posivelofile[200]={};
-#endif
-
-
-#if POSI_VELO_ROT_FILE
-  static double x_rot[N_p+N_tr+1][4]={};
-  static double r_xy[N_p+N_tr+1]={},theta=0.0;
-  FILE *fpposi_rot;
-  char posi_rot[200]={};
 #endif
 
 
@@ -331,6 +326,13 @@ int main(int argc, char **argv){
 	   &dE_correct
 	   );
 
+    /**************************************************/
+    fprintf(fplog,"\t(E_tot_0 = %.15e\tabs_L_0 = %.15e)\n",
+	    E_tot_0,
+	    abs_L_0
+	    );
+    /**************************************************/
+
     fgets(buf,sizeof(buf),fptempread);  //読み飛ばし.
     fgets(buf,sizeof(buf),fptempread);  //読み飛ばし.
     fgets(buf,sizeof(buf),fptempread);  //読み飛ばし.
@@ -500,7 +502,6 @@ int main(int argc, char **argv){
     fprintf(fplog,"ENERGY_FILE\t%s\n",STR(ENERGY_FILE));
     fprintf(fplog,"ORBITALELEMENTS_FILE\t%s\n",STR(ORBITALELEMENTS_FILE));
     fprintf(fplog,"POSI_VELO_FILE\t%s\n",STR(POSI_VELO_FILE));
-    fprintf(fplog,"POSI_VELO_ROT_FILE\t%s\n",STR(POSI_VELO_ROT_FILE));
     fprintf(fplog,"COLLISION_FILE\t%s\n",STR(COLLISION_FILE));
     fprintf(fplog,"EXECUTION_TIME\t%s\n",STR(EXECUTION_TIME));
     fprintf(fplog,"EXECUTION_TIME_FUNC\t%s\n",STR(EXECUTION_TIME_FUNC));
@@ -655,7 +656,7 @@ int main(int argc, char **argv){
       fprintf(fplog,"posivelofile 0 error\n");
       return -1;
     }
-    fprintf(fpposivelo,"#t[yr]\ti\tx\ty\tz\tr_0(3D)\tr_0(2D)\tv_x\tv_y\tv_z\tabs_v\n");
+    fprintf(fpposivelo,"#1:t[yr]\t2:i\t3:x\t4:y\t5:z\t6:r_0(3D)\t7:r_0(2D)\t8:v_x\t9:v_y\t10:v_z\t11:abs_v\n");
     for(i=1;i<=global_n;i++){
       fprintf(fpposivelo,"%.15e\t%4d\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\n",
 	      0.0,
@@ -675,55 +676,6 @@ int main(int argc, char **argv){
     fclose(fpposivelo);
 #endif
 
-
-#if POSI_VELO_ROT_FILE
-    //回転座標系でプロット
-    r_xy[PLANET_NO] = sqrt(x_0[PLANET_NO][1]*x_0[PLANET_NO][1]+x_0[PLANET_NO][2]*x_0[PLANET_NO][2]);
-    r_xy[PLANETESIMAL_NO] = sqrt(x_0[PLANETESIMAL_NO][1]*x_0[PLANETESIMAL_NO][1]+x_0[PLANETESIMAL_NO][2]*x_0[PLANETESIMAL_NO][2]);
-    theta = atan2(x_0[PLANET_NO][2],x_0[PLANET_NO][1]);
-
-
-    x_rot[PLANETESIMAL_NO][1] = x_0[PLANETESIMAL_NO][1];
-    x_rot[PLANETESIMAL_NO][2] = x_0[PLANETESIMAL_NO][2];
-    Rotation_3D_zaxis(PLANETESIMAL_NO,x_rot,-theta);
-
-
-    x_rot[PLANET_NO][1] = x_0[PLANET_NO][1];
-    x_rot[PLANET_NO][2] = x_0[PLANET_NO][2];
-    Rotation_3D_zaxis(PLANET_NO,x_rot,-theta);
-
-
-    sprintf(posi_rot,"%s%s_posi_rot.dat",
-#ifdef SUBDIRECTORY
-	  dirname
-#else
-	  STR(DIRECTORY)
-#endif
-	    ,ele[PLANETESIMAL_NO].name);
-    fpposi_rot = fopen(posi_rot,"w");
-    if(fpposi_rot==NULL){
-      fprintf(fplog,"posi_rot error\n");
-      return -1;
-    }
-    fprintf(fpposi_rot,"#t[yr]\tx_rot[2]\ty_rot[2]\tz[2]\tr_xy[2]\ttheta[2]\tradius[2]\tx_rot[1]\ty_rot[1]\tz[1]\tr_xy[1]\ttheta[1]\tradius[1]\tr_Hill\n");
-    fprintf(fpposi_rot,"%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
-	    0.0,
-	    x_rot[PLANETESIMAL_NO][1],
-	    x_rot[PLANETESIMAL_NO][2],
-	    x_0[PLANETESIMAL_NO][3],
-	    r_xy[PLANETESIMAL_NO],
-	    atan2(x_rot[PLANETESIMAL_NO][2],x_rot[PLANETESIMAL_NO][1]),
-	    ele[PLANETESIMAL_NO].radius,
-	    x_rot[PLANET_NO][1],
-	    x_rot[PLANET_NO][2],
-	    x_0[PLANET_NO][3],
-	    r_xy[PLANET_NO],
-	    atan2(x_rot[PLANET_NO][2],x_rot[PLANET_NO][1]),
-	    ele[PLANET_NO].radius,
-	    ele[PLANET_NO].r_h
-	    );
-    fclose(fpposi_rot);
-#endif  /*POSI_VELO_ROT_FILE*/
 
 
 #if ORBITALELEMENTS_FILE
@@ -747,7 +699,7 @@ int main(int argc, char **argv){
 	exit(-1);
       }
 
-      fprintf(fporbit,"#t[yr]\te\ta\tu\tI\tOMEGA\tomega\tR_H\tradius\tmass\n");
+      fprintf(fporbit,"#1:t[yr]\t2:e\t3:a\t4:u\t5:I\t6:OMEGA\t7:omega\t8:R_H\t9:radius\t10:mass\n");
       fprintf(fporbit,"%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
 	      0.0,
 	      ele[i].ecc,
@@ -839,7 +791,7 @@ int main(int argc, char **argv){
       fprintf(fplog,"Ene 0 error\n");
       return -1;
     }
-    fprintf(fpEne,"#t[yr]\tE_tot\trelative E error\trelative dE_correct\tstep\n");
+    fprintf(fpEne,"#1:t[yr]\t2:E_tot\t3:relative E error\t4:relative dE_correct\t5:step\n");
     fprintf(fpEne,"%.15e\t%.15e\t%.15e\t%.15e\t%15e\n",
 	    0.0,
 	    E_tot_0,
@@ -850,12 +802,17 @@ int main(int argc, char **argv){
     fclose(fpEne);
 
     //角運動量の大きさ計算.
-    abs_L_0 = 0.0;
-    abs_L_0 = AngularMomentum(i,ele,x_0,v_0
+    abs_L_0 = AngularMomentum(ele,x_0,v_0
 #if FRAGMENTATION
 			      ,(t_sys+t_tmp),frag
 #endif
 			      );
+
+    fprintf(fplog,"E_tot_0 = %.15e\tabs_L_0 = %.15e\n",
+	    E_tot_0,
+	    abs_L_0
+	    );
+
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
     gettimeofday(&realtime_end,NULL);
     getrusage(RUSAGE_SELF,&usage_end);
@@ -954,7 +911,7 @@ int main(int argc, char **argv){
       fprintf(fplog,"tracerlistfile 0 error\n");
       return -1;
     }
-    fprintf(fptracerlist,"#inner\tcenter\touter\t(initial tracer list)\n");
+    fprintf(fptracerlist,"#1:inner\t2:center\t3:outer\t(initial tracer list)\n");
     for(i=1;
 	i<=Max_int(Max_int(tracerlistnumber[0],tracerlistnumber[1]),tracerlistnumber[2]);  //inner, center, outerの中の最大値.
 	++i){
@@ -972,7 +929,7 @@ int main(int argc, char **argv){
       fprintf(fplog,"tracerlistnumberfile 0 error\n");
       return -1;
     }
-    fprintf(fptracerlistnumber,"#t[yr]\tn_inner\tn_center\tn_outer\n");
+    fprintf(fptracerlistnumber,"#1:t[yr]\t2:n_inner\t3:n_center\t4:n_outer\n");
     fprintf(fptracerlistnumber,"%.15e\t%d\t%d\t%d\n",
 	    (t_sys+t_tmp)/2.0/M_PI,
 	    tracerlistnumber[0],
@@ -1062,7 +1019,7 @@ int main(int argc, char **argv){
     }
     fprintf(fpfrag,"#initial mass depletion timescale = %e [yr] (center)\n",tau_dep_center/2.0/M_PI);
     fprintf(fpfrag,"#mass_tot_all_0 = %.15e\tmass_tot_center_0 = %.15e\tsigma_center_0 = %.15e\tn_center_0 = %d\n",mass_tot_all,mass_tot_center,sigma_center,n_center);
-    fprintf(fpfrag,"#t[yr]\tmass_tot_all\tmass_tot_inner\tmass_tot_center\tmass_tot_outer\tsigma_inner\tsigma_center\tsigma_outer\t\tn_inner\tn_center\tn_outer\n");
+    fprintf(fpfrag,"#1:t[yr]\t2:mass_tot_all\t3:mass_tot_inner\t4:mass_tot_center\t5:mass_tot_outer\t6:sigma_inner\t7:sigma_center\t8:sigma_outer\t9:n_inner\t10:n_center\t11:n_outer\n");
     fprintf(fpfrag,"%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%d\t%d\t%d\n",
 	    0.0,
 	    mass_tot_all,
@@ -1092,7 +1049,7 @@ int main(int argc, char **argv){
       fprintf(fplog,"posimassfile 0 error\n");
       return -1;
     }
-    fprintf(fpposimass,"#t[yr]\ti\tx\ty\tz\tr_0(3D)\tr_0(2D)\tmass\tdelta_r_out\tdelta_r_in\tsigma\tn_s\tneighbornumber\tdt_frag[yr]\n");
+    fprintf(fpposimass,"#1:t[yr]\t2:i\t3:x\t4:y\t5:z\t6:r_0(3D)\t7:r_0(2D)\t8:mass\t9:delta_r_out\t10:delta_r_in\t11:sigma\t12:n_s\t13:neighbornumber\t14:dt_frag[yr]\n");
     for(i=1;i<=global_n;i++){
       fprintf(fpposimass,"%.15e\t%4d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%4d\t%.15e\n",
 	      0.0,
@@ -1149,7 +1106,7 @@ int main(int argc, char **argv){
 	    dE_correct
 	    );
     fprintf(fpinitial,"\n\n");
-    fprintf(fpinitial,"#name\tx[AU]\ty[AU]\tz[AU]\t|r|[AU]\tvx[AU(2pi/yr)]\tvy[AU(2pi/yr)]\tvz[AU(2pi/yr)]\t|v|[AU(2pi/yr)]\tax[AU(2pi/yr)^2]\tay[AU(2pi/yr)^2]\taz[AU(2pi/yr)^2]\tadotx[AU(2pi/yr)^3]\tadoty[AU(2pi/yr)^3]\tadotz[AU(2pi/yr)^3]\tt_i[yr]\tdt_i[yr]\tmass[Msun]\n");
+    fprintf(fpinitial,"#1:name\t2:x[AU]\t3:y[AU]\t4:z[AU]\t5:|r|[AU]\t6:vx[AU(2pi/yr)]\t7:vy[AU(2pi/yr)]\t8:vz[AU(2pi/yr)]\t9:|v|[AU(2pi/yr)]\t10:ax[AU(2pi/yr)^2]\t11:ay[AU(2pi/yr)^2]\t12:az[AU(2pi/yr)^2]\t13:adotx[AU(2pi/yr)^3]\t14:adoty[AU(2pi/yr)^3]\t15:adotz[AU(2pi/yr)^3]\t16:t_i[yr]\t17:dt_i[yr]\t18:mass[Msun]\n");
 
     for(i=1;i<=global_n;++i){
       fprintf(fpinitial,"%s\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
@@ -1336,8 +1293,6 @@ int main(int argc, char **argv){
 
 #if COALESCENCE
 
-	double m_i, m_j;
-
 #if FRAGMENTATION
 	m_i = MassDepletion(i_col,ele[i_col].mass,(t_sys+t_tmp),frag);
 	m_j = MassDepletion(j_col,ele[j_col].mass,(t_sys+t_tmp),frag);
@@ -1401,7 +1356,7 @@ int main(int argc, char **argv){
 		dE_c,
 		v_imp
 		);
-	fprintf(fpcollision,"#t[yr]\ti\tx\ty\tz\tr_0(3D)\tr_0(2D)\tv_x\tv_y\tv_z\tabs_v\tR_Hill\tRadius\n");
+	fprintf(fpcollision,"#1:t[yr]\t2:i\t3:x\t4:y\t5:z\t6:r_0(3D)\t7:r_0(2D)\t8:v_x\t9:v_y\t10:v_z\t11:abs_v\t12:R_Hill\t13:Radius\n");
 	for(i=1;i<=global_n;i++){
 	  fprintf(fpcollision,"%.15e\t%4d\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15f\t%.15e\t%.15e\n",
 		  (t_sys+t_tmp)/2.0/M_PI,
@@ -1512,7 +1467,7 @@ int main(int argc, char **argv){
 		);
 	fclose(fpEne);
 
-	abs_L = AngularMomentum(i,ele,x_0,v_0
+	abs_L = AngularMomentum(ele,x_0,v_0
 #if FRAGMENTATION
 				,(t_sys+t_tmp),frag
 #endif
@@ -1715,10 +1670,8 @@ int main(int argc, char **argv){
       //t_ene ですべての粒子をそろえ、エネルギー、軌道要素等計算.
 
       for(i=1;i<=global_n;++i){
-
 	Dt[i] = t_ene - t_[i] - t_tmp;
 	t_[i] = 0.0;
-
 	dt_[i] = Dt[i];
       }
 
@@ -1858,7 +1811,7 @@ int main(int argc, char **argv){
 	      );
       fclose(fpEne);
 
-      abs_L = AngularMomentum(i,ele,x_c,v_c
+      abs_L = AngularMomentum(ele,x_c,v_c
 #if FRAGMENTATION
 			      ,(t_sys+t_tmp),frag
 #endif
@@ -1972,7 +1925,7 @@ int main(int argc, char **argv){
 	      dE_correct
 	      );
       fprintf(fptempread,"\n\n");
-      fprintf(fptempread,"#name\tx[AU]\ty[AU]\tz[AU]\t|r|[AU]\tvx[AU(2pi/yr)]\tvy[AU(2pi/yr)]\tvz[AU(2pi/yr)]\t|v|[AU(2pi/yr)]\tax[AU(2pi/yr)^2]\tay[AU(2pi/yr)^2]\taz[AU(2pi/yr)^2]\tadotx[AU(2pi/yr)^3]\tadoty[AU(2pi/yr)^3]\tadotz[AU(2pi/yr)^3]\tt_i[yr]\tdt_i[yr]\tmass[Msun]\n");
+      fprintf(fptempread,"#1:name\t2:x[AU]\t3:y[AU]\t4:z[AU]\t5:|r|[AU]\t6:vx[AU(2pi/yr)]\t7:vy[AU(2pi/yr)]\t8:vz[AU(2pi/yr)]\t9:|v|[AU(2pi/yr)]\t10:ax[AU(2pi/yr)^2]\t11:ay[AU(2pi/yr)^2]\t12:az[AU(2pi/yr)^2]\t13:adotx[AU(2pi/yr)^3]\t14:adoty[AU(2pi/yr)^3]\t15:adotz[AU(2pi/yr)^3]\t16:t_i[yr]\t17:dt_i[yr]\t18:mass[Msun]\n");
 
       for(i=1;i<=global_n;++i){
 
@@ -2020,7 +1973,7 @@ int main(int argc, char **argv){
 	      para.Q_D
 	      );
       fprintf(fptempfragread,"\n\n");
-      fprintf(fptempfragread,"#i\tfragtimes\tneighbornumber\tdelta_r_out\tdelta_r_in\tsigma\tn_s\tv_ave\tflux\tt_frag[yr]\tdt_frag[yr]\n");
+      fprintf(fptempfragread,"#1:i\t2:fragtimes\t3:neighbornumber\t4:delta_r_out\t5:delta_r_in\t6:sigma\t7:n_s\t8:v_ave\t9:flux\t10:t_frag[yr]\t11:dt_frag[yr]\n");
 
       for(i=global_n_p+1;i<=global_n;++i){
 	fprintf(fptempfragread,"%d\t%d\t%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
@@ -2206,7 +2159,7 @@ int main(int argc, char **argv){
 	fprintf(fplog,"posimassfile error\n");
 	return -1;
       }
-      fprintf(fpposimass,"#t[yr]\ti\tx\ty\tz\tr_0(3D)\tr_0(2D)\tmass\tdelta_r_out\tdelta_r_in\tsigma\tn_s\tneighbornumber\tdt_frag[yr]\n");
+      fprintf(fpposimass,"#1:t[yr]\t2:i\t3:x\t4:y\t5:z\t6:r_0(3D)\t7:r_0(2D)\t8:mass\t9:delta_r_out\t10:delta_r_in\t11:sigma\t12:n_s\t13:neighbornumber\t14:dt_frag[yr]\n");
       for(i=1;i<=global_n;i++){
 	fprintf(fpposimass,"%.15e\t%4d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%4d\t%.15e\n",
 		(t_sys+t_tmp)/2.0/M_PI,
@@ -2247,49 +2200,6 @@ int main(int argc, char **argv){
     }
 
 #endif  /*N_tr != 0*/
-
-
-#if POSI_VELO_ROT_FILE
-    if((i_col == 0) && (j_col == 0)){  //衝突しない場合.
-      r_xy[PLANET_NO] = sqrt(x_c[PLANET_NO][1]*x_c[PLANET_NO][1]+x_c[PLANET_NO][2]*x_c[PLANET_NO][2]);
-      r_xy[PLANETESIMAL_NO] = sqrt(x_c[PLANETESIMAL_NO][1]*x_c[PLANETESIMAL_NO][1]+x_c[PLANETESIMAL_NO][2]*x_c[PLANETESIMAL_NO][2]);
-      theta = atan2(x_c[PLANET_NO][2],x_c[PLANET_NO][1]);
-
-
-      x_rot[PLANETESIMAL_NO][1] = x_c[PLANETESIMAL_NO][1];
-      x_rot[PLANETESIMAL_NO][2] = x_c[PLANETESIMAL_NO][2];
-      Rotation_3D_zaxis(PLANETESIMAL_NO,x_rot,-theta);
-
-
-      x_rot[PLANET_NO][1] = x_c[PLANET_NO][1];
-      x_rot[PLANET_NO][2] = x_c[PLANET_NO][2];
-      Rotation_3D_zaxis(PLANET_NO,x_rot,-theta);
-
-
-      fpposi_rot = fopen(posi_rot,"a");
-      if(fpposi_rot==NULL){
-	fprintf(fplog,"posi error\n");
-	return -1;
-      }
-      fprintf(fpposi_rot,"%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
-	      (t_sys+t_tmp)/2.0/M_PI,
-	      x_rot[PLANETESIMAL_NO][1],
-	      x_rot[PLANETESIMAL_NO][2],
-	      x_c[PLANETESIMAL_NO][3],
-	      r_xy[PLANETESIMAL_NO],
-	      atan2(x_rot[PLANETESIMAL_NO][2],x_rot[PLANETESIMAL_NO][1]),
-	      ele[PLANETESIMAL_NO].radius,
-	      x_rot[PLANET_NO][1],
-	      x_rot[PLANET_NO][2],
-	      x_c[PLANET_NO][3],
-	      r_xy[PLANET_NO],
-	      atan2(x_rot[PLANET_NO][2],x_rot[PLANET_NO][1]),
-	      ele[PLANET_NO].radius,
-	      ele[PLANET_NO].r_h
-	      );
-      fclose(fpposi_rot);
-    }
-#endif
 
 
 #if ELIMINATE_PARTICLE
@@ -2482,7 +2392,7 @@ int main(int argc, char **argv){
 	  dE_correct
 	  );
   fprintf(fptempread,"\n\n");
-  fprintf(fptempread,"#name\tx[AU]\ty[AU]\tz[AU]\t|r|[AU]\tvx[AU(2pi/yr)]\tvy[AU(2pi/yr)]\tvz[AU(2pi/yr)]\t|v|[AU(2pi/yr)]\tax[AU(2pi/yr)^2]\tay[AU(2pi/yr)^2]\taz[AU(2pi/yr)^2]\tadotx[AU(2pi/yr)^3]\tadoty[AU(2pi/yr)^3]\tadotz[AU(2pi/yr)^3]\tt_i[yr]\tdt_i[yr]\tmass[Msun]\n");
+  fprintf(fptempread,"#1:name\t2:x[AU]\t3:y[AU]\t4:z[AU]\t5:|r|[AU]\t6:vx[AU(2pi/yr)]\t7:vy[AU(2pi/yr)]\t8:vz[AU(2pi/yr)]\t9:|v|[AU(2pi/yr)]\t10:ax[AU(2pi/yr)^2]\t11:ay[AU(2pi/yr)^2]\t12:az[AU(2pi/yr)^2]\t13:adotx[AU(2pi/yr)^3]\t14:adoty[AU(2pi/yr)^3]\t15:adotz[AU(2pi/yr)^3]\t16:t_i[yr]\t17:dt_i[yr]\t18:mass[Msun]\n");
 
   for(i=1;i<=global_n;++i){
     fprintf(fptempread,"%s\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
@@ -2529,7 +2439,7 @@ int main(int argc, char **argv){
 	  para.Q_D
 	  );
   fprintf(fptempfragread,"\n\n");
-  fprintf(fptempfragread,"#i\tfragtimes\tneighbornumber\tdelta_r_out\tdelta_r_in\tsigma\tn_s\tv_ave\tflux\tt_frag[yr]\tdt_frag[yr]\n");
+  fprintf(fptempfragread,"#1:i\t2:fragtimes\t3:neighbornumber\t4:delta_r_out\t5:delta_r_in\t6:sigma\t7:n_s\t8:v_ave\t9:flux\t10:t_frag[yr]\t11:dt_frag[yr]\n");
 
   for(i=global_n_p+1;i<=global_n;++i){
     fprintf(fptempfragread,"%d\t%d\t%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
@@ -2557,7 +2467,7 @@ int main(int argc, char **argv){
 	 i_sys,
 	 dt_[i_sys],
 	 (E_tot-E_tot_0)/fabs(E_tot_0),
-	 (abs_L-abs_L_0)/abs_L_0,
+	  (abs_L-abs_L_0)/fabs(abs_L_0),
 	 dE_correct/fabs(E_tot_0)
 	 );
 #endif

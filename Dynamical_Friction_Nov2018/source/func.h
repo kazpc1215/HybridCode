@@ -4,7 +4,7 @@
 
 #include "hybrid.h"
 
-double AngularMomentum(int i, CONST struct orbital_elements *ele_p, CONST double x_0[][4], CONST double v_0[][4]
+double AngularMomentum(CONST struct orbital_elements *ele_p, CONST double x_0[][4], CONST double v_0[][4]
 #if FRAGMENTATION
 		       , double t_dyn
 		       , CONST struct fragmentation *frag_p

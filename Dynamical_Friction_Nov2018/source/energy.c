@@ -47,23 +47,35 @@ double Calculate_Energy(CONST struct orbital_elements *ele_p, CONST double x_c[]
     E[i] = 0.5 * m_i * v2_c[i];
 #endif
 
-    for(j=i+1;j<=global_n;++j){
+#if !INTERACTION_TEST_PARTICLE
+
+#if INTERACTION_PLANET_TRACER
+    if(i<=global_n_p){
+#endif
+
+      for(j=i+1;j<=global_n;++j){
 
 #if FRAGMENTATION
-      m_j = MassDepletion(j,((ele_p+j)->mass),t_dyn,frag_p);
+	m_j = MassDepletion(j,((ele_p+j)->mass),t_dyn,frag_p);
 #else
-      m_j = ((ele_p+j)->mass);
+	m_j = ((ele_p+j)->mass);
 #endif
 
-      abs_rij = RelativeDistance(i,j,x_c); //絶対値.
+	abs_rij = RelativeDistance(i,j,x_c); //絶対値.
 
 #ifndef G
-      E[i] += - m_i * m_j / abs_rij;  //エネルギー計算.
+	E[i] += - m_i * m_j / abs_rij;  //エネルギー計算.
 #else
-      E[i] += - G * m_i * m_j / abs_rij;  //エネルギー計算.
+	E[i] += - G * m_i * m_j / abs_rij;  //エネルギー計算.
 #endif
 
-    }  //j loop
+      }  //j loop
+
+#if INTERACTION_PLANET_TRACER
+    }
+#endif
+
+#endif  /*!INTERACTION_TEST_PARTICLE*/
 
 #if !defined(G) && !defined(M_0)
     E_tot += - m_i / r_c[i] + E[i];
@@ -77,16 +89,15 @@ double Calculate_Energy(CONST struct orbital_elements *ele_p, CONST double x_c[]
 
 
 /*角運動量*/
-double AngularMomentum(int i, CONST struct orbital_elements *ele_p, CONST double x_0[][4], CONST double v_0[][4]
+double AngularMomentum(CONST struct orbital_elements *ele_p, CONST double x_0[][4], CONST double v_0[][4]
 #if FRAGMENTATION
 		       , double t_dyn
 		       , CONST struct fragmentation *frag_p
 #endif
 		       ){
-  int k;
+  int i, k;
   double L[global_n+1][4];
   double L_tot_0[4];
-  double abs_L_0;
   double m_i;
 
 
@@ -111,13 +122,5 @@ double AngularMomentum(int i, CONST struct orbital_elements *ele_p, CONST double
     }
   }
 
-  abs_L_0 = 0.0;
-
-  for(k=1;k<=3;++k){
-    abs_L_0 += L_tot_0[k]*L_tot_0[k];
-  }
-
-  abs_L_0 = sqrt(abs_L_0);
-
-  return abs_L_0;
+  return sqrt(L_tot_0[1]*L_tot_0[1] + L_tot_0[2]*L_tot_0[2] + L_tot_0[3]*L_tot_0[3]);
 }

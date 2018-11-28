@@ -72,8 +72,7 @@ EXTERN FILE *fplog;
 //////////////////////////////////////////////////
 #define ENERGY_FILE true  //エネルギー計算&ファイル作成.
 #define ORBITALELEMENTS_FILE true  //軌道要素計算&ファイル作成.
-#define POSI_VELO_FILE false  //位置速度ファイル作成.
-#define POSI_VELO_ROT_FILE false  //回転座標系の位置速度ファイル作成.
+#define POSI_VELO_FILE true  //位置速度ファイル作成.
 #define COLLISION_FILE true  //衝突直前の位置速度ファイル作成.
 #define EXECUTION_TIME true  //mainの実行時間測定.
 #define EXECUTION_TIME_FUNC false  //mainかつ関数ごとの実行時間測定.
