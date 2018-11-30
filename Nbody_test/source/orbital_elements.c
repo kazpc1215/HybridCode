@@ -63,6 +63,12 @@ void InitialOrbitalElements_Tracer(int i, double x_0[][4], struct orbital_elemen
 #elif N_p == 1
   double orbital_r_min = ((ele_p+1)->axis) / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
   double orbital_r_max = ((ele_p+1)->axis) * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#elif N_p == 0 && N_SMALL == 1000 && N_LARGE == 0
+  double orbital_r_min = 0.9293;  //10g/cm^2 @1AU.
+  double orbital_r_max = 1.0707;
+#elif N_p == 0 && N_SMALL == 800 && N_LARGE == 200
+  double orbital_r_min = 0.8868;  //10g/cm^2 @1AU.
+  double orbital_r_max = 1.1132;
 #endif
 
   int j=0,k=0,flag=0;
@@ -72,7 +78,12 @@ void InitialOrbitalElements_Tracer(int i, double x_0[][4], struct orbital_elemen
   //double index = 0.5;  //f(x) = C x^{-p}.
 
   sprintf((ele_p+i)->name,"tracer%06d",i-global_n_p);
-  (ele_p+i)->mass = M_TOT/(double)(global_n-global_n_p);  //質量.
+
+  if(i<=N_SMALL){
+    (ele_p+i)->mass = M_SMALL;  //質量.
+  }else if(i<=N_tr){
+    (ele_p+i)->mass = M_LARGE;  //質量.
+  }
 
   do{
     flag = 0;

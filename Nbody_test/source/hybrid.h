@@ -26,8 +26,8 @@
 #define ALWAYS_INLINE
 #endif
 
-#define DIRECTORY ../data/test/
-//#define DIRECTORY ../data/Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_nofrag_acc/  //ディレクトリ.
+//#define DIRECTORY ../data/test/
+#define DIRECTORY ../data/S8E2_t1E3_dtlog_M1E24g_ecc1E-4/  //ディレクトリ.
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
 
 #define STR_(str) #str
@@ -41,21 +41,23 @@
 
 
 //////////////////////////////////////////////////
-#define N_tr 30  //初期のトレーサーの数.
-#define N_p 3  //初期の原始惑星の数.
-#define ECC_RATIO 1.0  //ecc=0.01の何倍か. inc=ecc/2.
-#define STEP_INTERVAL 1.0E6  //何ステップごとに標準出力するか.
-#define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.
-//#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.
+#define N_tr 1000  //初期のトレーサーの数.
+#define N_SMALL 800  //大きい微惑星の数.
+#define N_LARGE 200  //小さい微惑星の数.
+#define N_p 0  //初期の原始惑星の数.
+#define ECC_RATIO 0.01  //ecc=0.01の何倍か. inc=ecc/2.  ecc = 1E-4, inc = 5E-5
+#define STEP_INTERVAL 5.0E5  //何ステップごとに標準出力するか.
+//#define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.
+#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.
 
 #define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.
 
 #define FRAGMENTATION false  //破壊 近傍粒子探索と質量フラックス計算.
-#define COLLISION true  //衝突.
+#define COLLISION false  //衝突.
 #if COLLISION
 #define COALESCENCE true  //衝突後に合体.
 #else
-#define SOFTENING true  //衝突しないようソフトニング.
+//#define SOFTENING true  //衝突しないようソフトニング.
 #endif
 
 
@@ -74,7 +76,7 @@ EXTERN FILE *fplog;
 #define ORBITALELEMENTS_FILE true  //軌道要素計算&ファイル作成.
 #define POSI_VELO_FILE true  //位置速度ファイル作成.
 #define COLLISION_FILE true  //衝突直前の位置速度ファイル作成.
-#define TRACERLIST_FILE true  //トレーサーリストのファイル作成.
+#define TRACERLIST_FILE false  //トレーサーリストのファイル作成.
 #define EXECUTION_TIME true  //mainの実行時間測定.
 #define EXECUTION_TIME_FUNC false  //mainかつ関数ごとの実行時間測定.
 #if EXECUTION_TIME
@@ -85,8 +87,8 @@ EXTERN FILE *fplog;
 
 
 //////////////////////////////////////////////////
-#define INTERACTION_ALL false  //全粒子同士の重力相互作用.
-#define INTERACTION_PLANET_TRACER true  //惑星とトレーサー間の相互作用.
+#define INTERACTION_ALL true  //全粒子同士の重力相互作用.
+#define INTERACTION_PLANET_TRACER false  //惑星とトレーサー間の相互作用.
 #define INTERACTION_TEST_PARTICLE false  //トレーサーをテスト粒子として扱う.
 #define INDIRECT_TERM true  //中心星が動く効果を補正.
 #define EJECTION false  //初期に破片（トレーサー）を放出する.
@@ -135,7 +137,8 @@ Mean Longitude (deg)               100.46435
 
 #if N_tr != 0
 //////////////////////////////////////////////////
-#define M_TOT (3.0E-5*N_p)  //10M_E * N_p  //トレーサーの総質量.
+#define M_SMALL 5.0E-10  //大きい微惑星の質量.
+#define M_LARGE 2.0E-9  //小さい微惑星の質量.
 
 #if EJECTION
 #define PLANET_OF_EJECTION 1

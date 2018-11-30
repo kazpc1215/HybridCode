@@ -558,7 +558,8 @@ int main(int argc, char **argv){
     fprintf(fplog,"PLANET_INC\t%s\n",STR(PLANET_INC));
     fprintf(fplog,"PLANET_DENSITY\t%s\n",STR(PLANET_DENSITY));
 #if N_tr != 0
-    fprintf(fplog,"M_TOT\t%s\n",STR(M_TOT));
+    fprintf(fplog,"M_SMALL\t%s\n",STR(M_SMALL));
+    fprintf(fplog,"M_LARGE\t%s\n",STR(M_LARGE));
 #if EJECTION
     fprintf(fplog,"PLANET_OF_EJECTION\t%s\n",STR(PLANET_OF_EJECTION));
     fprintf(fplog,"EJECTION_CONE_ANGLE\t%s\n",STR(EJECTION_CONE_ANGLE));
@@ -908,6 +909,12 @@ int main(int argc, char **argv){
 #elif N_p == 1
     orbital_r_min = ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
     orbital_r_max = ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#elif N_p == 0 && N_SMALL == 1000 && N_LARGE == 0
+    orbital_r_min = 0.9293;  //10g/cm^2 @1AU.
+    orbital_r_max = 1.0707;
+#elif N_p == 0 && N_SMALL == 800 && N_LARGE == 200
+    orbital_r_min = 0.8868;  //10g/cm^2 @1AU.
+    orbital_r_max = 1.1132;
 #endif
 
     for(i=global_n_p+1;i<=global_n;++i){
@@ -2063,6 +2070,12 @@ int main(int argc, char **argv){
 #elif N_p == 1
       orbital_r_min = ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
       orbital_r_max = ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#elif N_p == 0 && N_SMALL == 1000 && N_LARGE == 0
+      orbital_r_min = 0.9293;  //10g/cm^2 @1AU.
+      orbital_r_max = 1.0707;
+#elif N_p == 0 && N_SMALL == 800 && N_LARGE == 200
+      orbital_r_min = 0.8868;  //10g/cm^2 @1AU.
+      orbital_r_max = 1.1132;
 #endif
 
 
