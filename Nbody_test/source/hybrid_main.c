@@ -625,7 +625,7 @@ int main(int argc, char **argv){
     ///////////////////////////////ここまで初期処理//////////////////////////////////
 
 
-#if N_tr != 0
+#if N_p != 0
 
 #if N_p == 3
     ele[1].axis = PLANET_AXIS / MutualHillRadius_to_SemimajorAxis(DELTA_HILL) ;  //惑星2を中心に相互DELTA_HILLヒル内側へ離す.
@@ -720,9 +720,9 @@ int main(int argc, char **argv){
     for(i=1;i<=global_n;++i){
       sprintf(orbit,"%s%s.dat",
 #ifdef SUBDIRECTORY
-	  dirname
+	      dirname
 #else
-	  STR(DIRECTORY)
+	      STR(DIRECTORY)
 #endif
 	      ,ele[i].name);
       fporbit = fopen(orbit,"w");
