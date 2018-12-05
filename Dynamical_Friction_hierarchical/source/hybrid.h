@@ -41,7 +41,7 @@
 
 
 //////////////////////////////////////////////////
-#define N_tr 30  //初期のトレーサーの数.
+#define N_tr 3000  //初期のトレーサーの数.
 #define N_p 3  //初期の原始惑星の数.
 #define ECC_RATIO 1.0  //ecc=0.01の何倍か. inc=ecc/2.
 #define STEP_INTERVAL 1.0E6  //何ステップごとに標準出力するか.
@@ -55,7 +55,7 @@
 #if COLLISION
 #define COALESCENCE true  //衝突後に合体.
 #else
-#define SOFTENING true  //衝突しないようソフトニング.
+//#define SOFTENING true  //衝突しないようソフトニング.
 #endif
 
 

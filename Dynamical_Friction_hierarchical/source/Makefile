@@ -1,19 +1,19 @@
 # Makefile
 
 # SINGLE, DEBUG, OMP
-MODE = SINGLE
+MODE = OMP
 
 # -O0,-O1,-O2,-O3
 LEVEL = -O3
 
 CC = gcc
-OBJS = hybrid_main.o sub.o acc.o energy.o orbital_elements.o timestep.o neighbor.o massflux.o collision.o SFMT.o
+OBJS = acc.o collision.o energy.o heapsort.o hybrid_main.o massflux.o neighbor.o orbital_elements.o SFMT.o sub.o timestep.o
 
 
 ifeq ($(MODE),OMP)
 # OpenMP option
-# OMPOP = -fopenmp
-OMPOP = -h omp
+OMPOP = -fopenmp
+# OMPOP = -h omp
 endif
 
 
@@ -139,16 +139,17 @@ clean:
 ifeq ($(CC),gcc)
 -include *.d
 else
-hybrid_main.o: hybrid_main.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
 acc.o: acc.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
 collision.o: collision.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
 energy.o: energy.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
+heapsort.o: heapsort.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
+hybrid_main.o: hybrid_main.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
 massflux.o: massflux.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
 neighbor.o: neighbor.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
 orbital_elements.o: orbital_elements.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
+SFMT.o: SFMT.c SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
 sub.o: sub.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
 timestep.o: timestep.c hybrid.h func.h SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
-SFMT.o: SFMT.c SFMTdir/SFMT.h SFMTdir/SFMT-params.h SFMTdir/SFMT-params216091.h
 endif
 
 .PHONY: all clean

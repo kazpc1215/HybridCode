@@ -73,6 +73,10 @@ void Corrector_sys(int n_ite, int i_sys, CONST struct orbital_elements *ele_p, C
 
 double rand_func();
 
+void HeapSort(CONST int NUM_DATA, CONST double t[], CONST double dt[], CONST double t_tmp, int index[]);
+
+void DownHeap(double a[], int index[], int leaf, int root);
+
 #if COLLISION
 bool Collision_Judgement(int i_sys, CONST struct orbital_elements *ele_p, CONST double x_p[][4], double abs_r[], int *i_col, int *j_col);
 
