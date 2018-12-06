@@ -14,13 +14,13 @@ FILE *fplog;  //ログファイルポインタ.
 #if EXECUTION_TIME
 struct execution_time exetime =
   {
-    {0.0,0.0,0.0},
-    {0.0,0.0,0.0},
-    {0.0,0.0,0.0},
-    {0.0,0.0,0.0},
-    {0.0,0.0,0.0},
-    {0.0,0.0,0.0},
-    {0.0,0.0,0.0}
+   {0.0,0.0,0.0},
+   {0.0,0.0,0.0},
+   {0.0,0.0,0.0},
+   {0.0,0.0,0.0},
+   {0.0,0.0,0.0},
+   {0.0,0.0,0.0},
+   {0.0,0.0,0.0}
   };
 #endif
 
@@ -78,8 +78,8 @@ int main(int argc, char **argv){
 
 
 #if N_tr != 0
-  int tracerlist[N_p][N_tr+1] = {};  //各部分のトレーサーの数. 0 : 内側, 1 : 中央, 2 : 外側.
-  int tracerlistnumber[N_p] = {};
+  int tracerlist[3][N_tr+1] = {};  //各部分のトレーサーの数. 0 : 内側, 1 : 中央, 2 : 外側.
+  int tracerlistnumber[3] = {};
   double orbital_r=0.0,orbital_r_min=0.0,orbital_r_max=0.0;
 #if TRACERLIST_FILE
   FILE *fptracerlist;
@@ -177,8 +177,7 @@ int main(int argc, char **argv){
   /////////////////////////////ここまでOpenMpとMPIの準備//////////////////////////////
 
 
-  //sfmt_init_gen_rand(&sfmt, global_myid);  //乱数の種をmyidで決める.
-  sfmt_init_gen_rand(&sfmt, 3);  //乱数の種をmyidで決める.
+  sfmt_init_gen_rand(&sfmt, global_myid);  //乱数の種をmyidで決める.
 
 
 #ifdef DIRECTORY
@@ -273,7 +272,7 @@ int main(int argc, char **argv){
 #else
 	  STR(DIRECTORY)
 #endif
-	    );
+	  );
 #endif  /*TRACERLIST_FILE*/
 
 
@@ -409,9 +408,9 @@ int main(int argc, char **argv){
 
       }else{
 	fprintf(fplog,"%s: i=%d line is NULL.\n",
-	       tempreadfile,
-	       i
-	       );
+		tempreadfile,
+		i
+		);
       }
     }
 
@@ -430,7 +429,9 @@ int main(int argc, char **argv){
       }
     }
 
-    fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
+    i_sys = index[1];  //最もt[i]+dt[i]の値が小さいi. 衝突判定のときにはi_sysからの距離を測る.
+
+    //fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
 
 
 
@@ -480,9 +481,9 @@ int main(int argc, char **argv){
 
 	}else{
 	  fprintf(fplog,"%s: i=%d line is NULL.\n",
-		 tempfragreadfile,
-		 i
-		 );
+		  tempfragreadfile,
+		  i
+		  );
 	}
       }
 
@@ -624,9 +625,9 @@ int main(int argc, char **argv){
     sprintf(cat_header,"cat %s > %sheaderfile.dat",
 	    headerfile,
 #ifdef SUBDIRECTORY
-	  dirname
+	    dirname
 #else
-	  STR(DIRECTORY)
+	    STR(DIRECTORY)
 #endif
 	    );
     system(cat_header);  //headerファイルをテキストとしてdataに残す
@@ -637,9 +638,9 @@ int main(int argc, char **argv){
     sprintf(cat_main,"cat %s > %smainfile.dat",
 	    mainfile,
 #ifdef SUBDIRECTORY
-	  dirname
+	    dirname
 #else
-	  STR(DIRECTORY)
+	    STR(DIRECTORY)
 #endif
 	    );
     system(cat_main);  //mainファイルをテキストとしてdataに残す
@@ -689,13 +690,13 @@ int main(int argc, char **argv){
     para.Q_D = Q_0_FRAG * 1.13E-13 * pow(RHO / 3.0, 0.55) * pow(M_MAX * 1.989E12, P_FRAG);  //erg/g = 1.13E-13 AU^2/(yr/2pi)^2 として.
 
     fprintf(fplog,"alpha=%g\ts_1=%g\ts_2=%g\ts_3=%g\th_0=%g\tQ_D=%g\n",
-	   para.alpha,
-	   para.s_1,
-	   para.s_2,
-	   para.s_3,
-	   para.h_0,
-	   para.Q_D
-	   );
+	    para.alpha,
+	    para.s_1,
+	    para.s_2,
+	    para.s_3,
+	    para.h_0,
+	    para.Q_D
+	    );
 #endif
 
 #endif  /*N_tr != 0*/
@@ -743,9 +744,9 @@ int main(int argc, char **argv){
     for(i=1;i<=global_n;++i){
       sprintf(orbit,"%s%s.dat",
 #ifdef SUBDIRECTORY
-	  dirname
+	      dirname
 #else
-	  STR(DIRECTORY)
+	      STR(DIRECTORY)
 #endif
 	      ,ele[i].name);
       fporbit = fopen(orbit,"w");
@@ -925,7 +926,7 @@ int main(int argc, char **argv){
 	while(tmp < dt_list[j]) j++;
 	dt_[i] = dt_list[j];  // 値が最も近い2進数に設定.
       }
-      fprintf(fplog,"initial dt_[%d]=%.20e\n",i,dt_[i]);
+      //fprintf(fplog,"initial dt_[%d]=%.20e\n",i,dt_[i]);
     }
 
 
@@ -940,7 +941,9 @@ int main(int argc, char **argv){
       }
     }
 
-    fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
+    i_sys = index[1];  //最もt[i]+dt[i]の値が小さいi. 衝突判定のときにはi_sysからの距離を測る.
+
+    //fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
 
 
     /////////////////////////////ここまでで加速度，タイムステップ計算//////////////////////////////
@@ -961,24 +964,41 @@ int main(int argc, char **argv){
       orbital_r = RadiusFromCenter(i,x_0);
 
 
+#if N_p == 3
       if(orbital_r > ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)
 	 &&
-	 orbital_r < ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //innerにいる場合
+	 orbital_r < ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //innerにいる場合（惑星1の周り）.
 	tracerlistnumber[0] += 1;
 	tracerlist[0][tracerlistnumber[0]] = i;
       }
 
-      if(orbital_r > orbital_r_min && orbital_r < orbital_r_max){  //centerにいる場合
+      if(orbital_r > orbital_r_min && orbital_r < orbital_r_max){  //centerにいる場合（惑星2の周り）.
 	tracerlistnumber[1] += 1;
 	tracerlist[1][tracerlistnumber[1]] = i;
       }
 
       if(orbital_r > ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)
 	 &&
-	 orbital_r < ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //outerにいる場合
+	 orbital_r < ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //outerにいる場合（惑星3の周り）.
 	tracerlistnumber[2] += 1;
 	tracerlist[2][tracerlistnumber[2]] = i;
       }
+#elif N_p == 1
+      if(orbital_r < orbital_r_min){  //innerにいる場合（惑星から離れた内側）.
+	tracerlistnumber[0] += 1;
+	tracerlist[0][tracerlistnumber[0]] = i;
+      }
+
+      if(orbital_r > orbital_r_min && orbital_r < orbital_r_max){  //centerにいる場合（惑星の周り）.
+	tracerlistnumber[1] += 1;
+	tracerlist[1][tracerlistnumber[1]] = i;
+      }
+
+      if(orbital_r > orbital_r_max){  //outerにいる場合（惑星から離れた外側）.
+	tracerlistnumber[2] += 1;
+	tracerlist[2][tracerlistnumber[2]] = i;
+      }
+#endif
 
     }
 
@@ -1119,9 +1139,9 @@ int main(int argc, char **argv){
 
     sprintf(posimassfile,"%sPosi_Mass_%02d.dat",
 #ifdef SUBDIRECTORY
-	  dirname
+	    dirname
 #else
-	  STR(DIRECTORY)
+	    STR(DIRECTORY)
 #endif
 	    ,n_fragcheck
 	    );
@@ -1240,16 +1260,17 @@ int main(int argc, char **argv){
 
 
   fprintf(fplog,"-----\n");
-  fprintf(fplog,"#step\t\tNp\tNtr\ti_sys\tdt[i_sys]\t\tt_tmp[yr]\t\tt_sys[yr]\n");
-  fprintf(fplog,"%e\t%3d\t%6d\t%6d\t%.15e\t%.15e\t%.15e\n",
-	 step,
-	 global_n_p,
-	 global_n-global_n_p,
-	 i_sys,
-	 dt_[i_sys]/2.0/M_PI,
-	 t_tmp/2.0/M_PI,
-	 t_sys/2.0/M_PI
-	 );
+  fprintf(fplog,"#step\t\tNp\tNtr\ti_sys\tn_i_sys\tdt[i_sys][yr]\t\tt_tmp[yr]\t\tt_sys[yr]\n");
+  fprintf(fplog,"%e\t%3d\t%6d\t%6d\t%6d\t%.15e\t%.15e\t%.15e\n",
+	  step,
+	  global_n_p,
+	  global_n-global_n_p,
+	  i_sys,
+	  n_i_sys,
+	  dt_[i_sys]/2.0/M_PI,
+	  t_tmp/2.0/M_PI,
+	  t_sys/2.0/M_PI
+	  );
 
 
   fclose(fplog);  //一旦ファイルを閉じてログを書き出し.
@@ -1302,15 +1323,15 @@ int main(int argc, char **argv){
 	n_col++;
 
 	fprintf(fplog,"collision No.%d\t%.15e[yr]\ti=%d, j=%d\tr_ij=%.15e\tradius[%d]+radius[%d]=%.15e\n",
-	       n_col,
-	       (t_sys+t_tmp)/2.0/M_PI,
-	       i_col,
-	       j_col,
-	       abs_r[j_col],
-	       i_col,
-	       j_col,
-	       ele[i_col].radius + ele[j_col].radius
-	       );
+		n_col,
+		(t_sys+t_tmp)/2.0/M_PI,
+		i_col,
+		j_col,
+		abs_r[j_col],
+		i_col,
+		j_col,
+		ele[i_col].radius + ele[j_col].radius
+		);
 
 
 	//t_sysで揃えるためDt[i]を使う.
@@ -1405,9 +1426,9 @@ int main(int argc, char **argv){
 	//衝突時の位置速度をファイルへ書き出し.
 	sprintf(collisionfile,"%sCollision_%03d.dat",
 #ifdef SUBDIRECTORY
-	  dirname
+		dirname
 #else
-	  STR(DIRECTORY)
+		STR(DIRECTORY)
 #endif
 		,n_col
 		);
@@ -1928,9 +1949,9 @@ int main(int argc, char **argv){
 				  );  //軌道要素計算. ファイルへ書き出し.
 	sprintf(orbit,"%s%s.dat",
 #ifdef SUBDIRECTORY
-	  dirname
+		dirname
 #else
-	  STR(DIRECTORY)
+		STR(DIRECTORY)
 #endif
 		,ele[i].name);
 	fporbit = fopen(orbit,"a");
@@ -2129,24 +2150,44 @@ int main(int argc, char **argv){
 
 	orbital_r = RadiusFromCenter(i,x_c);
 
+#if N_p == 3
 	if(orbital_r > ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)
 	   &&
-	   orbital_r < ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //innerにいる場合
+	   orbital_r < ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //innerにいる場合（惑星1の周り）.
+
 	  tracerlistnumber[0] += 1;
 	  tracerlist[0][tracerlistnumber[0]] = i;
 	}
 
-	if(orbital_r > orbital_r_min && orbital_r < orbital_r_max){  //centerにいる場合
+	if(orbital_r > orbital_r_min && orbital_r < orbital_r_max){  //centerにいる場合（惑星2の周り）.
+
 	  tracerlistnumber[1] += 1;
 	  tracerlist[1][tracerlistnumber[1]] = i;
 	}
 
 	if(orbital_r > ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)
 	   &&
-	   orbital_r < ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //outerにいる場合
+	   orbital_r < ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //outerにいる場合（惑星3の周り）.
+
 	  tracerlistnumber[2] += 1;
 	  tracerlist[2][tracerlistnumber[2]] = i;
 	}
+#elif N_p == 1
+	if(orbital_r < orbital_r_min){  //innerにいる場合（惑星から離れた内側）.
+	  tracerlistnumber[0] += 1;
+	  tracerlist[0][tracerlistnumber[0]] = i;
+	}
+
+	if(orbital_r > orbital_r_min && orbital_r < orbital_r_max){  //centerにいる場合（惑星の周り）.
+	  tracerlistnumber[1] += 1;
+	  tracerlist[1][tracerlistnumber[1]] = i;
+	}
+
+	if(orbital_r > orbital_r_max){  //outerにいる場合（惑星から離れた外側）.
+	  tracerlistnumber[2] += 1;
+	  tracerlist[2][tracerlistnumber[2]] = i;
+	}
+#endif
       }
 
 
@@ -2169,8 +2210,8 @@ int main(int argc, char **argv){
 #if FRAGMENTATION
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
-    gettimeofday(&realtime_start,NULL);
-    getrusage(RUSAGE_SELF,&usage_start);
+      gettimeofday(&realtime_start,NULL);
+      getrusage(RUSAGE_SELF,&usage_start);
 #endif
 
       n_fragcheck++;
@@ -2236,9 +2277,9 @@ int main(int argc, char **argv){
 
       sprintf(posimassfile,"%sPosi_Mass_%02d.dat",
 #ifdef SUBDIRECTORY
-	  dirname
+	      dirname
 #else
-	  STR(DIRECTORY)
+	      STR(DIRECTORY)
 #endif
 	      ,n_fragcheck
 	      );
@@ -2296,11 +2337,11 @@ int main(int argc, char **argv){
       if(r_c[i]<SOLAR_RADIUS || r_c[i]>SOLAR_SYSTEM_LIMIT){  //太陽に飲みこまれるか系外へ出て行くか.
 
 	fprintf(fplog,"i=%d is eliminated\tr[%d]=%.15e\tt_sys+t_tmp=%.15e[yr]\n",
-	       i,
-	       i,
-	       r_c[i],
-	       (t_sys+t_tmp)/2.0/M_PI
-	       );
+		i,
+		i,
+		r_c[i],
+		(t_sys+t_tmp)/2.0/M_PI
+		);
 
 	if(i<=global_n_p){
 
@@ -2433,9 +2474,9 @@ int main(int argc, char **argv){
 
     }else{
       fprintf(fplog,"Collision Judgement error\ti_col=%d\tj_col=%d\n",
-	     i_col,
-	     j_col
-	     );
+	      i_col,
+	      j_col
+	      );
       exit(-1);
     }
 
@@ -2451,23 +2492,24 @@ int main(int argc, char **argv){
       }
     }
 
-    fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
+    //fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
 
 
 
     if(fmod(step,STEP_INTERVAL)==0.0){
       if(fmod(step,STEP_INTERVAL*50.0)==0.0){
-	fprintf(fplog,"#step\t\tNp\tNtr\ti_sys\tdt[i_sys]\t\tt_tmp[yr]\t\tt_sys[yr]\n");
+	fprintf(fplog,"#step\t\tNp\tNtr\ti_sys\tn_i_sys\tdt[i_sys][yr]\t\tt_tmp[yr]\t\tt_sys[yr]\n");
       }
-      fprintf(fplog,"%e\t%3d\t%6d\t%6d\t%.15e\t%.15e\t%.15e\n",
-	     step,
-	     global_n_p,
-	     global_n-global_n_p,
-	     i_sys,
-	     dt_[i_sys]/2.0/M_PI,
-	     t_tmp/2.0/M_PI,
-	     t_sys/2.0/M_PI
-	     );
+      fprintf(fplog,"%e\t%3d\t%6d\t%6d\t%6d\t%.15e\t%.15e\t%.15e\n",
+	      step,
+	      global_n_p,
+	      global_n-global_n_p,
+	      i_sys,
+	      n_i_sys,
+	      dt_[i_sys]/2.0/M_PI,
+	      t_tmp/2.0/M_PI,
+	      t_sys/2.0/M_PI
+	      );
 
       fclose(fplog);  //一旦ファイルを閉じてログを書き出し.
       fplog = fopen(logfile,"a");  //すぐに開く.
@@ -2586,12 +2628,12 @@ int main(int argc, char **argv){
 #if ENERGY_FILE
   fprintf(fplog,"-----\n");
   fprintf(fplog,"dt_[%d]\t= %.15e\nE_error\t= %.15e\nL_error\t= %.15e\ndE_correct\t= %.15e\n",
-	 i_sys,
-	 dt_[i_sys],
-	 (E_tot-E_tot_0)/fabs(E_tot_0),
+	  i_sys,
+	  dt_[i_sys],
+	  (E_tot-E_tot_0)/fabs(E_tot_0),
 	  (abs_L-abs_L_0)/fabs(abs_L_0),
-	 dE_correct/fabs(E_tot_0)
-	 );
+	  dE_correct/fabs(E_tot_0)
+	  );
 #endif
 
   fprintf(fplog,"step\t= %.15e\n",step);

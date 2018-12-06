@@ -26,8 +26,8 @@
 #define ALWAYS_INLINE
 #endif
 
-#define DIRECTORY ../data/test/
-//#define DIRECTORY ../data/Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_nofrag_acc/  //ディレクトリ.
+
+#define DIRECTORY ../data/Ntr1E2_t1E8_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-1_nofrag_acc/  //ディレクトリ.
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
 
 #define STR_(str) #str
@@ -41,10 +41,10 @@
 
 
 //////////////////////////////////////////////////
-#define N_tr 3000  //初期のトレーサーの数.
-#define N_p 3  //初期の原始惑星の数.
-#define ECC_RATIO 1.0  //ecc=0.01の何倍か. inc=ecc/2.
-#define STEP_INTERVAL 1.0E3  //何ステップごとに標準出力するか.
+#define N_tr 100  //初期のトレーサーの数.
+#define N_p 1  //初期の原始惑星の数.
+#define ECC_RATIO 10.0  //ecc=0.01の何倍か. inc=ecc/2.
+#define STEP_INTERVAL 5.0E5  //何ステップごとに標準出力するか.
 #define BREAK_TIME 100.0  //4h = 14400sec, 12h = 43200sec.
 //#define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.
 //#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.
@@ -77,7 +77,7 @@ EXTERN FILE *fplog;
 #define COLLISION_FILE true  //衝突直前の位置速度ファイル作成.
 #define TRACERLIST_FILE true  //トレーサーリストのファイル作成.
 #define EXECUTION_TIME true  //mainの実行時間測定.
-#define EXECUTION_TIME_FUNC false  //mainかつ関数ごとの実行時間測定.
+#define EXECUTION_TIME_FUNC true  //mainかつ関数ごとの実行時間測定.
 #if EXECUTION_TIME
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -136,7 +136,7 @@ Mean Longitude (deg)               100.46435
 
 #if N_tr != 0
 //////////////////////////////////////////////////
-#define M_TOT (3.0E-5*N_p)  //10M_E * N_p  //トレーサーの総質量.
+#define M_TOT (3.0E-7*N_p)  //0.1M_E * N_p  //トレーサーの総質量.
 
 #if EJECTION
 #define PLANET_OF_EJECTION 1
@@ -172,7 +172,7 @@ Mean Longitude (deg)               100.46435
 
 
 //////////////////////////////////////////////////
-#define T_MAX (2.0*M_PI*1.0E3)  //10^3yr 全計算時間.
+#define T_MAX (2.0*M_PI*1.0E8)  //10^8yr 全計算時間.
 #define DT_LOG true  //true: t_eneをlogでとる. false: t_eneをlinearでとる.
 
 /* linear では 初項 DT_ENE，公差 DT_ENE の等差数列 */

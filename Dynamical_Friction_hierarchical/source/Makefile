@@ -1,7 +1,7 @@
 # Makefile
 
 # SINGLE, DEBUG, OMP
-MODE = OMP
+MODE = SINGLE
 
 # -O0,-O1,-O2,-O3
 LEVEL = -O3
