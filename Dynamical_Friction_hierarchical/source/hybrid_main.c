@@ -177,7 +177,8 @@ int main(int argc, char **argv){
   /////////////////////////////ここまでOpenMpとMPIの準備//////////////////////////////
 
 
-  sfmt_init_gen_rand(&sfmt, global_myid);  //乱数の種をmyidで決める.
+  //sfmt_init_gen_rand(&sfmt, global_myid);  //乱数の種をmyidで決める.
+  sfmt_init_gen_rand(&sfmt, 3);  //乱数の種をmyidで決める.
 
 
 #ifdef DIRECTORY
@@ -415,6 +416,22 @@ int main(int argc, char **argv){
     }
 
     fclose(fptempread);
+
+
+
+    HeapSort(global_n,t_,dt_,t_tmp,index);  //ヒープソート.
+
+    n_i_sys = 0;
+    for(i=1;i<=global_n;++i){
+      if(t_[index[1]] + dt_[index[1]] == t_[index[i]] + dt_[index[i]]){
+	n_i_sys++;
+      }else{
+	break;
+      }
+    }
+
+    fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
+
 
 
 #if FRAGMENTATION
@@ -923,7 +940,7 @@ int main(int argc, char **argv){
       }
     }
 
-    fprintf(fplog,"n_i_sys = %d\tt+dt = %.100e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
+    fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
 
 
     /////////////////////////////ここまでで加速度，タイムステップ計算//////////////////////////////
@@ -943,6 +960,7 @@ int main(int argc, char **argv){
 
       orbital_r = RadiusFromCenter(i,x_0);
 
+
       if(orbital_r > ele[1].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)
 	 &&
 	 orbital_r < ele[1].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)){  //innerにいる場合
@@ -961,6 +979,7 @@ int main(int argc, char **argv){
 	tracerlistnumber[2] += 1;
 	tracerlist[2][tracerlistnumber[2]] = i;
       }
+
     }
 
     fprintf(fplog,"inner = %d,\tcenter = %d,\touter = %d,\ttotal = %d\n",tracerlistnumber[0],tracerlistnumber[1],tracerlistnumber[2],global_n-global_n_p);
@@ -1154,7 +1173,7 @@ int main(int argc, char **argv){
       return -1;
     }
     fprintf(fpinitial,"#1:t_tmp\t2:t_sys\t3:t_ene\t4:global_n_p\t5:global_n\t6:i_sys\t7:n_col\t8:step\t9:E_tot_0\t10:abs_L_0\t11:dE_correct\n");
-    fprintf(fpinitial,"%.15e\t%.15e\t%.15e\t%6d\t%6d\t%6d\t%d\t%8e\t%.15e\t%.15e\t%.15e\n",
+    fprintf(fpinitial,"%.30e\t%.30e\t%.15e\t%6d\t%6d\t%6d\t%d\t%8e\t%.15e\t%.15e\t%.15e\n",
 	    t_tmp,
 	    t_sys,
 	    t_ene,
@@ -1168,10 +1187,10 @@ int main(int argc, char **argv){
 	    dE_correct
 	    );
     fprintf(fpinitial,"\n\n");
-    fprintf(fpinitial,"#1:name\t2:x[AU]\t3:y[AU]\t4:z[AU]\t5:|r|[AU]\t6:vx[AU(2pi/yr)]\t7:vy[AU(2pi/yr)]\t8:vz[AU(2pi/yr)]\t9:|v|[AU(2pi/yr)]\t10:ax[AU(2pi/yr)^2]\t11:ay[AU(2pi/yr)^2]\t12:az[AU(2pi/yr)^2]\t13:adotx[AU(2pi/yr)^3]\t14:adoty[AU(2pi/yr)^3]\t15:adotz[AU(2pi/yr)^3]\t16:t_i[yr]\t17:dt_i[yr]\t18:mass[Msun]\n");
+    fprintf(fpinitial,"#1:name\t2:x[AU]\t3:y[AU]\t4:z[AU]\t5:|r|[AU]\t6:vx[AU(2pi/yr)]\t7:vy[AU(2pi/yr)]\t8:vz[AU(2pi/yr)]\t9:|v|[AU(2pi/yr)]\t10:ax[AU(2pi/yr)^2]\t11:ay[AU(2pi/yr)^2]\t12:az[AU(2pi/yr)^2]\t13:adotx[AU(2pi/yr)^3]\t14:adoty[AU(2pi/yr)^3]\t15:adotz[AU(2pi/yr)^3]\t16:t_i[yr/2pi]\t17:dt_i[yr/2pi]\t18:mass[Msun]\n");
 
     for(i=1;i<=global_n;++i){
-      fprintf(fpinitial,"%s\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
+      fprintf(fpinitial,"%s\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.30e\t%.30e\t%.15e\n",
 	      ele[i].name,
 	      x_0[i][1],
 	      x_0[i][2],
@@ -1187,8 +1206,8 @@ int main(int argc, char **argv){
 	      adot_0[i][1],
 	      adot_0[i][2],
 	      adot_0[i][3],
-	      t_[i]/2.0/M_PI,
-	      dt_[i]/2.0/M_PI,
+	      t_[i],
+	      dt_[i],
 	      ele[i].mass
 	      );
     }
@@ -1203,7 +1222,7 @@ int main(int argc, char **argv){
   gettimeofday(&realtime_start,NULL);
   getrusage(RUSAGE_SELF,&usage_start);
 #endif
-  for(i=global_n_p+1;i<=global_n;++i){
+  for(i=1;i<=global_n;++i){
     Calculate_OrbitalElements(i,x_0,v_0,ele,r_0,v2_0,r_dot_v
 #if FRAGMENTATION
 			      ,(t_sys+t_tmp),frag
@@ -1745,7 +1764,7 @@ int main(int argc, char **argv){
       t_tmp += t_sys;
       t_sys = 0.0;
 
-      fprintf(fplog,"## t_ene < t_sys\tn_i_sys = %d\tt+dt = %.100e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
+      fprintf(fplog,"## t_ene < t_sys\tn_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
 
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
@@ -1979,7 +1998,7 @@ int main(int argc, char **argv){
 	return -1;
       }
       fprintf(fptempread,"#1:t_tmp\t2:t_sys\t3:t_ene\t4:global_n_p\t5:global_n\t6:i_sys\t7:n_col\t8:step\t9:E_tot_0\t10:abs_L_0\t11:dE_correct\n");
-      fprintf(fptempread,"%.15e\t%.15e\t%.15e\t%6d\t%6d\t%6d\t%d\t%8e\t%.15e\t%.15e\t%.15e\n",
+      fprintf(fptempread,"%.30e\t%.30e\t%.15e\t%6d\t%6d\t%6d\t%d\t%8e\t%.15e\t%.15e\t%.15e\n",
 	      t_tmp,
 	      t_sys,
 	      t_ene,
@@ -2027,10 +2046,10 @@ int main(int argc, char **argv){
 	fprintf(fplog,"tempfragreadfile error\n");
 	return -1;
       }
-      fprintf(fptempfragread,"#1:t_tmp[yr]\t2:t_sys[yr]\t3:n_fragcheck\t4:t_fragcheck\t5:s_1\t6:s_2\t7:s_3\t8:alpha\t9:h_0\t10:Q_D\n");
-      fprintf(fptempfragread,"%.15e\t%.15e\t%.15e\t%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
-	      t_tmp/2.0/M_PI,
-	      t_sys/2.0/M_PI,
+      fprintf(fptempfragread,"#1:t_tmp[yr/2pi]\t2:t_sys[yr/2pi]\t3:n_fragcheck\t4:t_fragcheck\t5:s_1\t6:s_2\t7:s_3\t8:alpha\t9:h_0\t10:Q_D\n");
+      fprintf(fptempfragread,"%.30e\t%.30e\t%.15e\t%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
+	      t_tmp,
+	      t_sys,
 	      t_fragcheck,
 	      n_fragcheck,
 	      para.s_1,
@@ -2432,7 +2451,7 @@ int main(int argc, char **argv){
       }
     }
 
-    fprintf(fplog,"n_i_sys = %d\tt+dt = %.100e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
+    fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
 
 
 
@@ -2462,7 +2481,6 @@ int main(int argc, char **argv){
       }
 #endif
 
-      return 0;  /////////check/////////
     }
 
 
@@ -2482,7 +2500,7 @@ int main(int argc, char **argv){
     return -1;
   }
   fprintf(fptempread,"#1:t_tmp\t2:t_sys\t3:t_ene\t4:global_n_p\t5:global_n\t6:i_sys\t7:n_col\t8:step\t9:E_tot_0\t10:abs_L_0\t11:dE_correct\n");
-  fprintf(fptempread,"%.15e\t%.15e\t%.15e\t%6d\t%6d\t%6d\t%6d\t%8e\t%.15e\t%.15e\t%.15e\n",
+  fprintf(fptempread,"%.30e\t%.30e\t%.15e\t%6d\t%6d\t%6d\t%6d\t%8e\t%.15e\t%.15e\t%.15e\n",
 	  t_tmp,
 	  t_sys,
 	  t_ene,
@@ -2529,10 +2547,10 @@ int main(int argc, char **argv){
     fprintf(fplog,"tempfragreadfile error\n");
     return -1;
   }
-  fprintf(fptempfragread,"#1:t_tmp[yr]\t2:t_sys[yr]\t3:t_fragcheck\t4:n_fragcheck\t5:s_1\t6:s_2\t7:s_3\t8:alpha\t9:h_0\t10:Q_D\n");
-  fprintf(fptempfragread,"%.15e\t%.15e\t%.15e\t%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
-	  t_tmp/2.0/M_PI,
-	  t_sys/2.0/M_PI,
+  fprintf(fptempfragread,"#1:t_tmp[yr/2pi]\t2:t_sys[yr/2pi]\t3:t_fragcheck\t4:n_fragcheck\t5:s_1\t6:s_2\t7:s_3\t8:alpha\t9:h_0\t10:Q_D\n");
+  fprintf(fptempfragread,"%.30e\t%.30e\t%.15e\t%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",
+	  t_tmp,
+	  t_sys,
 	  t_fragcheck,
 	  n_fragcheck,
 	  para.s_1,
