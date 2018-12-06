@@ -841,21 +841,6 @@ int main(int argc, char **argv){
 #endif
 			       );
 
-    //初期エネルギーをファイルへ書き出し.
-    fpEne = fopen(Ene,"w");
-    if(fpEne==NULL){
-      fprintf(fplog,"Ene 0 error\n");
-      return -1;
-    }
-    fprintf(fpEne,"#1:t[yr]\t2:E_tot\t3:relative E error\t4:relative dE_correct\t5:step\n");
-    fprintf(fpEne,"%.15e\t%.15e\t%.15e\t%.15e\t%15e\n",
-	    0.0,
-	    E_tot_0,
-	    0.0,
-	    dE_correct/fabs(E_tot_0),
-	    0.0
-	    );
-    fclose(fpEne);
 
     //角運動量の大きさ計算.
     abs_L_0 = AngularMomentum(ele,x_0,v_0
@@ -868,6 +853,26 @@ int main(int argc, char **argv){
 	    E_tot_0,
 	    abs_L_0
 	    );
+
+
+    //初期エネルギー、角運動量をファイルへ書き出し.
+    fpEne = fopen(Ene,"w");
+    if(fpEne==NULL){
+      fprintf(fplog,"Ene 0 error\n");
+      return -1;
+    }
+    fprintf(fpEne,"#1:t[yr]\t2:E_tot\t3:relative E error\t4:relative dE_correct\t5:L_tot\t6:relative L error\t7:step\n");
+    fprintf(fpEne,"%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%15e\n",
+	    0.0,
+	    E_tot_0,
+	    0.0,
+	    dE_correct/fabs(E_tot_0),
+	    abs_L_0,
+	    0.0,
+	    0.0
+	    );
+    fclose(fpEne);
+
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
     gettimeofday(&realtime_end,NULL);
@@ -1905,25 +1910,30 @@ int main(int argc, char **argv){
       E_tot += dE_correct;  //補正を常にする.
 
 
+      abs_L = AngularMomentum(ele,x_c,v_c
+#if FRAGMENTATION
+			      ,(t_sys+t_tmp),frag
+#endif
+			      );  //角運動量の大きさ計算.
+
+
       fpEne = fopen(Ene,"a");
       if(fpEne==NULL){
 	fprintf(fplog,"Ene error\n");
 	return -1;
       }
-      fprintf(fpEne,"%.15e\t%.15e\t%.15e\t%.15e\t%15e\n",
+      fprintf(fpEne,"%.15e\t%.15e\t%.15e\t%.15e\t%15e\t%15e\t%15e\n",
 	      (t_sys+t_tmp)/2.0/M_PI,
 	      E_tot,
 	      (E_tot-E_tot_0)/fabs(E_tot_0),
 	      dE_correct/fabs(E_tot_0),
+	      abs_L,
+	      (abs_L-abs_L_0)/fabs(abs_L_0),
 	      step
 	      );
       fclose(fpEne);
 
-      abs_L = AngularMomentum(ele,x_c,v_c
-#if FRAGMENTATION
-			      ,(t_sys+t_tmp),frag
-#endif
-			      );
+
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
       gettimeofday(&realtime_end,NULL);
       getrusage(RUSAGE_SELF,&usage_end);
