@@ -45,8 +45,8 @@
 #define N_p 1  //初期の原始惑星の数.
 #define ECC_RATIO 10.0  //ecc=0.01の何倍か. inc=ecc/2.
 #define STEP_INTERVAL 5.0E5  //何ステップごとに標準出力するか.
-#define BREAK_TIME 100.0  //4h = 14400sec, 12h = 43200sec.
-//#define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.
+//#define BREAK_TIME 100.0  //4h = 14400sec, 12h = 43200sec.
+#define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.
 //#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.
 
 #define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.
@@ -77,7 +77,7 @@ EXTERN FILE *fplog;
 #define COLLISION_FILE true  //衝突直前の位置速度ファイル作成.
 #define TRACERLIST_FILE true  //トレーサーリストのファイル作成.
 #define EXECUTION_TIME true  //mainの実行時間測定.
-#define EXECUTION_TIME_FUNC true  //mainかつ関数ごとの実行時間測定.
+#define EXECUTION_TIME_FUNC false  //mainかつ関数ごとの実行時間測定.
 #if EXECUTION_TIME
 #include <sys/time.h>
 #include <sys/resource.h>
