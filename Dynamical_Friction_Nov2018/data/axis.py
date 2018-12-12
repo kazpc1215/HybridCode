@@ -15,13 +15,13 @@ import numpy as np
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc3E-2_nofrag_acc/"
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc5E-2_nofrag_acc/"
 
-directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_frag_acc/"
+# directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_frag_acc/"
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc3E-2_frag_acc/"
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc5E-2_frag_acc/"
 
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc1E-2_frag_acc/"
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc3E-2_frag_acc/"
-# directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc5E-2_frag_acc/"
+directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc5E-2_frag_acc/"
 
 
 N_p = 3
@@ -34,7 +34,9 @@ if(N_p == 1):
 elif(N_p == 3):
     LINE = 34  # 1000yr
     SUBDIR_NUM = 13
-
+    # SUBDIR_NUM = 12  # Mmax5E-15_ecc1E-2_frag_acc
+    # SUBDIR_NUM = 13  # Mmax5E-15_ecc3E-2_frag_acc
+    # SUBDIR_NUM = 19  # Mmax5E-15_ecc5E-2_frag_acc
 
 time = np.empty([SUBDIR_NUM, LINE], dtype=float)  # (ファイル番号,行数)
 axis_1 = np.empty([SUBDIR_NUM, LINE], dtype=float)
@@ -125,8 +127,8 @@ elif (N_p == 3):
     rand_error[14, :] = r_h_1.std(axis=0, ddof=1)
     rand_error[15, :] = r_h_2.mean(axis=0)
     rand_error[16, :] = r_h_2.std(axis=0, ddof=1)
-    rand_error[17, :] = r_h_2.mean(axis=0)
-    rand_error[18, :] = r_h_2.std(axis=0, ddof=1)
+    rand_error[17, :] = r_h_3.mean(axis=0)
+    rand_error[18, :] = r_h_3.std(axis=0, ddof=1)
 
     print(rand_error)
 

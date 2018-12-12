@@ -15,9 +15,9 @@ import numpy as np
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc3E-2_frag_acc/"
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc5E-2_frag_acc/"
 
-directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc1E-2_frag_acc/"
+# directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc1E-2_frag_acc/"
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc3E-2_frag_acc/"
-# directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc5E-2_frag_acc/"
+directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc5E-2_frag_acc/"
 
 N_p = 3
 N_tr = 3000
@@ -28,6 +28,9 @@ if(N_p == 1):
 elif(N_p == 3):
     LINE = 34  # 1000yr
     SUBDIR_NUM = 13
+    # SUBDIR_NUM = 12  # Mmax5E-15_ecc1E-2_frag_acc
+    # SUBDIR_NUM = 13  # Mmax5E-15_ecc3E-2_frag_acc
+    # SUBDIR_NUM = 19  # Mmax5E-15_ecc5E-2_frag_acc
 
 
 time = np.empty([SUBDIR_NUM, LINE], dtype=float)  # (ファイル番号,行数)
