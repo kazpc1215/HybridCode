@@ -14,7 +14,7 @@ def Jacobi(axis):
 
 ######################################################################
 
-directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_nofrag_acc/"
+# directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_nofrag_acc/"
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc3E-2_nofrag_acc/"
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc5E-2_nofrag_acc/"
 
@@ -23,7 +23,7 @@ directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_nofrag_acc/"
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc5E-2_frag_acc/"
 
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc1E-2_frag_acc/"
-# directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc3E-2_frag_acc/"
+directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc3E-2_frag_acc/"
 # directory = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc5E-2_frag_acc/"
 
 N_p = 3
@@ -48,8 +48,8 @@ x = [i/X_MESH for i in range(int(0.5*X_MESH), int(1.5*X_MESH)+1)]
 y = [i/Y_MESH for i in range(int(0.2*Y_MESH)+1)]
 x, y = np.meshgrid(x, y)
 
-
-for subnum in range(1, SUBDIR_NUM+1):
+for subnum in range(13, 13+1):
+# for subnum in range(1, SUBDIR_NUM+1):
     subdirectory = "rand%02d/" % subnum
 
     time = np.empty([N_p+N_tr+1, LINE], dtype=float)  # (ファイル番号,行数)
@@ -135,7 +135,8 @@ for subnum in range(1, SUBDIR_NUM+1):
         plt.scatter(axis[1:N_p+1, T], ecc[1:N_p+1, T], color="r", s=50, label="Planet", zorder=4)
         plt.legend(loc="upper left", fontsize=25)
         plt.tight_layout()
-        filename = "../image/" + directory + subdirectory + "axis_ecc_T%02d.png" % step
+        # filename = "../image/" + directory + subdirectory + "axis_ecc_T%02d.png" % step
+        filename = "../image/movie/" + directory + subdirectory + "axis_ecc_T%02d.png" % step
         plt.savefig(filename)
         plt.close()
         #####
@@ -164,7 +165,8 @@ for subnum in range(1, SUBDIR_NUM+1):
         plt.scatter(axis[1:N_p+1, T], inc[1:N_p+1, T], color="r", s=50, label="Planet", zorder=3)
         plt.legend(loc="upper left", fontsize=25)
         plt.tight_layout()
-        filename = "../image/" + directory + subdirectory + "axis_inc_T%02d.png" % step
+        # filename = "../image/" + directory + subdirectory + "axis_inc_T%02d.png" % step
+        filename = "../image/movie/" + directory + subdirectory + "axis_inc_T%02d.png" % step
         plt.savefig(filename)
         plt.close()
         #####
