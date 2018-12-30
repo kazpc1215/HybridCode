@@ -429,8 +429,13 @@ int main(int argc, char **argv){
       }
     }
 
-    i_sys = index[1];  //最もt[i]+dt[i]の値が小さいi. 衝突判定のときにはi_sysからの距離を測る.
 
+    i_sys = index[1];
+    for(i=2;i<=n_i_sys;++i){
+      if(index[i] < i_sys){
+	i_sys = index[i];  //最もt[i]+dt[i]の値が小さい粒子のうち最も若いi. 衝突判定のときにはi_sysからの距離を測る.
+      }
+    }
     //fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
 
 
@@ -946,7 +951,13 @@ int main(int argc, char **argv){
       }
     }
 
-    i_sys = index[1];  //最もt[i]+dt[i]の値が小さいi. 衝突判定のときにはi_sysからの距離を測る.
+
+    i_sys = index[1];
+    for(i=2;i<=n_i_sys;++i){
+      if(index[i] < i_sys){
+	i_sys = index[i];  //最もt[i]+dt[i]の値が小さい粒子のうち最も若いi. 衝突判定のときにはi_sysからの距離を測る.
+      }
+    }
 
     //fprintf(fplog,"n_i_sys = %d\tt+dt = %.30e\n",n_i_sys,(t_tmp+t_[index[1]]+dt_[index[1]]));
 
@@ -1288,7 +1299,6 @@ int main(int argc, char **argv){
 
     step += 1.0;
 
-    i_sys = index[1];  //最もt[i]+dt[i]の値が小さいi. 衝突判定のときにはi_sysからの距離を測る.
     t_sys = t_[i_sys] + dt_[i_sys];
 
     if(t_sys + t_tmp < t_ene){
@@ -2503,6 +2513,14 @@ int main(int argc, char **argv){
 	n_i_sys++;
       }else{
 	break;
+      }
+    }
+
+
+    i_sys = index[1];
+    for(i=2;i<=n_i_sys;++i){
+      if(index[i] < i_sys){
+	i_sys = index[i];  //最もt[i]+dt[i]の値が小さい粒子のうち最も若いi. 衝突判定のときにはi_sysからの距離を測る.
       }
     }
 
