@@ -7,7 +7,8 @@ import numpy as np
 
 
 
-directory = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-2_nofrag_acc/"
+# directory = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-2_nofrag_acc/"
+directory = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-1_nofrag_acc/"
 
 N_p = 1
 N_tr = 100

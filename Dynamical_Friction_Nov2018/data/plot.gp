@@ -5,6 +5,50 @@ set term aqua dashed font "Times-Roman,30" enhanced
 
 PAUSE = -1
 
+
+set bmargin 2
+set lmargin 7
+set xtics offset 0,0.3
+set ytics offset 0.5,0
+set xl "time [yr]" offset 0,1
+set format x "10^{%L}"
+
+set log x
+
+set bar 0.3
+
+
+
+# RUN = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_nofrag_acc/"
+# RUN = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc3E-2_nofrag_acc/"
+# RUN = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc5E-2_nofrag_acc/"
+
+# RUN = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-2_frag_acc/"
+# RUN = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc3E-2_frag_acc/"
+# RUN = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-15_ecc5E-2_frag_acc/"
+
+#RUN = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc1E-2_frag_acc/"
+# RUN = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc3E-2_frag_acc/"
+ RUN = "Ntr3E3_t1E3_dtlog_Mtot3E-5_Mmax5E-18_ecc5E-2_frag_acc/"
+
+
+set xl "time [yr]" offset 0,1
+set yl "N" offset 3,0
+set xr [1E0:1E3+1]
+set yr [0:4000]
+
+set key right top box width -1 spacing 1.0 maxrows 2 font "Times-Roman,20"
+p sprintf("%stracerlistnumber_all.dat",RUN) u 1:($2 + $4 + $6):(sqrt(($3)**2 + ($5)**2 + ($7)**2)) w yerrorlines lw 2 lt -1 ps 0 t "total",\
+"" u 1:2:3 w yerrorlines lw 2 lt 1 ps 0 t "inner",\
+"" u 1:4:5 w yerrorlines lw 2 lt 2 ps 0 t "center",\
+"" u 1:6:7 w yerrorlines lw 2 lt 3 ps 0 t "outer"
+
+pause
+
+########################################
+
+
+
 set bmargin 2
 set lmargin 6
 set xtics offset 0,0.3
@@ -25,7 +69,6 @@ ECC = 0.05
 
 
 #########################################
-
 
 
 if (ECC == 0.01) {

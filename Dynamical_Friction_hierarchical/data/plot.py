@@ -14,7 +14,8 @@ def Jacobi(axis):
 
 ######################################################################
 
-directory = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-2_nofrag_acc/"
+# directory = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-2_nofrag_acc/"
+directory = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-1_nofrag_acc/"
 
 N_p = 1
 N_tr = 100
@@ -22,7 +23,8 @@ N_tr = 100
 
 if(N_p == 1):
     # LINE = 42  # 10000yr
-    LINE = 314  # 1E8yr
+    # LINE = 314  # 1E8yr
+    LINE = 283  # 5.62E7yr
     # SUBDIR_NUM = 40
     SUBDIR_NUM = 1
 elif(N_p == 3):
@@ -35,8 +37,10 @@ elif(N_p == 3):
 X_MESH = 2000
 Y_MESH = 5000
 
-x = [i/X_MESH for i in range(int(0.5*X_MESH), int(1.5*X_MESH)+1)]
-y = [i/Y_MESH for i in range(int(0.3*Y_MESH)+1)]
+# x = [i/X_MESH for i in range(int(0.5*X_MESH), int(1.5*X_MESH)+1)]
+# y = [i/Y_MESH for i in range(int(0.3*Y_MESH)+1)]
+x = [i/X_MESH for i in range(1, int(2.0*X_MESH)+1)]
+y = [i/Y_MESH for i in range(1, int(0.8*Y_MESH)+1)]
 x, y = np.meshgrid(x, y)
 
 # for subnum in range(13, 13+1):
@@ -105,13 +109,14 @@ for subnum in range(1, SUBDIR_NUM+1):
         if(N_p == 1):
             # plt.title(r"$N_{\rm tr}=1000,M_{\rm tot}=10 {\rm M_{\oplus}},{\rm time}: %.3e {\rm yr}$" % time[1, T], fontsize=18)
             # plt.xlim([0.8, 1.2])
-            plt.xlim([0.5, 1.5])
+            # plt.xlim([0.5, 1.5])
+            plt.xlim([0.0, 2.0])
         elif(N_p == 3):
             # plt.title(r"$N_{\rm tr}=3000,M_{\rm tot}=30 {\rm M_{\oplus}},{\rm time}: %.3e {\rm yr}$" % time[1, T], fontsize=18)
             plt.xlim([0.75, 1.3])
 
-        # plt.ylim([0, 0.2])
-        plt.ylim([0, 0.3])
+        plt.ylim([0, 0.8])
+        # plt.ylim([0, 0.3])
         plt.xlabel('semi-major axis [AU]', fontsize=30)
         plt.ylabel('ecc', fontsize=30)
 
@@ -140,13 +145,14 @@ for subnum in range(1, SUBDIR_NUM+1):
             # plt.title(r"$N_{\rm tr}=1000,M_{\rm tot}=10 {\rm M_{\oplus}},{\rm time}: %.3e {\rm yr}$" % time[1, T], fontsize=18)
             plt.title(r"${\rm time}: %.3e {\rm yr}$" % time[1, T], fontsize=25)
             # plt.xlim([0.8, 1.2])
-            plt.xlim([0.5, 1.5])
+            # plt.xlim([0.5, 1.5])
+            plt.xlim([0.0, 2.0])
         elif(N_p == 3):
             # plt.title(r"$N_{\rm tr}=3000,M_{\rm tot}=30 {\rm M_{\oplus}},{\rm time}: %.3e {\rm yr}$" % time[1, T], fontsize=18)
             plt.xlim([0.75, 1.3])
 
-        # plt.ylim([0, 0.1])
-        plt.ylim([0, 0.16])
+        plt.ylim([0, 0.5])
+        # plt.ylim([0, 0.16])
         plt.xlabel('semi-major axis [AU]', fontsize=30)
         plt.ylabel('inc [rad]', fontsize=30)
 

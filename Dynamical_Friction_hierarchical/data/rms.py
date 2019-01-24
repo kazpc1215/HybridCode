@@ -11,14 +11,16 @@ import numpy as np
 
 
 ######################################################################
-directory = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-2_nofrag_acc/"
+# directory = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-2_nofrag_acc/"
+directory = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-1_nofrag_acc/"
 
 N_p = 1
 N_tr = 100
 
 if(N_p == 1):
     # LINE = 42  # 10000yr
-    LINE = 314  # 1E8yr
+    # LINE = 314  # 1E8yr
+    LINE = 283  # 5.62E7yr
     # SUBDIR_NUM = 40
     SUBDIR_NUM = 1
 elif(N_p == 3):
