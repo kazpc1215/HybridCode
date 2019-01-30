@@ -27,8 +27,14 @@
 #endif
 
 
-#define DIRECTORY ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2/  //ディレクトリ.
+#define DIRECTORY ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_Collision001/  //ディレクトリ.
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
+
+
+#define COLLISION_TEMPFILE_NAME Collision_temp_001.dat
+#define COLLISION_FILE_NAME Collision_001.dat
+#define INITIALIZATION false
+
 
 #define STR_(str) #str
 #define STR(str) STR_(str)
@@ -41,7 +47,7 @@
 
 
 //////////////////////////////////////////////////
-#define N_tr 0  //初期のトレーサーの数.
+#define N_tr 300  //初期のトレーサーの数.
 #define N_p 25  //初期の原始惑星の数.
 #define ECC_RATIO 1.0  //ecc=0.01の何倍か. inc=ecc/2.
 #define STEP_INTERVAL 5.0E6  //何ステップごとに標準出力するか.
@@ -50,9 +56,9 @@
 //#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.
 #define BREAK_TIME 864000.0  //10days = 864000sec.
 
-#define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.
+//#define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.
 
-#define FRAGMENTATION false  //破壊 近傍粒子探索と質量フラックス計算.
+#define FRAGMENTATION true  //破壊 近傍粒子探索と質量フラックス計算.
 #define COLLISION true  //衝突.
 #if COLLISION
 #define COALESCENCE true  //衝突後に合体.
@@ -61,10 +67,11 @@
 #endif
 
 
-#define PLANET_INNER_AXIS 0.4  //[AU].
+
+//#define PLANET_INNER_AXIS 0.4  //[AU].
 #define DELTA_HILL 10.0  //相互ヒル半径の何倍か.
-#define SIGMA_SOLID 7.1  //[g/cm^2]. //固体面密度（MMSN->7.1）. 1.5MMSN=10.65, 2MMSN=14.2, 2.5MMSN=17.75, 3MMSN=21.3.
-#define ALPHA_SOLID 1.5  //面密度分布での軌道長半径のべき（MMSN->1.5）
+//#define SIGMA_SOLID 7.1  //[g/cm^2]. //固体面密度（MMSN->7.1）. 1.5MMSN=10.65, 2MMSN=14.2, 2.5MMSN=17.75, 3MMSN=21.3.
+//#define ALPHA_SOLID 1.5  //面密度分布での軌道長半径のべき（MMSN->1.5）
 
 
 
