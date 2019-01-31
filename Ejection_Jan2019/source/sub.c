@@ -98,10 +98,20 @@ double MutualHillRadius_to_SemimajorAxis(double ratio){
 double MutualHillRadius_to_SemimajorAxis(double m_1,double m_2,double ratio){
   return (1.0/ratio + 0.5*cbrt((m_1+m_2)/3.0))/(1.0/ratio - 0.5*cbrt((m_1+m_2)/3.0));
 }
-*/
+
 
 double IsolationMass(double axis,double ratio,double sigma_0,double alpha){
   return 4.85E-7*pow(ratio/10.,1.5)*pow(sigma_0/10.,1.5)*pow(axis,1.5*(2.-alpha));
+}
+*/
+
+
+double Escape_Velocity(double mass_p, double r){
+#ifndef G
+  return sqrt(2.0 * mass_p / r);
+#else
+  return sqrt(2.0 * G * mass_p / r);
+#endif
 }
 
 

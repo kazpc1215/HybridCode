@@ -149,103 +149,115 @@ void InitialOrbitalElements_Tracer(int i, double x_0[][4], struct orbital_elemen
 
 
 #if EJECTION
-void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[], double r_dot_v[], double r_0[], CONST struct orbital_elements *ele_p){
+void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[], double r_dot_v[], double r_0[], struct orbital_elements *ele_p, double x_col, double y_col, double z_col,double mass_p, double r_h_p){
   static double x_eject[N_p+N_tr+1][4]={};
   static double v_eject[N_p+N_tr+1][4]={};
   int i,k;
-  double tmp_x=0.0, tmp_y=0.0, tmp_r=0.0, tmp_v=0.0, tmp_theta=0.0, tmp_rand=0.0;
-#ifndef G
-  double ejection_velocity = sqrt(2.0 * ((ele_p+PLANET_OF_EJECTION)->mass) / ((ele_p+PLANET_OF_EJECTION)->radius));
-#else
-  double ejection_velocity = sqrt(2.0 * G * ((ele_p+PLANET_OF_EJECTION)->mass) / ((ele_p+PLANET_OF_EJECTION)->radius));
-#endif
+  double tmp_r=0.0, tmp_v=0.0, tmp_theta=0.0, tmp_phi=0.0, tmp_psi=0.0;
+
+  double x_G = x_0[0][1];  //衝突した2天体の重心.
+  double y_G = x_0[0][2];
+  double z_G = x_0[0][3];
+  double vx_G = v_0[0][1];
+  double vy_G = v_0[0][2];
+  double vz_G = v_0[0][3];
+
 
   for(i=global_n_p+1;i<=global_n;++i){
 
     sprintf((ele_p+i)->name,"tracer%06d",i-global_n_p);
-    (ele_p+i)->mass = M_TOT / (double)N_tr;
+    (ele_p+i)->mass = 0.1 * mass_p / (double)N_tr;  //惑星質量の10%の破片.
     (ele_p+i)->orinum = i;
 
 
-    //coneを作る.
+    //x軸を対象軸とするdiskを作る.
     //位置.
-    tmp_r = ((ele_p+PLANET_OF_EJECTION)->radius) * (1.0 + 0.1 * (int)((double)(i - global_n_p - 1) / 100.0));
-    tmp_rand = 2.0 * M_PI / 100.0 * (double)(i - global_n_p - 1);
-    x_eject[i][1] = tmp_r * cos(EJECTION_CONE_ANGLE);  //破片のx座標.
-    x_eject[i][2] = tmp_r * sin(EJECTION_CONE_ANGLE) * cos(tmp_rand);  //破片のy座標.
-    x_eject[i][3] = tmp_r * sin(EJECTION_CONE_ANGLE) * sin(tmp_rand);  //破片のz座標.
+    tmp_r = (0.1 + 0.15 * rand_func()) * r_h_p;  //惑星のヒル半径の[0.1:0.25]倍の距離.
+    tmp_theta = - M_PI / 6.0 + M_PI / 3.0 * rand_func();  //[-pi/6:pi/6].
+    tmp_phi = 2.0 * M_PI * rand_func();  //[0:2pi].
+    x_eject[i][1] = tmp_r * sin(tmp_theta);  //破片のx座標.
+    x_eject[i][2] = tmp_r * cos(tmp_theta) * cos(tmp_phi);  //破片のy座標.
+    x_eject[i][3] = tmp_r * cos(tmp_theta) * sin(tmp_phi);  //破片のz座標.
     //速度.
-    tmp_v = ejection_velocity * (0.9 + 0.1 * tmp_r / ((ele_p+PLANET_OF_EJECTION)->radius));
-    tmp_theta = EJECTION_CONE_ANGLE * tmp_r / ((ele_p+PLANET_OF_EJECTION)->radius);
-    v_eject[i][1] = tmp_v * cos(tmp_theta);  //破片の速度x成分.
-    v_eject[i][2] = tmp_v * sin(tmp_theta) * cos(tmp_rand);  //破片の速度y成分.
-    v_eject[i][3] = tmp_v * sin(tmp_theta) * sin(tmp_rand);  //破片の速度z成分.
+    tmp_v = 1.1 * Escape_Velocity(mass_p,tmp_r);  //脱出速度の1.1倍.
+    v_eject[i][1] = tmp_v * sin(tmp_theta);  //破片の速度x成分.
+    v_eject[i][2] = tmp_v * cos(tmp_theta) * cos(tmp_phi);  //破片の速度y成分.
+    v_eject[i][3] = tmp_v * cos(tmp_theta) * sin(tmp_phi);  //破片の速度z成分.
+
+
+    //printf("%.15e\t%.15e\t%.15e\n",x_eject[i][1],x_eject[i][2],x_eject[i][3]);
 
 
 
-    //z軸周りに回転.
-    //位置. 回転させないとouter.
-    //Rotation_3D_zaxis(i,x_eject,M_PI);  //180度回転. inner.
-    //Rotation_3D_zaxis(i,x_eject,M_PI/2.0);  //90度回転. front.
-    Rotation_3D_zaxis(i,x_eject,-M_PI/2.0);  //-90度回転. back.
-    //速度. 回転させないとouter.
-    //Rotation_3D_zaxis(i,v_eject,M_PI);  //180度回転. inner.
-    //Rotation_3D_zaxis(i,v_eject,M_PI/2.0);  //90度回転. front.
-    Rotation_3D_zaxis(i,v_eject,-M_PI/2.0);  //-90度回転. back.
+    //////////////////ここまでで、惑星中心、x軸はi_colとj_colを結ぶ直線、yz平面は重心速度ベクトルが乗っている平面/////////////////////
+
+    //i_colとj_colを結ぶ直線l
+    //惑星中心に平行移動した座標(x',y',z')
+    //直線lをx'y'平面に射影した直線l'
+
+    tmp_phi = atan2(y_col-y_G,x_col-x_G);  //直線l'とx'軸のなす角.
+
+    if(tmp_phi<0.0){
+      tmp_phi += 2.0 * M_PI;
+    }
+
+    tmp_theta = atan2(sqrt((x_col-x_G)*(x_col-x_G) + (y_col-y_G)*(y_col-y_G)),(z_col-z_G));  //直線lとz'軸のなす角.
+
+    if(tmp_theta<0.0){
+      tmp_theta += 2.0 * M_PI;
+    }
+
+    //座標(x',y',z')をz'軸周りにtmp_phiだけ回転した座標(x'',y'',z'').
+    //座標(x'',y'',z'')をy''軸周りにtmp_thetaだけ回転した座標(x''',y''',z''').
+    //座標(x''',y''',z''')における重心速度ベクトルv_G'''とy'''z'''平面のなす角tmp_psi.
+
+    //tmp_psiを計算する.
+
+
+    double tmp_vx_G=0.0,tmp_vy_G=0.0;
+
+    tmp_vx_G = vx_G * cos(tmp_theta) * cos(tmp_phi) + vy_G * cos(tmp_theta) * sin(tmp_phi) - vz_G * sin(tmp_theta);
+    tmp_vy_G = - vx_G * sin(tmp_phi) + vy_G * cos(tmp_phi);
+
+    tmp_psi = atan2(tmp_vx_G,tmp_vy_G);
+
+    if(tmp_psi<0.0){
+      tmp_psi += 2.0 * M_PI;
+    }
+
+    //printf("%.15e\t%.15e\t%.15e\n",x_eject[i][1],x_eject[i][2],x_eject[i][3]);
 
 
 
-    //fprintf(fplog,"%s\tx_eject[%d][1]=%f\tx_eject[%d][2]=%f\tx_eject[%d][3]=%f\n",ele[i].name,i,x_eject[i][1],i,x_eject[i][2],i,x_eject[i][3]);
-    //fprintf(fplog,"%s\tv_eject[%d][1]=%f\tv_eject[%d][2]=%f\tv_eject[%d][3]=%f\n",ele[i].name,i,v_eject[i][1],i,v_eject[i][2],i,v_eject[i][3]);
+    //x_eject, v_ejectを惑星中心に平行移動した座標(x',y',z')にする.
+
+    //z軸周りに-tmp_psiだけ回転.
+    Rotation_3D_zaxis(i,x_eject,-tmp_psi);
+    Rotation_3D_zaxis(i,v_eject,-tmp_psi);
+    //printf("%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",x_eject[i][1],x_eject[i][2],x_eject[i][3],v_eject[i][1],v_eject[i][2],v_eject[i][3]);
+
+    //y軸周りにtmp_thetaだけ回転.
+    Rotation_3D_yaxis(i,x_eject,tmp_theta);
+    Rotation_3D_yaxis(i,v_eject,tmp_theta);
+    //printf("%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",x_eject[i][1],x_eject[i][2],x_eject[i][3],v_eject[i][1],v_eject[i][2],v_eject[i][3]);
+
+    //z軸周りにtmp_phiだけ回転.
+    Rotation_3D_zaxis(i,x_eject,tmp_phi);
+    Rotation_3D_zaxis(i,v_eject,tmp_phi);
+    //printf("%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",x_eject[i][1],x_eject[i][2],x_eject[i][3],v_eject[i][1],v_eject[i][2],v_eject[i][3]);
 
 
-    //////////////////ここまでで、惑星中心、xyは軌道面上、x軸は太陽から惑星の方向/////////////////////
-
-
-    //x軸が惑星の近日点を向くようにz軸周りに回転.
-    //位置.
-    tmp_x = x_eject[i][1];
-    tmp_y = x_eject[i][2];
-
-    x_eject[i][1] = cos((((ele_p+PLANET_OF_EJECTION)->u) - ((ele_p+PLANET_OF_EJECTION)->ecc)) / (1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * cos(((ele_p+PLANET_OF_EJECTION)->u)))) * tmp_x - sin((sqrt(1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * ((ele_p+PLANET_OF_EJECTION)->ecc)) * sin(((ele_p+PLANET_OF_EJECTION)->u))) / (1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * cos(((ele_p+PLANET_OF_EJECTION)->u)))) * tmp_y;
-
-    x_eject[i][2] = sin((sqrt(1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * ((ele_p+PLANET_OF_EJECTION)->ecc)) * sin(((ele_p+PLANET_OF_EJECTION)->u))) / (1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * cos(((ele_p+PLANET_OF_EJECTION)->u)))) * tmp_x + cos((((ele_p+PLANET_OF_EJECTION)->u) - ((ele_p+PLANET_OF_EJECTION)->ecc)) / (1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * cos(((ele_p+PLANET_OF_EJECTION)->u)))) * tmp_y;
-
-    //速度.
-    tmp_x = v_eject[i][1];
-    tmp_y = v_eject[i][2];
-
-    v_eject[i][1] = cos((((ele_p+PLANET_OF_EJECTION)->u) - ((ele_p+PLANET_OF_EJECTION)->ecc)) / (1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * cos(((ele_p+PLANET_OF_EJECTION)->u)))) * tmp_x - sin((sqrt(1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * ((ele_p+PLANET_OF_EJECTION)->ecc)) * sin(((ele_p+PLANET_OF_EJECTION)->u))) / (1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * cos(((ele_p+PLANET_OF_EJECTION)->u)))) * tmp_y;
-
-    v_eject[i][2] = sin((sqrt(1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * ((ele_p+PLANET_OF_EJECTION)->ecc)) * sin(((ele_p+PLANET_OF_EJECTION)->u))) / (1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * cos(((ele_p+PLANET_OF_EJECTION)->u)))) * tmp_x + cos((((ele_p+PLANET_OF_EJECTION)->u) - ((ele_p+PLANET_OF_EJECTION)->ecc)) / (1.0 - ((ele_p+PLANET_OF_EJECTION)->ecc) * cos(((ele_p+PLANET_OF_EJECTION)->u)))) * tmp_y;
-
-
-    //////////////////ここまでで、惑星中心、xyは軌道面上、x軸は惑星の近日点の方向/////////////////////
-
-
-    //基準系と平行になるようにオイラー回転.
-    //位置.
-    Rotation_3D_zaxis(i,x_eject,((ele_p+PLANET_OF_EJECTION)->Omega));
-    Rotation_3D_xaxis(i,x_eject,((ele_p+PLANET_OF_EJECTION)->inc));
-    Rotation_3D_zaxis(i,x_eject,((ele_p+PLANET_OF_EJECTION)->omega));
-
-    //速度.
-    Rotation_3D_zaxis(i,v_eject,((ele_p+PLANET_OF_EJECTION)->Omega));
-    Rotation_3D_xaxis(i,v_eject,((ele_p+PLANET_OF_EJECTION)->inc));
-    Rotation_3D_zaxis(i,v_eject,((ele_p+PLANET_OF_EJECTION)->omega));
-
-
-    //////////////////ここまでで、惑星中心に平行移動した基準系/////////////////////
+    //////////////////ここまで、惑星中心に平行移動した座標(x',y',z')/////////////////////
 
 
     //太陽中心の基準系に平行移動.
     for(k=1;k<=3;++k){
-      x_0[i][k] = x_0[PLANET_OF_EJECTION][k] + x_eject[i][k];
-      v_0[i][k] = v_0[PLANET_OF_EJECTION][k] + v_eject[i][k];
+      x_0[i][k] = x_0[0][k] + x_eject[i][k];
+      v_0[i][k] = v_0[0][k] + v_eject[i][k];
     }
 
 
-    //////////////////ここまでで、基準系/////////////////////
+    //////////////////ここまで、基準系/////////////////////
 
 
     r_0[i] = RadiusFromCenter(i,x_0);  //中心星からの距離.

@@ -114,8 +114,8 @@ int main(int argc, char **argv){
   char posimassfile[200]={};
   FILE *fptempfragread;
   char tempfragreadfile[200]={};
-  FILE *fptaudep;
-  char taudepfile[200]={};
+  //FILE *fptaudep;
+  //char taudepfile[200]={};
 #endif  /*FRAGMENTATION*/
 
 
@@ -243,7 +243,7 @@ int main(int argc, char **argv){
 #endif
 	  );
 
-
+  /*
   sprintf(taudepfile,"%sTau_dep.dat",
 #ifdef SUBDIRECTORY
 	  dirname
@@ -251,7 +251,7 @@ int main(int argc, char **argv){
 	  STR(DIRECTORY)
 #endif
 	  );
-
+  */
 #endif  /*FRAGMENTATION*/
 
 
@@ -654,13 +654,8 @@ int main(int argc, char **argv){
 
     ///////////////////////////////ここまで初期処理//////////////////////////////////
 
-    sprintf(collisionfile,"%s%s",
-#ifdef SUBDIRECTORY
-	    dirname
-#else
-	    STR(DIRECTORY)
-#endif
-	    ,STR(COLLISION_TEMPFILE_NAME)
+    sprintf(collisionfile,"%s",
+	    STR(COLLISION_TEMPFILE_NAME)
 	    );
 
     if(stat(collisionfile,&st)==0){  //読み込むファイルの存在確認.
@@ -675,22 +670,16 @@ int main(int argc, char **argv){
 
       fgets(buf,sizeof(buf),fptempread);  //読み飛ばし.
       fgets(buf,sizeof(buf),fptempread);
-      sscanf(buf,"%lf\t%lf\t%lf\t%d\t%d\t%d\t%d\t%lf\t%lf\t%lf\t%lf\n",
-	     &t_tmp,
-	     &t_sys,
-	     &t_ene,
+      sscanf(buf,"%*f\t%*f\t%*f\t%d\t%d\t%*d\t%*d\t%*f\t%lf\t%lf\t%lf\n",
 	     &global_n_p,
 	     &global_n,
-	     &i_sys,
-	     &n_col,
-	     &step,
 	     &E_tot_0,
 	     &abs_L_0,
 	     &dE_correct
 	     );
 
       /**************************************************/
-      fprintf(fplog,"\t(E_tot_0 = %.15e\tabs_L_0 = %.15e)\n",
+      fprintf(fplog,"------\n\t(E_tot_0 = %.15e\tabs_L_0 = %.15e)\n------\n",
 	      E_tot_0,
 	      abs_L_0
 	      );
@@ -703,7 +692,7 @@ int main(int argc, char **argv){
       for(i=1;i<=global_n;++i){
 	if(fgets(buf,sizeof(buf),fptempread)!=NULL){
 
-	  sscanf(buf,"%s\t%lf\t%lf\t%lf\t%*f\t%lf\t%lf\t%lf\t%*f\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n",
+	  sscanf(buf,"%s\t%lf\t%lf\t%lf\t%*f\t%lf\t%lf\t%lf\t%*f\t%*f\t%*f\t%*f\t%*f\t%*f\t%*f\t%*f\t%*f\t%lf\n",
 		 ele[i].name,
 		 &x_0[i][1],
 		 &x_0[i][2],
@@ -711,14 +700,6 @@ int main(int argc, char **argv){
 		 &v_0[i][1],
 		 &v_0[i][2],
 		 &v_0[i][3],
-		 &a_0[i][1],
-		 &a_0[i][2],
-		 &a_0[i][3],
-		 &adot_0[i][1],
-		 &adot_0[i][2],
-		 &adot_0[i][3],
-		 &t_[i],
-		 &dt_[i],
 		 &ele[i].mass
 		 );
 
@@ -751,19 +732,15 @@ int main(int argc, char **argv){
     global_n += N_tr;  //トレーサーをN_tr個追加.
 
 
-
 #if N_tr != 0
 
 #if EJECTION
 
-    sprintf(collisionfile,"%s%s",
-#ifdef SUBDIRECTORY
-	    dirname
-#else
-	    STR(DIRECTORY)
-#endif
-	    ,STR(COLLISION_FILE_NAME)
+    sprintf(collisionfile,"%s",
+	    STR(COLLISION_FILE_NAME)
 	    );
+
+    double x_col=0.0,y_col=0.0,z_col=0.0,vx_col=0.0,vy_col=0.0,vz_col=0.0;
 
     if(stat(collisionfile,&st)==0){  //読み込むファイルの存在確認.
 
@@ -790,17 +767,26 @@ int main(int argc, char **argv){
       fgets(buf,sizeof(buf),fptempread);  //読み飛ばし.
       fgets(buf,sizeof(buf),fptempread);  //読み飛ばし.
       fgets(buf,sizeof(buf),fptempread);  //読み飛ばし.
-      fgets(buf,sizeof(buf),fptempread);  //i_colもあえて読み飛ばし.
       fgets(buf,sizeof(buf),fptempread);
-      sscanf(buf,"%*f\t%*d\t%lf\t%lf\t%lf\t%*f\t%*f\t%lf\t%lf\t%lf\t%*f\t%lf\t%lf\t%lf\n",
+      sscanf(buf,"%*f\t%d\t%lf\t%lf\t%lf\t%*f\t%*f\t%lf\t%lf\t%lf\t%*f\t%*f\t%*f\t%*f\n",
+	     &i_col,
 	     &x_col,
 	     &y_col,
 	     &z_col,
 	     &vx_col,
 	     &vy_col,
-	     &vz_col,
-	     
-	     );  //j_colの位置・速度.
+	     &vz_col
+	     );  //i_colの位置・速度.
+
+      //j_colは読まない.
+
+      Calculate_OrbitalElements(i_col,x_0,v_0,ele,r_0,v2_0,r_dot_v
+#if FRAGMENTATION
+				,(t_sys+t_tmp),frag
+#endif
+				);  //i_colの軌道要素計算.
+
+
 
     }else{
 
@@ -809,9 +795,48 @@ int main(int argc, char **argv){
 
     }  //読み込むファイル存在確認終わり.
 
+    /*
+    printf("%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",i_col,x_0[0][1],x_0[0][2],x_0[0][3],v_0[0][1],v_0[0][2],v_0[0][3]);
+    printf("%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",i_col,x_0[i_col][1],x_0[i_col][2],x_0[i_col][3],v_0[i_col][1],v_0[i_col][2],v_0[i_col][3]);
+    printf("%d\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",i_col,x_col,y_col,z_col,vx_col,vy_col,vz_col);
+    */
 
-    EjectionOfTracerFromPlanet(x_0,v_0,v2_0,r_dot_v,r_0,ele);
+
+    EjectionOfTracerFromPlanet(x_0,v_0,v2_0,r_dot_v,r_0,ele,x_col,y_col,z_col,ele[i_col].mass,ele[i_col].r_h);
+
+    i_col = 0;  //0に戻しておく.
+
+
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+    gettimeofday(&realtime_start,NULL);
+    getrusage(RUSAGE_SELF,&usage_start);
 #endif
+    for(i=1;i<=global_n;++i){
+      Calculate_OrbitalElements(i,x_0,v_0,ele,r_0,v2_0,r_dot_v
+#if FRAGMENTATION
+				,(t_sys+t_tmp),frag
+#endif
+				);  //軌道要素計算.
+    }
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+    gettimeofday(&realtime_end,NULL);
+    getrusage(RUSAGE_SELF,&usage_end);
+    exetime.Orbital_Elements[0] += Cal_time(realtime_start,realtime_end);
+    exetime.Orbital_Elements[1] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
+    exetime.Orbital_Elements[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
+#endif
+
+
+#endif  /*EJECTION*/
+
+
+    /*
+    for(i=1;i<=global_n;++i){
+      printf("%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",x_0[i][1],x_0[i][2],x_0[i][3],v_0[i][1],v_0[i][2],v_0[i][3]);
+    }
+    */
+
 
 
 #if ORBITING_SMALL_PARTICLE
@@ -1207,6 +1232,7 @@ int main(int argc, char **argv){
 
       frag[i].fragtimes = 0;
       frag[i].t_frag = 0.0;
+
       NeighborSearch(i,(t_sys+t_tmp),ele,frag,x_0);  //近傍(扇形領域に入った)粒子探索.
       MassFlux(i,ele,frag,&para);  //質量フラックス計算.
       frag[i].dt_frag = Depletion_Time(i,frag);  //統計的計算のタイムスケールのXI倍. 統計的計算のタイミングの目安.
@@ -1242,7 +1268,7 @@ int main(int argc, char **argv){
     sigma_outer = mass_tot_outer / (M_PI * (ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[3].axis * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) - ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL) * ele[3].axis / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL)));
 
 
-
+    /*
     //統計的計算で破壊タイムスケールの見積もり.
 #if !defined(G) && !defined(M_0)
     v_ave = sqrt(2.0 * (ECC_RMS * ECC_RMS + INC_RMS * INC_RMS) / PLANET_AXIS);
@@ -1263,7 +1289,7 @@ int main(int argc, char **argv){
     fprintf(fptaudep,"#initial mass depletion timescale [yr]\n");
     fprintf(fptaudep,"%.15e\n",tau_dep_center/2.0/M_PI);
     fclose(fptaudep);
-
+    */
 
     fpfrag = fopen(fragfile,"w");
     if(fpfrag==NULL){
@@ -1289,7 +1315,7 @@ int main(int argc, char **argv){
     fclose(fpfrag);
 
 
-    sprintf(posimassfile,"%sPosi_Mass_%02d.dat",
+    sprintf(posimassfile,"%sPosi_Mass_%03d.dat",
 #ifdef SUBDIRECTORY
 	    dirname
 #else
@@ -1470,6 +1496,7 @@ int main(int argc, char **argv){
 
 #if COLLISION
 	/////////////////////////衝突した場合/////////////////////////
+
 
 	n_col++;
 
@@ -1843,6 +1870,15 @@ int main(int argc, char **argv){
 	}
 	fclose(fpcollision);
 #endif  /*COLLISION_FILE*/
+
+
+	/////////
+	if(i_col <= global_n_p && j_col <= global_n_p){  //惑星同士が衝突した場合.
+	  fprintf(fplog,"i_col = %d\tj_col = %d\tGiant impact occured. Ending this program.\n",i_col,j_col);
+	  break;  //time loopから抜ける.
+	}
+	/////////
+
 
 	//////////////////////////////////////////////////////////////
 #endif  /*COLLISION*/
@@ -2507,7 +2543,7 @@ int main(int argc, char **argv){
       fclose(fpfrag);
 
 
-      sprintf(posimassfile,"%sPosi_Mass_%02d.dat",
+      sprintf(posimassfile,"%sPosi_Mass_%03d.dat",
 #ifdef SUBDIRECTORY
 	      dirname
 #else

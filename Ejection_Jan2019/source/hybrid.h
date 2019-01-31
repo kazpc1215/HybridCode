@@ -27,13 +27,14 @@
 #endif
 
 
-#define DIRECTORY ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_Collision001/  //ディレクトリ.
+#define DIRECTORY ../data/N25_t1E5_dtlog_R0.1to0.25_Theta30_EscVelo1.1_Col001/  //ディレクトリ.
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
 
 
-#define COLLISION_TEMPFILE_NAME Collision_temp_001.dat
-#define COLLISION_FILE_NAME Collision_001.dat
-#define INITIALIZATION false
+#define COLLISION_TEMPFILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_temp_001.dat
+#define COLLISION_FILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_001.dat
+
+#define INITIALIZATION false  //COLLISION_TEMPFILE_NAMEを惑星の初期条件とするため.
 
 
 #define STR_(str) #str
@@ -50,7 +51,7 @@
 #define N_tr 300  //初期のトレーサーの数.
 #define N_p 25  //初期の原始惑星の数.
 #define ECC_RATIO 1.0  //ecc=0.01の何倍か. inc=ecc/2.
-#define STEP_INTERVAL 5.0E6  //何ステップごとに標準出力するか.
+#define STEP_INTERVAL 1.0E4  //何ステップごとに標準出力するか.
 //#define BREAK_TIME 100.0  //4h = 14400sec, 12h = 43200sec.
 //#define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.
 //#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.
@@ -104,7 +105,7 @@ EXTERN FILE *fplog;
 #define INTERACTION_PLANET_TRACER true  //惑星とトレーサー間の相互作用.
 #define INTERACTION_TEST_PARTICLE false  //トレーサーをテスト粒子として扱う.
 #define INDIRECT_TERM true  //中心星が動く効果を補正.
-#define EJECTION false  //初期に破片（トレーサー）を放出する.
+#define EJECTION true  //初期に破片（トレーサー）を放出する.
 #define ORBITING_SMALL_PARTICLE false  //初期に微惑星をケプラー運動させておく.
 #define ELIMINATE_PARTICLE false  //太陽に飲みこまれるか系外へ出て行くかで粒子を消す.
 //////////////////////////////////////////////////
@@ -150,7 +151,7 @@ Mean Longitude (deg)               100.46435
 
 #if N_tr != 0
 //////////////////////////////////////////////////
-#define M_TOT (3.0E-7*N_p)  //0.1M_E * N_p  //トレーサーの総質量.
+//#define M_TOT (3.0E-7*N_p)  //0.1M_E * N_p  //トレーサーの総質量.
 
 #if EJECTION
 #define PLANET_OF_EJECTION 1
@@ -171,14 +172,15 @@ Mean Longitude (deg)               100.46435
 #define DELTA_R 0.01  //Hill 近傍粒子探索用.
 #define DELTA_THETA 0.125*M_PI  //近傍粒子探索用.
 //#define DELTA_THETA 1.0*M_PI  //近傍粒子探索用.
-#define NEIGHBOR_MAX 200  //近傍粒子リスト配列の最大値.
+#define NEIGHBOR_MAX (N_tr)  //近傍粒子リスト配列の最大値.
 #define RHO 3.0  // [g/cc]  微惑星の物質密度.
 #define EPSILON_FRAG 0.2
 #define B_FRAG (5.0/3.0)
 #define Q_0_FRAG 9.5E8 // [erg/g]  Q_D = Q_0*(rho/3[g/cc])^0.55*(m/10^21[g])^p
 #define P_FRAG 0.453
 #define XI 0.01 //面密度減少タイムスケールを自身のXI倍間隔で更新する.
-#define M_MAX 5.00E-15  //最大微惑星質量. 1E19 g ~10kmサイズ.
+#define M_MAX 5.00E-9  //最大微惑星質量. 1E25 g ~1000kmサイズ.
+//#define M_MAX 5.00E-15  //最大微惑星質量. 1E19 g ~10kmサイズ.
 //#define M_MAX 5.00E-18  //最大微惑星質量. 1E16 g ~1kmサイズ.
 #endif  /*FRAGMENTATION*/
 //////////////////////////////////////////////////
@@ -186,7 +188,7 @@ Mean Longitude (deg)               100.46435
 
 
 //////////////////////////////////////////////////
-#define T_MAX (2.0*M_PI*1.0E8)  //10^8yr 全計算時間.
+#define T_MAX (2.0*M_PI*1.0E5)  //10^5yr 全計算時間.
 #define DT_LOG true  //true: t_eneをlogでとる. false: t_eneをlinearでとる.
 
 /* linear では 初項 DT_ENE，公差 DT_ENE の等差数列 */
