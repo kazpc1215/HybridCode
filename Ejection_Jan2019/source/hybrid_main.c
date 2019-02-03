@@ -2110,6 +2110,97 @@ int main(int argc, char **argv){
 #endif
 
 
+
+
+#if FRAGMENTATION
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+      gettimeofday(&realtime_start,NULL);
+      getrusage(RUSAGE_SELF,&usage_start);
+#endif
+
+      for(i=global_n_p+1;i<=global_n;++i){
+        i_sys = i;  //i_sys
+
+	frag[i_sys].fragtimes++;
+
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+	gettimeofday(&realtime_start_2,NULL);
+	getrusage(RUSAGE_SELF,&usage_start_2);
+#endif
+	Calculate_OrbitalElements(i_sys,x_c,v_c,ele,r_c,v2_c,r_dot_v
+#if FRAGMENTATION
+				  ,(t_sys+t_tmp),frag
+#endif
+				  );  //軌道要素計算.
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+	gettimeofday(&realtime_end_2,NULL);
+	getrusage(RUSAGE_SELF,&usage_end_2);
+	exetime.Energy[0] += Cal_time(realtime_start_2,realtime_end_2);
+	exetime.Energy[1] += Cal_time(usage_start_2.ru_utime,usage_end_2.ru_utime);
+	exetime.Energy[2] += Cal_time(usage_start_2.ru_stime,usage_end_2.ru_stime);
+#endif
+
+
+	ele[i_sys].mass = MassDepletion(i_sys,ele[i_sys].mass,(t_sys+t_tmp),frag);  //トレーサー質量の減少を計算.
+
+	frag[i_sys].t_frag = t_[i_sys] + t_tmp + dt_[i_sys];  //力学的時間に揃える.
+
+	NeighborSearch(i_sys,(t_sys+t_tmp),ele,frag,x_c);  //近傍(扇形領域に入った)粒子探索.
+
+	MassFlux(i_sys,ele,frag,&para);  //質量フラックス計算.
+
+	frag[i_sys].dt_frag = Depletion_Time(i_sys,frag);  //統計的計算のタイムスケールのXI倍. 統計的計算のタイミングの目安.
+
+	if(isnan(frag[i_sys].dt_frag)){
+	  fprintf(fplog,"time=%.15e[yr]\tfrag[%d].neighbornumber=%d\n",
+		  (t_sys+t_tmp)/2.0/M_PI,
+		  i_sys,
+		  frag[i_sys].neighbornumber
+		  );
+	  fprintf(fplog,"i=%d\tv_ave=%f\tsigma=%f\tecc=%f\tr_c=%f\tdelta_r_out=%f\tdelta_r_in=%f\n",
+		  i_sys,
+		  frag[i_sys].v_ave,
+		  frag[i_sys].sigma,
+		  ele[i_sys].ecc,
+		  r_c[i_sys],
+		  frag[i_sys].delta_r_out,
+		  frag[i_sys].delta_r_in
+		  );
+	  fprintf(fplog,"axis=%e\tecc=%e\tinc=%e\tu=%e\tOmega=%e\tomega=%e\n",
+		  ele[i_sys].axis,
+		  ele[i_sys].ecc,
+		  ele[i_sys].inc,
+		  ele[i_sys].u,
+		  ele[i_sys].Omega,
+		  ele[i_sys].omega
+		  );
+	  fprintf(fplog,"x=%f\ty=%f\tz=%f\n",
+		  x_c[i_sys][1],
+		  x_c[i_sys][2],
+		  x_c[i_sys][3]
+		  );
+	  return -1;
+	}
+
+
+      }  //i_sys loop.
+
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+      gettimeofday(&realtime_end,NULL);
+      getrusage(RUSAGE_SELF,&usage_end);
+      exetime.Fragmentation[0] += Cal_time(realtime_start,realtime_end);
+      exetime.Fragmentation[1] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
+      exetime.Fragmentation[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
+#endif
+
+#endif  /*FRAGMENTATION*/
+
+
+
+
 #if POSI_VELO_FILE
       fpposivelo = fopen(posivelofile,"a");  //位置、速度をファイルへ書き出し.
       if(fpposivelo==NULL){
