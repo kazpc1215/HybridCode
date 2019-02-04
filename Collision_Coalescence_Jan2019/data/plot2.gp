@@ -30,21 +30,21 @@ set ytics offset 0,0
 set yl "pericenter/apocenter distance [AU]" offset 2.5,0
 
 
-# dirname = "N18_t1E8_dtlog_10RHM_2MMSN_Miso_ecc1E-2/rand01"
-# i1 = 1
-# i2 = 14
-# i3 = 16
-# i4 = 17
-
-
-dirname = "N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2/rand01"
+ dirname = "N18_t1E8_dtlog_10RHM_2MMSN_Miso_ecc1E-2/rand01"
  i1 = 1
- i2 = 2
- i3 = 21
- i4 = 23
- i5 = 25
+ i2 = 14
+ i3 = 16
+ i4 = 17
 
-N=25
+
+# dirname = "N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2/rand01"
+# i1 = 1
+# i2 = 2
+# i3 = 21
+# i4 = 23
+# i5 = 25
+
+N=18
 
 #YEAR=1.0E3
 EVERY=1
@@ -85,9 +85,11 @@ pause -1
 
 set log
 set format "10^{%L}"
+set auto
 
-set xr [1E5:1E8]
-set yr [1E-3:1]
+set xr [1E4:1E8]
+set yr [0.01:0.2]
+
 
 
 
@@ -95,15 +97,27 @@ set yr [1E-3:1]
 # set ytics 0,0.05
 # set mytics 5
 
+set yr [0.01:0.2]
 set yl "mass weighted mean ecc" offset 2,0
 plot sprintf("%s/WeightedAverage.dat",dirname) every EVERY u (($1)/YEAR):2 w l lw LW notitle
 
 pause -1
 
+set yr [0.001:0.2]
 set yl "mass weighted mean inc [rad]" offset 2,0
 plot sprintf("%s/WeightedAverage.dat",dirname) every EVERY u (($1)/YEAR):3 w l lw LW notitle
 
 pause -1
 
+set yr [0.01:0.3]
 set yl "mass weighted mean (e^2 + i^2)^{1/2}" offset 2,0
 plot sprintf("%s/WeightedAverage.dat",dirname) every EVERY u (($1)/YEAR):4 w l lw LW notitle
+
+pause -1
+
+
+
+plot sprintf("%s/WeightedAverage.dat",dirname) every EVERY u (($1)/YEAR):2 w l lw LW t "mass weighted mean ecc",\
+sprintf("%s/WeightedAverage.dat",dirname) every EVERY u (($1)/YEAR):3 w l lw LW t "mass weighted mean inc [rad]",\
+sprintf("%s/WeightedAverage.dat",dirname) every EVERY u (($1)/YEAR):4 w l lw LW t "mass weighted mean (e^2 + i^2)^{1/2}"
+
