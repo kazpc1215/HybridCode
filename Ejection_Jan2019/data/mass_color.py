@@ -11,22 +11,33 @@ def delta_axis(ratio):
 
 
 ######################################################################
-# directory = "N25_t1E5_dtlog_R0.1to0.25_Theta30_EscVelo1.1_Col001_Ntr100_Mmax3.5E-9/"
+# directory = "N25_t1E5_dtlog_R0.1to0.25_Theta30_EscVelo1.1_Col001_Ntr100_Mmax3.5E-10/"
 # N_p = 24
 # PLANET_LIST = [1, 2, 3, 4, 5, 6, 25, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
 # COLLISION_PLANET = 6
+# LINE = 42  # 1E4yr
 
 
-# directory = "N25_t1E5_dtlog_R0.1to0.25_Theta30_EscVelo1.1_Col020_Ntr100_Mmax7.2E-9/"
+# directory = "N18_t1E5_dtlog_R0.1to0.25_Theta30_EscVelo1.1_Col001_Ntr100_Mmax1.2E-9/"
+# N_p = 17
+# PLANET_LIST = [1, 2, 3, 4, 5, 6, 7, 18, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+# COLLISION_PLANET = 7
+# LINE = 42  # 1E4yr
+# LINE = 44  # 1.77E4yr
+
+
+# directory = "N25_t1E5_dtlog_R0.1to0.25_Theta30_EscVelo1.1_Col020_Ntr100_Mmax7.2E-10/"
 # N_p = 5
 # PLANET_LIST = [1, 2, 23, 21, 25]
 # COLLISION_PLANET = 2
+# LINE = 50  # 1E5yr
 
 
-directory = "N18_t1E5_dtlog_R0.1to0.25_Theta30_EscVelo1.1_Col014_Ntr100_Mmax1.5E-8/"
+directory = "N18_t1E5_dtlog_R0.1to0.25_Theta30_EscVelo1.1_Col014_Ntr100_Mmax1.5E-9/"
 N_p = 4
 PLANET_LIST = [1, 17, 16, 14]
 COLLISION_PLANET = 4
+LINE = 50  # 1E5yr
 
 
 
@@ -34,8 +45,7 @@ N_tr = 100
 
 
 
-# LINE = 42  # 1E4yr
-LINE = 50  # 1E5yr
+
 SUBDIR_NUM = 1
 
 
@@ -121,10 +131,13 @@ for subnum in range(1, SUBDIR_NUM+1):
         ax = fig.add_subplot(1, 1, 1, aspect='equal')
         # ax.set_xlim([-0.6, 0.6])
         # ax.set_ylim([-0.6, 0.6])
+        # ax.set_xlim([-1.0, 1.0])
+        # ax.set_ylim([-1.0, 1.0])
         # ax.set_xlim([-1.5, 1.5])
         # ax.set_ylim([-1.5, 1.5])
         ax.set_xlim([-2.0, 2.0])
         ax.set_ylim([-2.0, 2.0])
+
         ax.set_xlabel('x [AU]', fontsize=20)
         ax.set_ylabel('y [AU]', fontsize=20)
         ax.title.set_text('%.3e [yr]' % time[1, T])
@@ -144,26 +157,28 @@ for subnum in range(1, SUBDIR_NUM+1):
                 ax.scatter(x[n-1, T], y[n-1, T], color="k", marker="+", alpha=0.2, s=50)
 
 
-        ax.scatter(x[N_p:, T], y[N_p:, T], s=10, c="r")
 
-        """
+
         fig.subplots_adjust(right=0.85)
 
         cm = plt.cm.get_cmap("rainbow")
         cbar_ax = fig.add_axes([0.85, 0.15, 0.03, 0.7])
 
-        im = ax.scatter(x[N_p:, T], y[N_p:, T], s=10, c=mass[N_p:, T] * 2E33 / 6E27, cmap=cm, vmax=M_MAX * 2E33 / 6E27)
+        # im = ax.scatter(x[N_p:, T], y[N_p:, T], s=10, c=mass[N_p:, T] * 2E33 / 6E27, cmap=cm, vmax=M_MAX * 2E33 / 6E27)
 
-        # im = ax.scatter(x[N_p:, T], y[N_p:, T], s=10, c=sigma[N_p:, T] * 2.0E33/1.5E13/1.5E13, cmap=cm, norm=LogNorm(0.1, sigma[N_p:, 0].max() * 2.0E33/1.5E13/1.5E13))
+        im = ax.scatter(x[N_p:, T], y[N_p:, T], s=10, c=sigma[N_p:, T] * 2.0E33/1.5E13/1.5E13, cmap=cm, norm=LogNorm(0.1, sigma[N_p:, 0].max() * 2.0E33/1.5E13/1.5E13))
 
         ax.scatter(0, 0, c='k', marker='*', s=100)
 
-        # fig.colorbar(im, cax=cbar_ax).set_label(r'$\Sigma\ [\rm g/cm^2]$', fontsize=20)
-        fig.colorbar(im, cax=cbar_ax).set_label(r'mass$\ [\rm M_{\oplus}]$', fontsize=20)
-        """
+        fig.colorbar(im, cax=cbar_ax).set_label(r'$\Sigma\ [\rm g/cm^2]$', fontsize=20)
+        # fig.colorbar(im, cax=cbar_ax).set_label(r'mass$\ [\rm M_{\oplus}]$', fontsize=20)
 
 
-        plt.show()
+        filename = "../image/" + directory + subdirectory + "Sigma_T%02d.png" % T
+        plt.savefig(filename, format="png", dpi=100)
+        # plt.show()
+        plt.close()
+
 
 
         """
