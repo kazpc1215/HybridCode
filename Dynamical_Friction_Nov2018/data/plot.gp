@@ -3,7 +3,6 @@ reset
 
 set term aqua dashed font "Times-Roman,30" enhanced
 
-PAUSE = -1
 
 
 set bmargin 2
