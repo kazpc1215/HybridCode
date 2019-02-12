@@ -15,7 +15,7 @@ set ytics offset 0.5,0
 
 set log
 
-set format "10^{%L}"
+set format x "10^{%L}"
 # unset key
 
 set grid
@@ -29,51 +29,44 @@ LW = 2
 
 set xl "time [yr]" offset 0,1
 
-# OHTSUKI_NOFRAG_PLANET = "Meach3E-9_Mtot3E-7_Mmax5E-15_t1E9_dtlog_ecc1E-2_nofrag_dt/Planet.dat"
-# OHTSUKI_NOFRAG_PLANETESIMAL = "Meach3E-9_Mtot3E-7_Mmax5E-15_t1E9_dtlog_ecc1E-2_nofrag_dt/Planetesimal.dat"
-# RUN1 = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-2_nofrag_acc/RMS_randall.dat"
+
+RUN1 = "Ntr1E2_t1E8_dtlog_Mtot6E-7_Mmax3E-9_ecc5E-2_frag_acc/rand01/Planet01.dat"
+RUN2 = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax3E-9_ecc5E-2_frag_acc/rand01/Planet01.dat"
+
+set ytics add (0.01, 0.02, 0.05)
+
+set yl "ecc" offset 3,0
+set xr [1E2:1.E8]
+set yr [0.01:0.05]
 
 
-OHTSUKI_NOFRAG_PLANET = "Meach3E-9_Mtot3E-7_Mmax5E-15_t1E9_dtlog_ecc1E-1_nofrag_dt/Planet.dat"
-OHTSUKI_NOFRAG_PLANETESIMAL = "Meach3E-9_Mtot3E-7_Mmax5E-15_t1E9_dtlog_ecc1E-1_nofrag_dt/Planetesimal.dat"
-RUN1 = "Ntr1E2_t1E8_dtlog_Mtot3E-7_Mmax5E-15_ecc1E-1_nofrag_acc/RMS_randall.dat"
+unset key
 
 
-set yl "ecc" offset 2,0
-set xr [1:1.E8]
- set yr [1E-2:1]
-# set yr [0.003:1]
-# set yr [0.005:0.5]
+plot RUN1 u 1:2 w l lw 3 lt 1,\
+RUN2 u 1:2 w l lw 3 lt 3,\
+0.0167 lw 3 lt 2 dt 2
 
+pause -1
 
-### nofrag_ecc  ###
-set multiplot
-set key left Left bottom box width -10 spacing 1.0 reverse font "Times-Roman,20"
-plot OHTSUKI_NOFRAG_PLANET u 1:2 w l lt -1 lw 2 dt 1 t "Planet, semi-analytic, no frag.",\
-RUN1 u 1:4 w l lw 2 dt 1 lt 1 ps 0.5 t "Planet, r.m.s., no frag." ## RUN1 u 1:4:5 w yerrorlines lw 2 dt 1 lt 1 ps 0.5 t "Planet, r.m.s., no frag."
-set key left Left top box width -12 spacing 1.0 reverse font "Times-Roman,20"
-plot OHTSUKI_NOFRAG_PLANETESIMAL u 1:2 w l lt -1 lw 2 dt 2 t "Planetesimal, semi-analytic, no frag.",\
-RUN1 u 1:6 w l lw 2 dt 2 lt 1 ps 0.5 t "Planetesimal, r.m.s., no frag." ## RUN1 u 1:6:7 w yerrorlines lw 2 dt 2 lt 1 ps 0.5 t "Planetesimal, r.m.s., no frag."
-unset multiplot
+plot RUN1 u 1:2 w l lw 3 lt 1,\
+0.0167 lw 3 lt 2 dt 2
+
 
 pause -1
 
 
-set yl "inc [rad]" offset 2,0
-set xr [1:1.E8]
- set yr [1E-2:1]
-# set yr [0.003:1]
-# set yr [0.005:0.5]
+set yl "inc [rad]" offset 3,0
+set xr [1E2:1.E8]
+# set yr [1E-2:1]
 
-### nofrag_inc  ###
-set multiplot
-set key left Left bottom box width -10 spacing 1.0 reverse font "Times-Roman,20"
-plot OHTSUKI_NOFRAG_PLANET u 1:3 w l lt -1 lw 2 dt 1 t "Planet, semi-analytic, no frag.",\
-RUN1 u 1:10 w l lw 2 dt 1 lt 1 ps 0.5 t "Planet, r.m.s., no frag." ## RUN1 u 1:10:11 w yerrorlines lw 2 dt 1 lt 1 ps 0.5 t "Planet, r.m.s., no frag."
-set key left Left top box width -12 spacing 1.0 reverse font "Times-Roman,20"
-plot OHTSUKI_NOFRAG_PLANETESIMAL u 1:3 w l lt -1 lw 2 dt 2 t "Planetesimal, semi-analytic, no frag.",\
-RUN1 u 1:12 w l lw 2 dt 2 lt 1 ps 0.5 t "Planetesimal, r.m.s., no frag." ## RUN1 u 1:12:13 w yerrorlines lw 2 dt 2 lt 1 ps 0.5 t "Planetesimal, r.m.s., no frag."
-unset multiplot
+plot RUN1 u 1:5 w l lw 3 lt 1,\
+RUN2 u 1:5 w l lw 3 lt 3
+
+pause -1
+
+plot RUN1 u 1:5 w l lw 3 lt 1
+
 
 pause -1
 
