@@ -1,6 +1,7 @@
 # HybridCode
 
 衝突・破壊をとりいれたN体計算
+
 作成者：磯谷和秀
 
 # 1.ディレクトリ構成
@@ -23,11 +24,14 @@
 
 ## Makefile
 コンパイル用のMakefile
+
 コンパイルがうまくいくと、実行ファイルの名前の入力待ちになる
+
 天文台のXC50を使う際には、ジョブを投げる用のシェルスクリプトを生成することもできる
 
 ## hybrid.h
 ヘッダーファイル
+
 パラメータは基本ここでいじる
 
 
@@ -98,6 +102,8 @@
 
 
 ## acc.c
+
+### 相互重力加速度
 ```c
 /*相互重力加速度*/
 static inline ALWAYS_INLINE double Acceleration_ij(int i, int j, int k, CONST double m_j, CONST double x_0[][4], CONST double abs_r[]){

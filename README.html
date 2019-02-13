@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="hybridcode">HybridCode</h1>
+<p>衝突・破壊をとりいれたN体計算 作成者：磯谷和秀</p>
+<h1 id="ディレクトリ構成">1.ディレクトリ構成</h1>
+<h2 id="source">source/</h2>
+<p>ソースコードとMakefile</p>
+<h2 id="data">data/</h2>
+<p>データ保管</p>
+<h2 id="image">image/</h2>
+<p>画像保管</p>
+<h2 id="log">log/</h2>
+<p>ログ保管（最新版では「data/」中にlog.txtとして保存している）</p>
+<h1 id="source内のファイル概要">2.「source/」内のファイル概要</h1>
+<h2 id="makefile">Makefile</h2>
+<p>コンパイル用のMakefile コンパイルがうまくいくと、実行ファイルの名前の入力待ちになる 天文台のXC50を使う際には、ジョブを投げる用のシェルスクリプトを生成することもできる</p>
+<h2 id="hybrid.h">hybrid.h</h2>
+<p>ヘッダーファイル パラメータは基本ここでいじる</p>
+<h2 id="func.h">func.h</h2>
+<p>関数の宣言用ヘッダー</p>
+<h2 id="hybrid_main.c">hybrid_main.c</h2>
+<p>メインファイル</p>
+<h2 id="acc.c">acc.c</h2>
+<p>加速度や加加速度計算</p>
+<h2 id="collision.c">collision.c</h2>
+<p>衝突判定、衝突前後の操作</p>
+<h2 id="energy.c">energy.c</h2>
+<p>エネルギー計算</p>
+<h2 id="heapsort.c">heapsort.c</h2>
+<p>ヒープソート（階層化タイムステップを導入する際に必要）</p>
+<h2 id="massflux.c">massflux.c</h2>
+<p>衝突・破壊の際の定常質量フラックス（Kobayashi &amp; Tanaka, 2010）を計算</p>
+<h2 id="neighbor.c">neighbor.c</h2>
+<p>近傍トレーサーの探索、面密度と平均相対速度の計算</p>
+<h2 id="orbital_elements.c">orbital_elements.c</h2>
+<p>初期軌道要素の設定（or 初期位置の設定）、軌道要素計算</p>
+<h2 id="sfmt.c">SFMT.c</h2>
+<p>メルセンヌ・ツイスタ法による乱数生成</p>
+<h2 id="sfmtdir">SFMTdir/</h2>
+<p>メルセンヌ・ツイスタ法用のヘッダーが入ったディレクトリ</p>
+<h2 id="sub.c">sub.c</h2>
+<p>一行でかけるような細々した関数</p>
+<h2 id="timestep.c">timestep.c</h2>
+<p>タイムステップ計算</p>
+<h2 id="qsub_depend.sh">qsub_depend.sh</h2>
+<p>天文台のXC50にて、ジョブを投げるシェルスクリプト</p>
+<h1 id="ソースコードの詳細">3.ソースコードの詳細</h1>
+<h2 id="hybrid.h-1">hybrid.h</h2>
+<h2 id="acc.c-1">acc.c</h2>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*相互重力加速度*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> Acceleration_ij(<span class="dt">int</span> i, <span class="dt">int</span> j, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_j, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> abs_r[]){
+  <span class="dt">double</span> rij3;
+
+<span class="pp">#ifndef EPSILON</span>
+  rij3 = abs_r[j]*abs_r[j]*abs_r[j];
+<span class="pp">#else</span>
+  rij3 = (abs_r[j]*abs_r[j] + EPSILON*EPSILON)*sqrt(abs_r[j]*abs_r[j] + EPSILON*EPSILON);
+<span class="pp">#endif</span>
+  rij3 = <span class="fl">1.0</span>/rij3;
+
+<span class="pp">#ifndef G</span>
+  <span class="cf">return</span> m_j * (x_0[j][k] - x_0[i][k]) * rij3;
+<span class="pp">#else</span>
+  <span class="cf">return</span> G * m_j * (x_0[j][k] - x_0[i][k]) * rij3;
+<span class="pp">#endif</span>
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*相互重力加加速度*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> dAcceleration_ij(<span class="dt">int</span> i, <span class="dt">int</span> j, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_j, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_dot_v_ij[], CONST <span class="dt">double</span> abs_r[]){
+  <span class="dt">double</span> rij3;
+  <span class="dt">double</span> rij5;
+
+<span class="pp">#ifndef EPSILON</span>
+  rij3 = abs_r[j]*abs_r[j]*abs_r[j];
+  rij5 = rij3*abs_r[j]*abs_r[j];
+<span class="pp">#else</span>
+  rij3 = (abs_r[j]*abs_r[j] + EPSILON*EPSILON)*sqrt(abs_r[j]*abs_r[j] + EPSILON*EPSILON);
+  rij5 = (abs_r[j]*abs_r[j] + EPSILON*EPSILON)*(abs_r[j]*abs_r[j] + EPSILON*EPSILON)*sqrt(abs_r[j]*abs_r[j] + EPSILON*EPSILON);
+<span class="pp">#endif</span>
+  rij3 = <span class="fl">1.0</span>/rij3;
+  rij5 = <span class="fl">1.0</span>/rij5;
+
+<span class="pp">#ifndef G</span>
+  <span class="cf">return</span> m_j * ((v_0[j][k] - v_0[i][k]) * rij3 - <span class="fl">3.0</span> * r_dot_v_ij[j] * (x_0[j][k] - x_0[i][k]) * rij5);
+<span class="pp">#else</span>
+  <span class="cf">return</span> G * m_j * ((v_0[j][k] - v_0[i][k]) * rij3 - <span class="fl">3.0</span> * r_dot_v_ij[j] * (x_0[j][k] - x_0[i][k]) * rij5);
+<span class="pp">#endif</span>
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*加速度indirect項*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> Acceleration_indirect(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_i, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[]){
+  <span class="dt">double</span> r3;
+  r3 = r_0[i]*r_0[i]*r_0[i];
+  r3 = <span class="fl">1.0</span>/r3;
+
+<span class="pp">#ifndef G</span>
+  <span class="cf">return</span> - m_i * x_0[i][k] * r3;
+<span class="pp">#else</span>
+  <span class="cf">return</span> - G * m_i * x_0[i][k] * r3;
+<span class="pp">#endif</span>
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*加加速度indirect項*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> dAcceleration_indirect(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_i, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> r_dot_v[]){
+  <span class="dt">double</span> r3;
+  <span class="dt">double</span> r5;
+  r3 = r_0[i]*r_0[i]*r_0[i];
+  r5 = r3*r_0[i]*r_0[i];
+  r3 = <span class="fl">1.0</span>/r3;
+  r5 = <span class="fl">1.0</span>/r5;
+
+<span class="pp">#ifndef G</span>
+  <span class="cf">return</span> - m_i * (v_0[i][k] * r3 - <span class="fl">3.0</span> * r_dot_v[i] * x_0[i][k] * r5);
+<span class="pp">#else</span>
+  <span class="cf">return</span> - G * m_i * (v_0[i][k] * r3 - <span class="fl">3.0</span> * r_dot_v[i] * x_0[i][k] * r5);
+<span class="pp">#endif</span>
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*外力加速度*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> External_Acceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[]){
+  <span class="dt">double</span> r3;
+  r3 = r_0[i]*r_0[i]*r_0[i];
+  r3 = <span class="fl">1.0</span>/r3;
+
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+  <span class="cf">return</span> - x_0[i][k] * r3;
+<span class="pp">#else</span>
+  <span class="cf">return</span> - G * M_0 * x_0[i][k] * r3;
+<span class="pp">#endif</span>
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*外力加加速度*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> External_dAcceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> r_dot_v[]){
+  <span class="dt">double</span> r3;
+  <span class="dt">double</span> r5;
+  r3 = r_0[i]*r_0[i]*r_0[i];
+  r5 = r3*r_0[i]*r_0[i];
+  r3 = <span class="fl">1.0</span>/r3;
+  r5 = <span class="fl">1.0</span>/r5;
+
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+  <span class="cf">return</span> - (v_0[i][k] * r3 - <span class="fl">3.0</span> * r_dot_v[i] * x_0[i][k] * r5);
+<span class="pp">#else</span>
+  <span class="cf">return</span> - G M_0 * (v_0[i][k] * r3 - <span class="fl">3.0</span> * r_dot_v[i] * x_0[i][k] * r5);
+<span class="pp">#endif</span>
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*i_sys のみの修正子*/</span>
+<span class="dt">void</span> Corrector_sys(<span class="dt">int</span> n_ite, <span class="dt">int</span> i_sys, CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_p[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_p[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_p[], <span class="dt">double</span> x_c[][<span class="dv">4</span>], <span class="dt">double</span> v_c[][<span class="dv">4</span>], <span class="dt">double</span> r_c[], <span class="dt">double</span> v2_c[], <span class="dt">double</span> r_dot_v[], CONST <span class="dt">double</span> a_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> adot_0[][<span class="dv">4</span>], <span class="dt">double</span> a[][<span class="dv">4</span>], <span class="dt">double</span> adot[][<span class="dv">4</span>], <span class="dt">double</span> adot2_dt2[][<span class="dv">4</span>], <span class="dt">double</span> adot3_dt3[][<span class="dv">4</span>], CONST <span class="dt">double</span> dt_[]
+<span class="pp">#if FRAGMENTATION</span>
+           , <span class="dt">double</span> t_dyn
+           , CONST <span class="kw">struct</span> fragmentation *frag_p
+<span class="pp">#endif</span>
+           ){
+
+  <span class="dt">int</span> j, k;
+  <span class="dt">double</span> dt = dt_[i_sys];
+  <span class="dt">double</span> abs_r[
+<span class="pp">#if INTERACTION_ALL</span>
+           global_n
+<span class="pp">#elif INTERACTION_PLANET_TRACER</span>
+           global_n
+<span class="pp">#elif INTERACTION_TEST_PARTICLE</span>
+           global_n_p
+<span class="pp">#endif</span>
+           +<span class="dv">1</span>];
+  <span class="dt">double</span> r_dot_v_ij[
+<span class="pp">#if INTERACTION_ALL</span>
+            global_n
+<span class="pp">#elif INTERACTION_PLANET_TRACER</span>
+            global_n
+<span class="pp">#elif INTERACTION_TEST_PARTICLE</span>
+            global_n_p
+<span class="pp">#endif</span>
+            +<span class="dv">1</span>];
+  <span class="dt">double</span> a_tmp[<span class="dv">4</span>]={}, adot_tmp[<span class="dv">4</span>]={}, adot2_dt2_tmp[<span class="dv">4</span>]={}, adot3_dt3_tmp[<span class="dv">4</span>]={};
+  <span class="dt">double</span> x_c_tmp[<span class="dv">4</span>]={}, v_c_tmp[<span class="dv">4</span>]={};
+
+
+  <span class="cf">for</span>(j=<span class="dv">1</span>;j&lt;=
+<span class="pp">#if INTERACTION_ALL</span>
+    global_n
+<span class="pp">#elif INTERACTION_PLANET_TRACER</span>
+    global_n
+<span class="pp">#elif INTERACTION_TEST_PARTICLE</span>
+    global_n_p
+<span class="pp">#endif</span>
+    ;++j){
+    <span class="cf">if</span>(i_sys!=j){
+      <span class="cf">if</span>(n_ite == <span class="dv">0</span>){
+    abs_r[j] = RelativeDistance(i_sys,j,x_p);  <span class="co">//絶対値.</span>
+    r_dot_v_ij[j] = RelativeInnerProduct(i_sys,j,x_p,v_p);  <span class="co">//r_ij,v_ijの内積.</span>
+      }<span class="cf">else</span> <span class="cf">if</span>(n_ite &lt;= ITE_MAX){  <span class="co">//iterationではx_c,v_cを使う.</span>
+    abs_r[j] = RelativeDistance(i_sys,j,x_c);  <span class="co">//絶対値.</span>
+    r_dot_v_ij[j] = RelativeInnerProduct(i_sys,j,x_c,v_c);  <span class="co">//r_ij,v_ijの内積.</span>
+      }
+    }<span class="cf">else</span>{
+      abs_r[i_sys] = <span class="fl">0.0</span>;
+      r_dot_v_ij[i_sys] = <span class="fl">0.0</span>;
+    }
+  }
+
+
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+    <span class="cf">if</span>(n_ite == <span class="dv">0</span>){
+      a_tmp[k] = All_Acceleration(i_sys,k,ele_p,x_p,r_p,abs_r
+<span class="pp">#if FRAGMENTATION</span>
+                  ,t_dyn,frag_p
+<span class="pp">#endif</span>
+                  );
+      adot_tmp[k] = All_dAcceleration(i_sys,k,ele_p,x_p,v_p,r_dot_v,r_dot_v_ij,r_p,abs_r
+<span class="pp">#if FRAGMENTATION</span>
+                  ,t_dyn,frag_p
+<span class="pp">#endif</span>
+                      );
+    }<span class="cf">else</span> <span class="cf">if</span>(n_ite &lt;= ITE_MAX){  <span class="co">//iterationではx_c,v_cを使う.</span>
+      a_tmp[k] = All_Acceleration(i_sys,k,ele_p,x_c,r_c,abs_r
+<span class="pp">#if FRAGMENTATION</span>
+                  ,t_dyn,frag_p
+<span class="pp">#endif</span>
+                  );
+      adot_tmp[k] = All_dAcceleration(i_sys,k,ele_p,x_c,v_c,r_dot_v,r_dot_v_ij,r_c,abs_r
+<span class="pp">#if FRAGMENTATION</span>
+                  ,t_dyn,frag_p
+<span class="pp">#endif</span>
+                      );
+    }
+  }
+
+
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){  <span class="co">//修正子.</span>
+
+    adot2_dt2_tmp[k] = - <span class="fl">6.0</span> * (a_0[i_sys][k] - a_tmp[k]) - (<span class="fl">4.0</span> * adot_0[i_sys][k] + <span class="fl">2.0</span> * adot_tmp[k]) * dt; <span class="co">//第2次導関数.</span>
+    adot3_dt3_tmp[k] = <span class="fl">12.0</span> * (a_0[i_sys][k] - a_tmp[k]) + <span class="fl">6.0</span> * (adot_0[i_sys][k] + adot_tmp[k]) * dt; <span class="co">//第3次導関数.</span>
+
+    <span class="co">//x_c_tmp[k] = x_p[i_sys][k] + adot2_dt2_tmp[k]*dt_[i_sys]*dt_[i_sys]/24.0 + adot3_dt3_tmp[k]*dt_[i_sys]*dt_[i_sys]/120.0;</span>
+    <span class="co">//v_c_tmp[k] = v_p[i_sys][k] + adot2_dt2_tmp[k]*dt_[i_sys]/6.0 +adot3_dt3_tmp[k]*dt_[i_sys]/24.0;</span>
+
+    x_c_tmp[k] = x_p[i_sys][k] + dt * dt * <span class="fl">0.125</span> * INV_3 * (adot2_dt2_tmp[k] + adot3_dt3_tmp[k] * <span class="fl">0.2</span>);
+    v_c_tmp[k] = v_p[i_sys][k] + dt * <span class="fl">0.5</span> * INV_3 * (adot2_dt2_tmp[k] + adot3_dt3_tmp[k] * <span class="fl">0.25</span>);
+  }  <span class="co">//k loop</span>
+
+
+  r_c[i_sys] = sqrt(x_c_tmp[<span class="dv">1</span>]*x_c_tmp[<span class="dv">1</span>] + x_c_tmp[<span class="dv">2</span>]*x_c_tmp[<span class="dv">2</span>] + x_c_tmp[<span class="dv">3</span>]*x_c_tmp[<span class="dv">3</span>]);
+  v2_c[i_sys] = v_c_tmp[<span class="dv">1</span>]*v_c_tmp[<span class="dv">1</span>] + v_c_tmp[<span class="dv">2</span>]*v_c_tmp[<span class="dv">2</span>] + v_c_tmp[<span class="dv">3</span>]*v_c_tmp[<span class="dv">3</span>];
+  r_dot_v[i_sys] = x_c_tmp[<span class="dv">1</span>]*v_c_tmp[<span class="dv">1</span>] + x_c_tmp[<span class="dv">2</span>]*v_c_tmp[<span class="dv">2</span>] + x_c_tmp[<span class="dv">3</span>]*v_c_tmp[<span class="dv">3</span>];
+
+
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+    a[i_sys][k] = a_tmp[k];
+    adot[i_sys][k] = adot_tmp[k];
+    adot2_dt2[i_sys][k] = adot2_dt2_tmp[k];
+    adot3_dt3[i_sys][k] = adot3_dt3_tmp[k];
+    x_c[i_sys][k] = x_c_tmp[k];
+    v_c[i_sys][k] = v_c_tmp[k];
+  }
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*全加速度*/</span>
+<span class="dt">double</span> All_Acceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> abs_r[]
+<span class="pp">#if FRAGMENTATION</span>
+            , <span class="dt">double</span> t_dyn
+            , CONST <span class="kw">struct</span> fragmentation *frag_p
+<span class="pp">#endif</span>
+            ){
+  <span class="dt">int</span> j;
+  <span class="dt">double</span> a_0;
+  <span class="dt">double</span> m_j;
+
+  a_0 = External_Acceleration(i,k,x_0,r_0);
+
+<span class="pp">#if INTERACTION_PLANET_TRACER</span>
+  <span class="cf">if</span>(i&gt;global_n_p){  <span class="co">//i_sysがトレーサーの場合，惑星からの影響を計算.</span>
+<span class="pp">#endif</span>
+
+<span class="pp">#if INTERACTION_ALL</span>
+<span class="pp">#pragma omp parallel for reduction(+:a_0)</span>
+<span class="pp">#endif</span>
+    <span class="cf">for</span>(j=<span class="dv">1</span>;j&lt;=
+<span class="pp">#if INTERACTION_ALL</span>
+      global_n
+<span class="pp">#elif INTERACTION_PLANET_TRACER</span>
+      global_n_p
+<span class="pp">#elif INTERACTION_TEST_PARTICLE</span>
+      global_n_p
+<span class="pp">#endif</span>
+      ;++j){
+
+<span class="pp">#if FRAGMENTATION</span>
+      m_j = MassDepletion(j,((ele_p+j)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+      m_j = ((ele_p+j)-&gt;mass);
+<span class="pp">#endif</span>
+
+<span class="pp">#if INDIRECT_TERM</span>
+      a_0 += Acceleration_indirect(j,k,m_j,x_0,r_0);
+<span class="pp">#endif</span>
+
+      <span class="cf">if</span>(i!=j){
+    a_0 += Acceleration_ij(i,j,k,m_j,x_0,abs_r);
+      }
+    }
+
+
+
+<span class="pp">#if INTERACTION_PLANET_TRACER</span>
+  }<span class="cf">else</span> <span class="cf">if</span>(i&lt;=global_n_p){  <span class="co">//i_sysが惑星の場合，自身以外のすべてからの影響を計算.</span>
+
+<span class="pp">#pragma omp parallel for reduction(+:a_0)</span>
+    <span class="cf">for</span>(j=<span class="dv">1</span>;j&lt;=global_n;++j){
+
+<span class="pp">#if FRAGMENTATION</span>
+      m_j = MassDepletion(j,((ele_p+j)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+      m_j = ((ele_p+j)-&gt;mass);
+<span class="pp">#endif</span>
+
+<span class="pp">#if INDIRECT_TERM</span>
+      a_0 += Acceleration_indirect(j,k,m_j,x_0,r_0);
+<span class="pp">#endif</span>
+
+      <span class="cf">if</span>(i!=j){
+    a_0 += Acceleration_ij(i,j,k,m_j,x_0,abs_r);
+      }
+    }
+
+  }
+<span class="pp">#endif</span>
+
+  <span class="cf">return</span> a_0;
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*全加加速度*/</span>
+<span class="dt">double</span> All_dAcceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_dot_v[], CONST <span class="dt">double</span> r_dot_v_ij[], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> abs_r[]
+<span class="pp">#if FRAGMENTATION</span>
+             , <span class="dt">double</span> t_dyn
+             , CONST <span class="kw">struct</span> fragmentation *frag_p
+<span class="pp">#endif</span>
+             ){
+  <span class="dt">int</span> j;
+  <span class="dt">double</span> adot_0;
+  <span class="dt">double</span> m_j;
+
+  adot_0 = External_dAcceleration(i,k,x_0,v_0,r_0,r_dot_v);
+
+<span class="pp">#if INTERACTION_PLANET_TRACER</span>
+  <span class="cf">if</span>(i&gt;global_n_p){  <span class="co">//i_sysがトレーサーの場合，惑星からの影響を計算.</span>
+<span class="pp">#endif</span>
+
+<span class="pp">#if INTERACTION_ALL</span>
+<span class="pp">#pragma omp parallel for reduction(+:adot_0)</span>
+<span class="pp">#endif</span>
+    <span class="cf">for</span>(j=<span class="dv">1</span>;j&lt;=
+<span class="pp">#if INTERACTION_ALL</span>
+      global_n
+<span class="pp">#elif INTERACTION_PLANET_TRACER</span>
+      global_n_p
+<span class="pp">#elif INTERACTION_TEST_PARTICLE</span>
+      global_n_p
+<span class="pp">#endif</span>
+      ;++j){
+
+<span class="pp">#if FRAGMENTATION</span>
+      m_j = MassDepletion(j,((ele_p+j)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+      m_j = ((ele_p+j)-&gt;mass);
+<span class="pp">#endif</span>
+
+<span class="pp">#if INDIRECT_TERM</span>
+      adot_0 += dAcceleration_indirect(j,k,m_j,x_0,v_0,r_0,r_dot_v);
+<span class="pp">#endif</span>
+
+      <span class="cf">if</span>(i!=j){
+    adot_0 += dAcceleration_ij(i,j,k,m_j,x_0,v_0,r_dot_v_ij,abs_r);
+      }
+    }
+
+<span class="pp">#if INTERACTION_PLANET_TRACER</span>
+  }<span class="cf">else</span> <span class="cf">if</span>(i&lt;=global_n_p){  <span class="co">//i_sysが惑星の場合，自身以外のすべてからの影響を計算.</span>
+
+<span class="pp">#pragma omp parallel for reduction(+:adot_0)</span>
+    <span class="cf">for</span>(j=<span class="dv">1</span>;j&lt;=global_n;++j){
+
+<span class="pp">#if FRAGMENTATION</span>
+      m_j = MassDepletion(j,((ele_p+j)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+      m_j = ((ele_p+j)-&gt;mass);
+<span class="pp">#endif</span>
+
+<span class="pp">#if INDIRECT_TERM</span>
+      adot_0 += dAcceleration_indirect(j,k,m_j,x_0,v_0,r_0,r_dot_v);
+<span class="pp">#endif</span>
+
+      <span class="cf">if</span>(i!=j){
+    adot_0 += dAcceleration_ij(i,j,k,m_j,x_0,v_0,r_dot_v_ij,abs_r);
+      }
+    }
+
+  }
+<span class="pp">#endif</span>
+
+  <span class="cf">return</span> adot_0;
+}</code></pre></div>
+<hr />
+<h1 id="文字の修飾イタリック太字">5.文字の修飾(イタリック、太字)</h1>
+<ul>
+<li>イタリック 「_」または「*」で文字をくくります。</li>
+</ul>
+<blockquote>
+<p>_イタリック_ <em>イタリック</em></p>
+<p>*イタリック* <em>イタリック</em></p>
+</blockquote>
+<ul>
+<li>太字 「__」または「**」で文字をくくります。</li>
+</ul>
+<blockquote>
+<p>__太字__ <strong>太字</strong></p>
+<p>**太字** <strong>太字</strong></p>
+</blockquote>
+<h1 id="リスト">6.リスト</h1>
+<p>リストの上下に空白を入れないと正しく表示されないので注意。 また、記号と文の間に半角スペースを入れること。</p>
+<ul>
+<li>順序なしリスト</li>
+</ul>
+<p>文頭に「<em>」「+」「-」のいずれかを入れる。 &gt; * 順序なしリスト &gt; </em> 順序なしリスト</p>
+<ul>
+<li>順序つきリスト</li>
+</ul>
+<p>文頭に「数字.」を入れる。 見た目はほぼ変わりません。</p>
+<blockquote>
+<ol type="1">
+<li>リスト1</li>
+<li>リスト2</li>
+</ol>
+</blockquote>
+<h1 id="水平線">7. 水平線</h1>
+<p>「<em>」か「-」を3つ以上一行に書く。 以下は全て水平線となる。 &gt; *** * * * --- - - - &gt; 全部以下の水平線 </em>**</p>
+<h1 id="テーブル">8. テーブル</h1>
+<p>以下のようにテーブルを組みます。 基本は「|」でくくっていくことです。 2行目がポイントで、2行目のコロンの位置によってセル内の文字の配置が変わります。</p>
+<blockquote>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">|左揃え</th>
+<th style="text-align: center;">中央揃え</th>
+<th style="text-align: right;">右揃え</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">align-left</td>
+<td style="text-align: center;">align-center</td>
+<td style="text-align: right;">align-right</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">セルの左揃えです</td>
+<td style="text-align: center;">セルの中央揃えです</td>
+<td style="text-align: right;">セルの右揃えです</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">左揃え</th>
+<th style="text-align: center;">中央揃え</th>
+<th style="text-align: right;">右揃え</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">align-left</td>
+<td style="text-align: center;">align-center</td>
+<td style="text-align: right;">align-right</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">セルの左揃えです</td>
+<td style="text-align: center;">セルの中央揃えです</td>
+<td style="text-align: right;">セルの右揃えです</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h1 id="マークダウンのエスケープ">9. マークダウンのエスケープ</h1>
+<p>「」をMarkdownの前につけることでMarkdownを無効化出来ます。 この記事ではこれを多用しました。 &gt; \#見出しh1 とすると #見出しh1 となります。</p>
+<h1 id="補足ページをmarkdownで見る">10. 補足:ページをMarkdownで見る</h1>
+<p>Qiitaを見ていると「これはどんな記法で書いてあるんだろう」ときになることがあるかもしれません。 そんな時はMarkdown記法で見たいURLの最後に.mdをつければ見ることが出来ます。</p>
+<h2 id="参考">参考</h2>
+<p><a href="http://qiita.com/Qiita/items/c686397e4a0f4f11683d">Markdown記法チートシート</a></p>
+</body>
+</html>
