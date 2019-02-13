@@ -43,14 +43,16 @@ code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Ann
 code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
 code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
   </style>
+  <link rel="stylesheet" href="github.css">
   <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
 </head>
 <body>
 <h1 id="hybridcode">HybridCode</h1>
-<p>衝突・破壊をとりいれたN体計算 作成者：磯谷和秀</p>
-<h1 id="ディレクトリ構成">1.ディレクトリ構成</h1>
+<p>衝突・破壊をとりいれたN体計算</p>
+<p>作成者：磯谷和秀</p>
+<h1 id="ディレクトリ構成">1. ディレクトリ構成</h1>
 <h2 id="source">source/</h2>
 <p>ソースコードとMakefile</p>
 <h2 id="data">data/</h2>
@@ -61,9 +63,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>ログ保管（最新版では「data/」中にlog.txtとして保存している）</p>
 <h1 id="source内のファイル概要">2.「source/」内のファイル概要</h1>
 <h2 id="makefile">Makefile</h2>
-<p>コンパイル用のMakefile コンパイルがうまくいくと、実行ファイルの名前の入力待ちになる 天文台のXC50を使う際には、ジョブを投げる用のシェルスクリプトを生成することもできる</p>
+<p>コンパイル用のMakefile</p>
+<p>コンパイルがうまくいくと、実行ファイルの名前の入力待ちになる</p>
+<p>天文台のXC50を使う際には、ジョブを投げる用のシェルスクリプトを生成することもできる</p>
 <h2 id="hybrid.h">hybrid.h</h2>
-<p>ヘッダーファイル パラメータは基本ここでいじる</p>
+<p>ヘッダーファイル</p>
+<p>パラメータは基本ここでいじる</p>
 <h2 id="func.h">func.h</h2>
 <p>関数の宣言用ヘッダー</p>
 <h2 id="hybrid_main.c">hybrid_main.c</h2>
@@ -94,8 +99,273 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>天文台のXC50にて、ジョブを投げるシェルスクリプト</p>
 <h1 id="ソースコードの詳細">3.ソースコードの詳細</h1>
 <h2 id="hybrid.h-1">hybrid.h</h2>
+<hr />
+<h3 id="インクルードガード">インクルードガード</h3>
+<div class="sourceCode"><pre class="sourceCode c:hybrid.h"><code class="sourceCode c"><span class="pp">#ifndef INCLUDED_hybrid_H  </span><span class="co">//include-guard</span>
+<span class="pp">#define INCLUDED_hybrid_H  </span><span class="co">//include-guard</span>
+.
+.
+.
+<span class="pp">#endif </span><span class="co">//include-guard</span></code></pre></div>
+<p>ヘッダーを複数のファイルで読み込む場合、一度読んだものは再度読まないようにする。</p>
+<hr />
+<h3 id="ヘッダーをインクルード">ヘッダーをインクルード</h3>
+<div class="sourceCode"><pre class="sourceCode c:hybrid.h"><code class="sourceCode c"><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;math.h&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;sys/stat.h&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;time.h&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;stdbool.h&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;mpi.h&gt;</span>
+<span class="pp">#include </span><span class="im">&quot;SFMTdir/SFMT.h&quot;</span>
+
+<span class="pp">#ifdef _OPENMP</span>
+<span class="pp">#include </span><span class="im">&lt;omp.h&gt;</span>
+<span class="pp">#define OMP_SCHEDULE static</span>
+<span class="pp">#endif</span></code></pre></div>
+<p>stdlib.h, stdio.h, math.hの説明は省略。</p>
+<p>sys/stat.h : 時間計測に使う。</p>
+<p>time.h : 時間計測に使う。</p>
+<p>stdbool.h : Boolean型の関数やtrue(==1), false(==0)を使う。</p>
+<p>mpi.h : MPI並列に使う。Macには標準では入っていないので、Macportsとかで入れ、コンパイルオプションでライブラリなどを指定する。天文台のXC50ではコンパイルオプションはいらない。</p>
+<p>SFMTdir/SFMT.h : メルセンヌ・ツイスタ法を使う。</p>
+<p>omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopenmpをつける。このオプションがない場合、_OPENMPは定義されないため、インクルードしないようにしている。</p>
+<hr />
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">
+
+
+
+<span class="pp">#if __GNUC__ == 7</span>
+<span class="pp">#define CONST const</span>
+<span class="pp">#define ALWAYS_INLINE __attribute__((always_inline))</span>
+<span class="pp">#else</span>
+<span class="pp">#define CONST</span>
+<span class="pp">#define ALWAYS_INLINE</span>
+<span class="pp">#endif</span>
+
+
+<span class="pp">#define DIRECTORY ../data/Ntr1E2_t1E8_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-1_nofrag_acc/  </span><span class="co">//ディレクトリ.</span>
+<span class="pp">#define SUBDIRECTORY rand  </span><span class="co">//子ディレクトリ. rand%02d</span>
+
+<span class="pp">#define STR_(str) #str</span>
+<span class="pp">#define STR(str) STR_(str)</span>
+
+<span class="pp">#define INV_3 0.33333333333333333333</span>
+
+<span class="pp">#ifndef EXTERN</span>
+<span class="pp">#define EXTERN extern</span>
+<span class="pp">#endif</span>
+
+
+<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#define N_tr 100  </span><span class="co">//初期のトレーサーの数.</span>
+<span class="pp">#define N_p 1  </span><span class="co">//初期の原始惑星の数.</span>
+<span class="pp">#define ECC_RATIO 10.0  </span><span class="co">//ecc=0.01の何倍か. inc=ecc/2.</span>
+<span class="pp">#define STEP_INTERVAL 5.0E5  </span><span class="co">//何ステップごとに標準出力するか.</span>
+<span class="co">//#define BREAK_TIME 100.0  //4h = 14400sec, 12h = 43200sec.</span>
+<span class="pp">#define BREAK_TIME 14100.0  </span><span class="co">//4h = 14400sec, 12h = 43200sec.</span>
+<span class="co">//#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.</span>
+
+<span class="pp">#define RAYLEIGH_DISTRIBUTION true  </span><span class="co">//離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.</span>
+
+<span class="pp">#define FRAGMENTATION false  </span><span class="co">//破壊 近傍粒子探索と質量フラックス計算.</span>
+<span class="pp">#define COLLISION true  </span><span class="co">//衝突.</span>
+<span class="pp">#if COLLISION</span>
+<span class="pp">#define COALESCENCE true  </span><span class="co">//衝突後に合体.</span>
+<span class="pp">#else</span>
+<span class="co">//#define SOFTENING true  //衝突しないようソフトニング.</span>
+<span class="pp">#endif</span>
+
+
+
+EXTERN <span class="dt">int</span> global_n;  <span class="co">//グローバル変数.</span>
+EXTERN <span class="dt">int</span> global_n_p;
+EXTERN <span class="dt">int</span> global_myid;
+EXTERN sfmt_t sfmt;
+EXTERN FILE *fplog;
+
+<span class="co">//////////////////////////////////////////////////</span>
+
+
+<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#define ENERGY_FILE true  </span><span class="co">//エネルギー計算&amp;ファイル作成.</span>
+<span class="pp">#define ORBITALELEMENTS_FILE true  </span><span class="co">//軌道要素計算&amp;ファイル作成.</span>
+<span class="pp">#define POSI_VELO_FILE true  </span><span class="co">//位置速度ファイル作成.</span>
+<span class="pp">#define COLLISION_FILE true  </span><span class="co">//衝突直前の位置速度ファイル作成.</span>
+<span class="pp">#define TRACERLIST_FILE true  </span><span class="co">//トレーサーリストのファイル作成.</span>
+<span class="pp">#define EXECUTION_TIME true  </span><span class="co">//mainの実行時間測定.</span>
+<span class="pp">#define EXECUTION_TIME_FUNC false  </span><span class="co">//mainかつ関数ごとの実行時間測定.</span>
+<span class="pp">#if EXECUTION_TIME</span>
+<span class="pp">#include </span><span class="im">&lt;sys/time.h&gt;</span>
+<span class="pp">#include </span><span class="im">&lt;sys/resource.h&gt;</span>
+<span class="pp">#endif</span>
+<span class="co">//////////////////////////////////////////////////</span>
+
+
+<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#define INTERACTION_ALL false  </span><span class="co">//全粒子同士の重力相互作用.</span>
+<span class="pp">#define INTERACTION_PLANET_TRACER true  </span><span class="co">//惑星とトレーサー間の相互作用.</span>
+<span class="pp">#define INTERACTION_TEST_PARTICLE false  </span><span class="co">//トレーサーをテスト粒子として扱う.</span>
+<span class="pp">#define INDIRECT_TERM true  </span><span class="co">//中心星が動く効果を補正.</span>
+<span class="pp">#define EJECTION false  </span><span class="co">//初期に破片（トレーサー）を放出する.</span>
+<span class="pp">#define ORBITING_SMALL_PARTICLE true  </span><span class="co">//初期に微惑星をケプラー運動させておく.</span>
+<span class="pp">#define ELIMINATE_PARTICLE false  </span><span class="co">//太陽に飲みこまれるか系外へ出て行くかで粒子を消す.</span>
+<span class="co">//////////////////////////////////////////////////</span>
+
+
+<span class="co">//////////////////////////////////////////////////</span>
+<span class="co">//#define G 1.0  //重力定数.</span>
+<span class="co">//#define M_0 1.0  //主星の質量.</span>
+<span class="pp">#if SOFTENING</span>
+<span class="pp">#define EPSILON 5.21495378928615e-05   </span><span class="co">//ソフトニングパラメーター.</span>
+<span class="pp">#endif</span>
+<span class="pp">#define ETA 1.0E-2  </span><span class="co">//刻み幅調整.</span>
+<span class="pp">#define ITE_MAX 2  </span><span class="co">//イテレーション回数（修正子計算の回数はITE_MAX+1）.</span>
+<span class="co">//////////////////////////////////////////////////</span>
+
+
+<span class="pp">#if ELIMINATE_PARTICLE</span>
+<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#define SOLAR_RADIUS 0.00465040106951872  </span><span class="co">//[AU] 6.957E10/1.496E13.</span>
+<span class="pp">#define SOLAR_SYSTEM_LIMIT 100.0  </span><span class="co">//[AU]</span>
+<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#endif</span>
+
+
+<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#define PLANET_MASS 3.0E-6  </span><span class="co">//地球質量M_E.</span>
+<span class="pp">#define PLANET_AXIS 1.0  </span><span class="co">//[AU].</span>
+<span class="pp">#define PLANET_ECC (0.01*ECC_RATIO)</span>
+<span class="pp">#define PLANET_INC (PLANET_ECC*0.5)</span>
+<span class="pp">#define PLANET_DENSITY 3.0  </span><span class="co">//[g/cc].</span>
+<span class="co">/*</span>
+<span class="co">Earth Mean Orbital Elements (J2000)</span>
+<span class="co">Semimajor axis (AU)                  1.00000011</span>
+<span class="co">Orbital eccentricity                 0.01671022</span>
+<span class="co">Orbital inclination (deg)            0.00005</span>
+<span class="co">Longitude of ascending node (deg)  -11.26064</span>
+<span class="co">Longitude of perihelion (deg)      102.94719</span>
+<span class="co">Mean Longitude (deg)               100.46435</span>
+<span class="co">*/</span>
+<span class="co">//////////////////////////////////////////////////</span>
+
+
+
+<span class="pp">#if N_tr != 0</span>
+<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#define M_TOT (3.0E-7*N_p)  </span><span class="co">//0.1M_E * N_p  //トレーサーの総質量.</span>
+
+<span class="pp">#if EJECTION</span>
+<span class="pp">#define PLANET_OF_EJECTION 1</span>
+<span class="pp">#define EJECTION_CONE_ANGLE M_PI/180.0*30.0  </span><span class="co">//30度.</span>
+<span class="pp">#endif</span>
+
+<span class="pp">#if ORBITING_SMALL_PARTICLE</span>
+<span class="pp">#define ECC_RMS (0.01*ECC_RATIO)  </span><span class="co">//トレーサーの離心率の二乗平均平方根.  //Rayleigh分布.</span>
+<span class="pp">#define INC_RMS (ECC_RMS*0.5)  </span><span class="co">//トレーサーの軌道傾斜角の二乗平均平方根.  //Rayleigh分布.</span>
+<span class="pp">#define DELTA_HILL 10.0  </span><span class="co">//惑星を「相互」ヒル半径の何倍離すか（軌道長半径）.</span>
+<span class="pp">#define SEPARATE_HILL 5.0  </span><span class="co">//初期に惑星とトレーサーをヒル半径の何倍以上離すか（相対距離）.</span>
+<span class="pp">#endif</span>
+
+<span class="pp">#if FRAGMENTATION</span>
+<span class="co">/* t_fragcheck : 初項 DT_FRAGCHECK，公比 GEOMETRIC_RATIO_FRAG の等比数列 */</span>
+<span class="pp">#define DT_FRAGCHECK 2.0*M_PI*0.1  </span><span class="co">//0.1yr</span>
+<span class="pp">#define GEOMETRIC_RATIO_FRAG pow(10.0,1.0/8.0) </span><span class="co">//10**(1/8)</span>
+<span class="pp">#define DELTA_R 0.01  </span><span class="co">//Hill 近傍粒子探索用.</span>
+<span class="pp">#define DELTA_THETA 0.125*M_PI  </span><span class="co">//近傍粒子探索用.</span>
+<span class="co">//#define DELTA_THETA 1.0*M_PI  //近傍粒子探索用.</span>
+<span class="pp">#define NEIGHBOR_MAX 200  </span><span class="co">//近傍粒子リスト配列の最大値.</span>
+<span class="pp">#define RHO 3.0  </span><span class="co">// [g/cc]  微惑星の物質密度.</span>
+<span class="pp">#define EPSILON_FRAG 0.2</span>
+<span class="pp">#define B_FRAG (5.0/3.0)</span>
+<span class="pp">#define Q_0_FRAG 9.5E8 </span><span class="co">// [erg/g]  Q_D = Q_0*(rho/3[g/cc])^0.55*(m/10^21[g])^p</span>
+<span class="pp">#define P_FRAG 0.453</span>
+<span class="pp">#define XI 0.01 </span><span class="co">//面密度減少タイムスケールを自身のXI倍間隔で更新する.</span>
+<span class="pp">#define M_MAX 5.00E-15  </span><span class="co">//最大微惑星質量. 1E19 g ~10kmサイズ.</span>
+<span class="co">//#define M_MAX 5.00E-18  //最大微惑星質量. 1E16 g ~1kmサイズ.</span>
+<span class="pp">#endif  </span><span class="co">/*FRAGMENTATION*/</span>
+<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#endif  </span><span class="co">/*N_tr != 0*/</span>
+
+
+<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#define T_MAX (2.0*M_PI*1.0E8)  </span><span class="co">//10^8yr 全計算時間.</span>
+<span class="pp">#define DT_LOG true  </span><span class="co">//true: t_eneをlogでとる. false: t_eneをlinearでとる.</span>
+
+<span class="co">/* linear では 初項 DT_ENE，公差 DT_ENE の等差数列 */</span>
+<span class="pp">#define DT_ENE (2.0*M_PI*1.0E-1)  </span><span class="co">//dt_ene = 0.1yr</span>
+
+<span class="pp">#if DT_LOG</span>
+<span class="co">/* log では 初項 DT_ENE，公比 GEOMETRIC_RATIO の等比数列 */</span>
+<span class="pp">#define GEOMETRIC_RATIO pow(10.0,1.0/8.0) </span><span class="co">//10**(1/8)</span>
+<span class="pp">#define GEOMETRIC_RATIO_LONGTERM pow(10.0,1.0/128.0) </span><span class="co">//10**(1/128) 10^6yrを超える時用.</span>
+<span class="pp">#endif</span>
+<span class="co">//////////////////////////////////////////////////</span>
+
+
+
+<span class="kw">struct</span> orbital_elements{
+  <span class="dt">char</span> name[<span class="dv">30</span>];  <span class="co">//名前（番号.</span>
+  <span class="dt">double</span> ecc;  <span class="co">//離心率.</span>
+  <span class="dt">double</span> axis;  <span class="co">//軌道長半径.</span>
+  <span class="dt">double</span> u;  <span class="co">//離心近点離角.</span>
+  <span class="dt">double</span> inc;  <span class="co">//軌道傾斜角.</span>
+  <span class="dt">double</span> Omega;  <span class="co">//昇交点経度.</span>
+  <span class="dt">double</span> omega;  <span class="co">//近点引数.</span>
+  <span class="dt">double</span> r_h;  <span class="co">//ヒル半径.</span>
+  <span class="dt">double</span> radius;  <span class="co">//物理半径.</span>
+  <span class="dt">double</span> mass;  <span class="co">//質量.</span>
+  <span class="dt">int</span> orinum;  <span class="co">//初期の番号.</span>
+};
+
+
+<span class="pp">#if FRAGMENTATION</span>
+<span class="kw">struct</span> fragmentation{
+  <span class="dt">int</span> neighborlist[NEIGHBOR_MAX+<span class="dv">1</span>];  <span class="co">//近傍粒子リスト.</span>
+  <span class="dt">int</span> neighbornumber;  <span class="co">//近傍粒子の個数</span>
+  <span class="dt">double</span> delta_r_out;  <span class="co">//扇型外側.</span>
+  <span class="dt">double</span> delta_r_in;  <span class="co">//扇型内側.</span>
+  <span class="dt">double</span> sigma;  <span class="co">//表面密度.</span>
+  <span class="dt">double</span> n_s;  <span class="co">//表面数密度.</span>
+  <span class="dt">double</span> v_ave;  <span class="co">//領域内での平均速度.</span>
+  <span class="dt">double</span> flux;  <span class="co">//質量フラックス.</span>
+  <span class="dt">double</span> dt_frag;  <span class="co">//統計的計算の粒子ごとのタイムステップ.</span>
+  <span class="dt">double</span> t_frag;  <span class="co">//統計的計算の粒子ごとの時間.</span>
+  <span class="dt">int</span> fragtimes;  <span class="co">//何回統計的計算をしているか.</span>
+};
+
+
+<span class="kw">struct</span> parameter{
+  <span class="dt">double</span> s_1;
+  <span class="dt">double</span> s_2;
+  <span class="dt">double</span> s_3;
+  <span class="dt">double</span> alpha;
+  <span class="dt">double</span> h_0;
+  <span class="dt">double</span> Q_D;
+};
+<span class="pp">#endif</span>
+
+
+<span class="pp">#if EXECUTION_TIME</span>
+<span class="kw">struct</span> execution_time{
+  <span class="dt">double</span> Energy[<span class="dv">3</span>];  <span class="co">//[0]: real time, [1]: user(cpu) time, [2]: system time</span>
+  <span class="dt">double</span> Orbital_Elements[<span class="dv">3</span>];
+  <span class="dt">double</span> Predictor[<span class="dv">3</span>];
+  <span class="dt">double</span> Corrector[<span class="dv">3</span>];
+  <span class="dt">double</span> Iteration[<span class="dv">3</span>];
+  <span class="dt">double</span> Collision_Judgement[<span class="dv">3</span>];
+  <span class="dt">double</span> Fragmentation[<span class="dv">3</span>];
+};
+EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">//グローバル変数</span>
+<span class="pp">#endif</span>
+
+</code></pre></div>
+<hr />
+<hr />
 <h2 id="acc.c-1">acc.c</h2>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*相互重力加速度*/</span>
+<hr />
+<h3 id="相互重力加速度">相互重力加速度</h3>
+<div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*相互重力加速度*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> Acceleration_ij(<span class="dt">int</span> i, <span class="dt">int</span> j, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_j, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> abs_r[]){
   <span class="dt">double</span> rij3;
 
@@ -112,7 +382,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <span class="cf">return</span> G * m_j * (x_0[j][k] - x_0[i][k]) * rij3;
 <span class="pp">#endif</span>
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*相互重力加加速度*/</span>
+<p>abc</p>
+<hr />
+<div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*相互重力加加速度*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> dAcceleration_ij(<span class="dt">int</span> i, <span class="dt">int</span> j, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_j, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_dot_v_ij[], CONST <span class="dt">double</span> abs_r[]){
   <span class="dt">double</span> rij3;
   <span class="dt">double</span> rij5;
@@ -133,7 +405,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <span class="cf">return</span> G * m_j * ((v_0[j][k] - v_0[i][k]) * rij3 - <span class="fl">3.0</span> * r_dot_v_ij[j] * (x_0[j][k] - x_0[i][k]) * rij5);
 <span class="pp">#endif</span>
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*加速度indirect項*/</span>
+<p>abc</p>
+<hr />
+<div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*加速度indirect項*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> Acceleration_indirect(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_i, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[]){
   <span class="dt">double</span> r3;
   r3 = r_0[i]*r_0[i]*r_0[i];
@@ -145,7 +419,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <span class="cf">return</span> - G * m_i * x_0[i][k] * r3;
 <span class="pp">#endif</span>
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*加加速度indirect項*/</span>
+<p>abc</p>
+<hr />
+<div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*加加速度indirect項*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> dAcceleration_indirect(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_i, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> r_dot_v[]){
   <span class="dt">double</span> r3;
   <span class="dt">double</span> r5;
@@ -160,7 +436,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <span class="cf">return</span> - G * m_i * (v_0[i][k] * r3 - <span class="fl">3.0</span> * r_dot_v[i] * x_0[i][k] * r5);
 <span class="pp">#endif</span>
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*外力加速度*/</span>
+<p>abc</p>
+<hr />
+<div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*外力加速度*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> External_Acceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[]){
   <span class="dt">double</span> r3;
   r3 = r_0[i]*r_0[i]*r_0[i];
@@ -172,7 +450,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <span class="cf">return</span> - G * M_0 * x_0[i][k] * r3;
 <span class="pp">#endif</span>
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*外力加加速度*/</span>
+<p>abc</p>
+<hr />
+<div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*外力加加速度*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> External_dAcceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> r_dot_v[]){
   <span class="dt">double</span> r3;
   <span class="dt">double</span> r5;
@@ -187,7 +467,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <span class="cf">return</span> - G M_0 * (v_0[i][k] * r3 - <span class="fl">3.0</span> * r_dot_v[i] * x_0[i][k] * r5);
 <span class="pp">#endif</span>
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*i_sys のみの修正子*/</span>
+<p>abc</p>
+<hr />
+<div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*i_sys のみの修正子*/</span>
 <span class="dt">void</span> Corrector_sys(<span class="dt">int</span> n_ite, <span class="dt">int</span> i_sys, CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_p[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_p[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_p[], <span class="dt">double</span> x_c[][<span class="dv">4</span>], <span class="dt">double</span> v_c[][<span class="dv">4</span>], <span class="dt">double</span> r_c[], <span class="dt">double</span> v2_c[], <span class="dt">double</span> r_dot_v[], CONST <span class="dt">double</span> a_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> adot_0[][<span class="dv">4</span>], <span class="dt">double</span> a[][<span class="dv">4</span>], <span class="dt">double</span> adot[][<span class="dv">4</span>], <span class="dt">double</span> adot2_dt2[][<span class="dv">4</span>], <span class="dt">double</span> adot3_dt3[][<span class="dv">4</span>], CONST <span class="dt">double</span> dt_[]
 <span class="pp">#if FRAGMENTATION</span>
            , <span class="dt">double</span> t_dyn
@@ -299,7 +581,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
   <span class="cf">return</span>;
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*全加速度*/</span>
+<p>abc</p>
+<hr />
+<div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*全加速度*/</span>
 <span class="dt">double</span> All_Acceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> abs_r[]
 <span class="pp">#if FRAGMENTATION</span>
             , <span class="dt">double</span> t_dyn
@@ -372,7 +656,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
   <span class="cf">return</span> a_0;
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">/*全加加速度*/</span>
+<p>abc</p>
+<hr />
+<div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*全加加速度*/</span>
 <span class="dt">double</span> All_dAcceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_dot_v[], CONST <span class="dt">double</span> r_dot_v_ij[], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> abs_r[]
 <span class="pp">#if FRAGMENTATION</span>
              , <span class="dt">double</span> t_dyn
@@ -443,7 +729,31 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
   <span class="cf">return</span> adot_0;
 }</code></pre></div>
+<p>abc</p>
 <hr />
+<hr />
+<h2 id="collision.c-1">collision.c</h2>
+<p>衝突判定、衝突前後の操作</p>
+<h2 id="energy.c-1">energy.c</h2>
+<p>エネルギー計算</p>
+<h2 id="heapsort.c-1">heapsort.c</h2>
+<p>ヒープソート（階層化タイムステップを導入する際に必要）</p>
+<h2 id="massflux.c-1">massflux.c</h2>
+<p>衝突・破壊の際の定常質量フラックス（Kobayashi &amp; Tanaka, 2010）を計算</p>
+<h2 id="neighbor.c-1">neighbor.c</h2>
+<p>近傍トレーサーの探索、面密度と平均相対速度の計算</p>
+<h2 id="orbital_elements.c-1">orbital_elements.c</h2>
+<p>初期軌道要素の設定（or 初期位置の設定）、軌道要素計算</p>
+<h2 id="sfmt.c-1">SFMT.c</h2>
+<p>メルセンヌ・ツイスタ法による乱数生成</p>
+<h2 id="sfmtdir-1">SFMTdir/</h2>
+<p>メルセンヌ・ツイスタ法用のヘッダーが入ったディレクトリ</p>
+<h2 id="sub.c-1">sub.c</h2>
+<p>一行でかけるような細々した関数</p>
+<h2 id="timestep.c-1">timestep.c</h2>
+<p>タイムステップ計算</p>
+<h2 id="qsub_depend.sh-1">qsub_depend.sh</h2>
+<p>天文台のXC50にて、ジョブを投げるシェルスクリプト</p>
 <h1 id="文字の修飾イタリック太字">5.文字の修飾(イタリック、太字)</h1>
 <ul>
 <li>イタリック 「_」または「*」で文字をくくります。</li>
