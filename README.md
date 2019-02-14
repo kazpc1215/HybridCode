@@ -295,10 +295,9 @@ true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを�
 #endif
 ```
 
-
+太陽に飲みこまれるか系外へ出て行くかで粒子を消す場合に必要なパラメータ。
 
 ```c
-
 //////////////////////////////////////////////////
 #define PLANET_MASS 3.0E-6  //地球質量M_E.
 #define PLANET_AXIS 1.0  //[AU].
@@ -994,5 +993,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTUyMjczNzIxNCwtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbMTI3OTYxOTg4NiwtMjkyMTY0NTEyXX0=
 -->
