@@ -344,7 +344,6 @@ Mean Longitude (deg)               100.46435
 トレーサーの初期パラメータ。EJECTION（破片として放出）かORBITATING_SMALL_PARTICLE（軌道上を運動）を上で選ぶ。
 
 ```c
-
 #if FRAGMENTATION
 /* t_fragcheck : 初項 DT_FRAGCHECK，公比 GEOMETRIC_RATIO_FRAG の等比数列 */
 #define DT_FRAGCHECK 2.0*M_PI*0.1  //0.1yr
@@ -364,8 +363,11 @@ Mean Longitude (deg)               100.46435
 #endif  /*FRAGMENTATION*/
 //////////////////////////////////////////////////
 #endif  /*N_tr != 0*/
+```
 
+破壊計算のパラメータ。
 
+```c
 //////////////////////////////////////////////////
 #define T_MAX (2.0*M_PI*1.0E8)  //10^8yr 全計算時間.
 #define DT_LOG true  //true: t_eneをlogでとる. false: t_eneをlinearでとる.
@@ -379,9 +381,12 @@ Mean Longitude (deg)               100.46435
 #define GEOMETRIC_RATIO_LONGTERM pow(10.0,1.0/128.0) //10**(1/128) 10^6yrを超える時用.
 #endif
 //////////////////////////////////////////////////
+```
 
 
 
+
+```c
 struct orbital_elements{
   char name[30];  //名前（番号.
   double ecc;  //離心率.
@@ -1005,6 +1010,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjAyMzcwNzczMywtMTkyNDIyMjU4NywtMj
+eyJoaXN0b3J5IjpbLTU0MjY1OTg1NiwtMTkyNDIyMjU4NywtMj
 kyMTY0NTEyXX0=
 -->
