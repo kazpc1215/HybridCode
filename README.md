@@ -493,7 +493,7 @@ static inline ALWAYS_INLINE double dAcceleration_ij(int i, int j, int k, CONST d
 ```
 
 i, j粒子間の加加速度計算。
-$$
+$G m_{\ast}  \left[ \frac { (\vec{v}_j - \vec{v}_i) } { r _{ij} \right| ^ { 3 } } - 3 \frac { \left( v _ { i } \cdot r _ { i } \right) r _ { i } } { \left| r _ { i } \right| ^ { 5 } } \right]$
 
 
 ```c:acc.c
@@ -997,6 +997,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwNTI4ODk4ODIsLTQ0NjI3NjEyNSwtMT
-kxMDg0ODk3LC0xOTI0MjIyNTg3LC0yOTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbLTU5ODI3OTcwLC00NDYyNzYxMjUsLTE5MT
+A4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX0=
 -->
