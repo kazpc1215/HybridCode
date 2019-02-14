@@ -443,7 +443,7 @@ EXTERN struct execution_time exetime;  //グローバル変数
 #endif
 ```
 
-各構造体の宣言。orbital_elementsは軌道要素の構造体。fragmentationは破壊
+各構造体の宣言。orbital_elementsは軌道要素の構造体（粒子毎にもつので配列）。fragmentationは破壊計算に必要なデータをもつ構造体（トレーサー毎にもつので配列）。parameterは破壊計算のパラメータのは
 
 ---
 
@@ -1006,6 +1006,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIzNDExMDIyMSwtMTkyNDIyMjU4NywtMj
-kyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbMzQxNDE4MjU2LC0xOTI0MjIyNTg3LC0yOT
+IxNjQ1MTJdfQ==
 -->
