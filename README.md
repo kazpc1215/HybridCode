@@ -320,8 +320,6 @@ Mean Longitude (deg)               100.46435
 
 
 ```c
-
-
 #if N_tr != 0
 //////////////////////////////////////////////////
 #define M_TOT (3.0E-7*N_p)  //0.1M_E * N_p  //トレーサーの総質量.
@@ -998,5 +996,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTQ1NjYyNzUxLC0yOTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl19
 -->
