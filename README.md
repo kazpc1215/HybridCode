@@ -323,7 +323,11 @@ Mean Longitude (deg)               100.46435
 #if N_tr != 0
 //////////////////////////////////////////////////
 #define M_TOT (3.0E-7*N_p)  //0.1M_E * N_p  //トレーサーの総質量.
+```
 
+トレーサーの総質量。
+
+```c
 #if EJECTION
 #define PLANET_OF_EJECTION 1
 #define EJECTION_CONE_ANGLE M_PI/180.0*30.0  //30度.
@@ -335,6 +339,11 @@ Mean Longitude (deg)               100.46435
 #define DELTA_HILL 10.0  //惑星を「相互」ヒル半径の何倍離すか（軌道長半径）.
 #define SEPARATE_HILL 5.0  //初期に惑星とトレーサーをヒル半径の何倍以上離すか（相対距離）.
 #endif
+```
+
+トレーサーの初期パラメータ。EJECTIONかORBITATING_SMALL_PARTICLEを
+
+```c
 
 #if FRAGMENTATION
 /* t_fragcheck : 初項 DT_FRAGCHECK，公比 GEOMETRIC_RATIO_FRAG の等比数列 */
@@ -996,5 +1005,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbMTI3ODIxNDc5NSwtMTkyNDIyMjU4NywtMj
+kyMTY0NTEyXX0=
 -->
