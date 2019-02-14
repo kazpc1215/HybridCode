@@ -159,7 +159,7 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 #endif
 ```
 
-gccのver7以降は、関数の引数としてポインタを渡す変更しない場合、constを
+関数の引数としてポインタを渡しつつもそれを変更しない場合（配列とか）、型ｎconst
 
 
 ```c
@@ -947,5 +947,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTIyMzAwNDQ5MV19
+eyJoaXN0b3J5IjpbLTE5Mjg5NDMxNl19
 -->
