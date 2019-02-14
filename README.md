@@ -459,7 +459,8 @@ j 粒子。
 3. k
 ベクトル3成分。
 4. m_j
-j 粒子
+j 粒子の質量。
+5. 
 
 
 ```c:acc.c
@@ -989,6 +990,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2Nzg5OTMyMTAsLTE5MTA4NDg5NywtMT
-kyNDIyMjU4NywtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbMTQ3NTAyNzk4LC0xOTEwODQ4OTcsLTE5Mj
+QyMjI1ODcsLTI5MjE2NDUxMl19
 -->
