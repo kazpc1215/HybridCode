@@ -161,7 +161,7 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 
 関数の引数としてポインタを渡しつつもそれを変更しない場合（配列とか）、型の前にconstをつけることが推奨されているが、gccがver4より古いときにエラーになるので、CONSTというマクロを変わりに書いている。この例ではgccのver7の場合のみCONSTをconstとして定義している。
 
-さらに、gccの新しいversionでは、関数のインライン展開を強制的に行いたいときに、
+さらに、gccでは関数のインライン展開を強制的に行いたいときに、__attribute__((always_inline))を関数名の前につけるが、これ
 
 
 
@@ -950,5 +950,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTI5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbLTE2MTI2OTA1OTAsLTI5MjE2NDUxMl19
 -->
