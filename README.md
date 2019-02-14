@@ -465,7 +465,7 @@ j 粒子の質量。
 6. abs_r[]
 i, j 粒子間の距離。
 
-$\frac{G m_j (\vec)}{r_{ij}^3}$
+$\frac{G m_j (\vec{x}_j - \vec{x}_i)}{r_{ij}^3}$
 
 
 ```c:acc.c
@@ -995,6 +995,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwNjI2NjAzNzgsLTQ0NjI3NjEyNSwtMT
+eyJoaXN0b3J5IjpbLTIwNjQwOTQzMDAsLTQ0NjI3NjEyNSwtMT
 kxMDg0ODk3LC0xOTI0MjIyNTg3LC0yOTIxNjQ1MTJdfQ==
 -->
