@@ -383,7 +383,8 @@ Mean Longitude (deg)               100.46435
 //////////////////////////////////////////////////
 ```
 
-何年分計算するかを設定。重力定数を1とし、太陽質量
+何年分計算するかを設定。重力定数を1とし、質量を太陽質量、距離を1AUで規格化すると、時間は1/2$\pi$年に規格化される。そのため、「年」を設定する場合には2
+
 
 
 ```c
@@ -1010,6 +1011,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY4NTU2MDE2NSwtMTkyNDIyMjU4NywtMj
-kyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbLTE5MDM2NDYxMzksLTE5MjQyMjI1ODcsLT
+I5MjE2NDUxMl19
 -->
