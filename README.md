@@ -383,8 +383,7 @@ Mean Longitude (deg)               100.46435
 //////////////////////////////////////////////////
 ```
 
-何年分計算するかを設定。重力定数を1とし、質量を太陽質量、距離を1AUで規格化すると、時間は1/2$\pi$年に規格化される。そのため、「年」を設定する場合には2
-
+何年分計算するかを設定。重力定数を1とし、質量を太陽質量、距離を1AUで規格化すると、時間は1/2$\pi$年に規格化される。そのため、「年」を設定する場合には2$\pi$を掛ける。
 
 
 ```c
@@ -442,13 +441,9 @@ struct execution_time{
 };
 EXTERN struct execution_time exetime;  //グローバル変数
 #endif
-
-
-
 ```
----
 
-
+各構造体の宣言。orbital_elementsは軌道要素の構造体。fragmentationは破壊
 
 ---
 
@@ -1011,6 +1006,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5MDM2NDYxMzksLTE5MjQyMjI1ODcsLT
-I5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbLTIzNDExMDIyMSwtMTkyNDIyMjU4NywtMj
+kyMTY0NTEyXX0=
 -->
