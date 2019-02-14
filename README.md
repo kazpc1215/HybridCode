@@ -194,11 +194,10 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 #endif
 ```
 
-グローバル変数をこのヘッダーで宣言する際に、externを型の前につける。そして、グローバル変数を定義するファイル（hybrid_main.c）にてこのヘッダーを読み込む前にEXTERNマクロを定義するようにする。その他のファイルではEXTERN
+グローバル変数をこのヘッダーで宣言する際に、externを型の前につける。そして、グローバル変数を定義するファイル（hybrid_main.c）にてこのヘッダーを読み込む前にEXTERNマクロを定義するようにする。その他のファイルではEXTERNを定義しないようにしているため、定義が重複しない。
 
 
 ```c
-
 //////////////////////////////////////////////////
 #define N_tr 100  //初期のトレーサーの数.
 #define N_p 1  //初期の原始惑星の数.
@@ -217,7 +216,7 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 #else
 //#define SOFTENING true  //衝突しないようソフトニング.
 #endif
-
+``
 
 
 EXTERN int global_n;  //グローバル変数.
@@ -969,5 +968,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTEyNjY5OTcwNywtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbLTE1NTY3NTE3NjUsLTI5MjE2NDUxMl19
 -->
