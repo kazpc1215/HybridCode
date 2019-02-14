@@ -150,10 +150,6 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 ---
 
 ```c
-
-
-
-
 #if __GNUC__ == 7
 #define CONST const
 #define ALWAYS_INLINE __attribute__((always_inline))
@@ -161,7 +157,12 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 #define CONST
 #define ALWAYS_INLINE
 #endif
+```
 
+
+
+
+```c
 
 #define DIRECTORY ../data/Ntr1E2_t1E8_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-1_nofrag_acc/  //ディレクトリ.
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
@@ -946,5 +947,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODI4MjU3ODEwXX0=
+eyJoaXN0b3J5IjpbMTAzMTE4OTcyOV19
 -->
