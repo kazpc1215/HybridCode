@@ -173,6 +173,8 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 #define STR(str) STR_(str)
 ```
 
+データを
+
 
 ```c
 
@@ -954,5 +956,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODM2MjMyNjE0LC0yOTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbLTEzODU3MjQ0MjIsLTI5MjE2NDUxMl19
 -->
