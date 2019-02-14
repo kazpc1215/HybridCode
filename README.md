@@ -192,7 +192,12 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 #ifndef EXTERN
 #define EXTERN extern
 #endif
+```
 
+グローバル変数をせんげん
+
+
+```c
 
 //////////////////////////////////////////////////
 #define N_tr 100  //初期のトレーサーの数.
@@ -964,5 +969,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTc1OTQxNDkwOCwtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbMjA2NjczOTAyOSwtMjkyMTY0NTEyXX0=
 -->
