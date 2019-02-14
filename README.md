@@ -255,10 +255,9 @@ EXTERN FILE *fplog;
 
 true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを使って場合分けしている。
 
-実行時間を図る場合、実時間についてはsystem/time.h、
+実行時間を図る場合、実時間についてはsystem/time.h、CPU時間とシステム時間についてはsys/resource.hが必要。
 
 ```c
-
 //////////////////////////////////////////////////
 #define INTERACTION_ALL false  //全粒子同士の重力相互作用.
 #define INTERACTION_PLANET_TRACER true  //惑星とトレーサー間の相互作用.
@@ -984,5 +983,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzk0MTA1NzE2LC0yOTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbMjAyMjYxNDgyMCwtMjkyMTY0NTEyXX0=
 -->
