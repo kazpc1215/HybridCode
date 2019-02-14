@@ -283,19 +283,21 @@ true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを�
 //////////////////////////////////////////////////
 ```
 
-
-
+エルミート法で必要なパラメータ。
 
 
 ```c
-
 #if ELIMINATE_PARTICLE
 //////////////////////////////////////////////////
 #define SOLAR_RADIUS 0.00465040106951872  //[AU] 6.957E10/1.496E13.
 #define SOLAR_SYSTEM_LIMIT 100.0  //[AU]
 //////////////////////////////////////////////////
 #endif
+```
 
+
+
+```c
 
 //////////////////////////////////////////////////
 #define PLANET_MASS 3.0E-6  //地球質量M_E.
@@ -992,5 +994,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTg3NjExMTQwNSwtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbLTUyMjczNzIxNCwtMjkyMTY0NTEyXX0=
 -->
