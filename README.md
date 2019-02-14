@@ -341,7 +341,7 @@ Mean Longitude (deg)               100.46435
 #endif
 ```
 
-トレーサーの初期パラメータ。EJECTIONかORBITATING_SMALL_PARTICLEを
+トレーサーの初期パラメータ。EJECTION（破片として放出）かORBITATING_SMALL_PARTICLE（軌道上を運動）を上で選ぶ。
 
 ```c
 
@@ -1005,6 +1005,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTI3ODIxNDc5NSwtMTkyNDIyMjU4NywtMj
+eyJoaXN0b3J5IjpbMjAyMzcwNzczMywtMTkyNDIyMjU4NywtMj
 kyMTY0NTEyXX0=
 -->
