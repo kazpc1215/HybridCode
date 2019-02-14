@@ -220,7 +220,11 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 
 計算パラメータ。true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを使って場合分けしている。
 
-BREAK_TIMEは実行する実時間（）
+BREAK_TIMEは実行する実時間（秒）。XC50では一回の実行時間が制限されているため。
+
+
+
+
 ```c
 EXTERN int global_n;  //グローバル変数.
 EXTERN int global_n_p;
@@ -251,7 +255,7 @@ EXTERN FILE *fplog;
 
 true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを使って場合分けしている。
 
-XC50では一回の実行時間が制限されているため、を図る場合、
+実行時間を図る場合、実時間についてはsystem/time.h、
 
 ```c
 
@@ -980,5 +984,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTQ5NjE3MDQzMSwtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbMzk0MTA1NzE2LC0yOTIxNjQ1MTJdfQ==
 -->
