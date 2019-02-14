@@ -218,7 +218,7 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 #endif
 ```
 
-計算パラメータ。true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを使って場合分けしているため。
+計算パラメータ。true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを使って場合分けしている。
 
 
 ```c
@@ -249,7 +249,9 @@ EXTERN FILE *fplog;
 //////////////////////////////////////////////////
 ```
 
+true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを使って場合分けしている。
 
+XC50では実行時間を図る場合、
 
 ```c
 
@@ -978,5 +980,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTk1Njk3MTcyMCwtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbLTEwNDE1ODc4NTgsLTI5MjE2NDUxMl19
 -->
