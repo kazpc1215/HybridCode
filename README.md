@@ -267,8 +267,11 @@ true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを�
 #define ORBITING_SMALL_PARTICLE true  //初期に微惑星をケプラー運動させておく.
 #define ELIMINATE_PARTICLE false  //太陽に飲みこまれるか系外へ出て行くかで粒子を消す.
 //////////////////////////////////////////////////
+```
 
+true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを使って場合分けしている。
 
+```c
 //////////////////////////////////////////////////
 //#define G 1.0  //重力定数.
 //#define M_0 1.0  //主星の質量.
@@ -278,7 +281,13 @@ true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを�
 #define ETA 1.0E-2  //刻み幅調整.
 #define ITE_MAX 2  //イテレーション回数（修正子計算の回数はITE_MAX+1）.
 //////////////////////////////////////////////////
+```
 
+
+
+
+
+```c
 
 #if ELIMINATE_PARTICLE
 //////////////////////////////////////////////////
@@ -983,5 +992,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjAyMjYxNDgyMCwtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbMTg3NjExMTQwNSwtMjkyMTY0NTEyXX0=
 -->
