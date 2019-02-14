@@ -314,7 +314,12 @@ Longitude of perihelion (deg)      102.94719
 Mean Longitude (deg)               100.46435
 */
 //////////////////////////////////////////////////
+```
 
+惑星の初期パラメータ。
+
+
+```c
 
 
 #if N_tr != 0
@@ -993,5 +998,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTI3OTYxOTg4NiwtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbLTQ1NjYyNzUxLC0yOTIxNjQ1MTJdfQ==
 -->
