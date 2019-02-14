@@ -98,7 +98,6 @@
 
 ## hybrid.h
 
----
 
 ### インクルードガード
 
@@ -113,7 +112,6 @@
 
 ヘッダーを複数のファイルで読み込む場合、一度読んだものは再度読まないようにする。
 
----
 
 ### ヘッダーをインクルード
 
@@ -147,7 +145,6 @@ SFMTdir/SFMT.h : メルセンヌ・ツイスタ法を使う。
 
 omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopenmpをつける。このオプションがない場合、\_OPENMPは定義されないため、インクルードしないようにしている。
 
----
 
 ```c
 #if __GNUC__ == 7
@@ -163,15 +160,12 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 
 さらに、gccでは関数のインライン展開を強制的に行いたいときに、__attribute__((always_inline))を関数名の前につけるが、これも古いversionでは使えないため、ALWAYS_INLINEというマクロを変わりに書いている。
 
-
-
 ```c
 #define DIRECTORY ../data/Ntr1E2_t1E8_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-1_nofrag_acc/  //ディレクトリ.
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
 ```
 
 データを書き出すファイルを置くディレクトリを指定する。
-
 
 ```c
 #define STR_(str) #str
@@ -180,13 +174,11 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 
 マクロを文字列に変換するマクロ。
 
-
 ```c
 #define INV_3 0.33333333333333333333
 ```
 
 1/3を定義。
-
 
 ```c
 #ifndef EXTERN
@@ -195,7 +187,6 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 ```
 
 グローバル変数をこのヘッダーで宣言する際に、externを型の前につける。そして、グローバル変数を定義するファイル（hybrid_main.c）にてこのヘッダーを読み込む前にEXTERNマクロを定義するようにする。その他のファイルではEXTERNを定義しないようにしているため、定義が重複しない。
-
 
 ```c
 //////////////////////////////////////////////////
@@ -221,9 +212,6 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 計算パラメータ。true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを使って場合分けしている。
 
 BREAK_TIMEは実行する実時間（秒）。XC50では一回の実行時間が制限されているため。
-
-
-
 
 ```c
 EXTERN int global_n;  //グローバル変数.
@@ -285,7 +273,6 @@ true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを�
 
 エルミート法で必要なパラメータ。
 
-
 ```c
 #if ELIMINATE_PARTICLE
 //////////////////////////////////////////////////
@@ -317,7 +304,6 @@ Mean Longitude (deg)               100.46435
 ```
 
 惑星の初期パラメータ。
-
 
 ```c
 #if N_tr != 0
@@ -385,7 +371,6 @@ Mean Longitude (deg)               100.46435
 
 何年分計算するかを設定。重力定数を1とし、質量を太陽質量、距離を1AUで規格化すると、時間は1/2$\pi$年に規格化される。そのため、「年」を設定する場合には2$\pi$を掛ける。
 
-
 ```c
 struct orbital_elements{
   char name[30];  //名前（番号.
@@ -449,14 +434,11 @@ fragmentationは破壊計算に必要なデータをもつ構造体（トレー�
 parameterは破壊計算のパラメータの構造体。
 execution_timeは実行開始からの時間をもつ構造体。
 
----
-
 ## acc.c
 
 
----
-
 ### 相互重力加速度
+
 ```c:acc.c
 /*相互重力加速度*/
 static inline ALWAYS_INLINE double Acceleration_ij(int i, int j, int k, CONST double m_j, CONST double x_0[][4], CONST double abs_r[]){
@@ -1010,6 +992,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzk0MjM2OTY4LC0xOTI0MjIyNTg3LC0yOT
-IxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbLTE4Njg5MDcxNDMsLTE5MjQyMjI1ODcsLT
+I5MjE2NDUxMl19
 -->
