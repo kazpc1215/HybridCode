@@ -463,7 +463,7 @@ j 粒子の質量。
 5. x_0[][4]
 粒子の位置x, y, zの配列。
 6. abs_r[]
-i, j 粒子の
+i, j 粒子間の
 
 ```c:acc.c
 /*相互重力加加速度*/
@@ -992,6 +992,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTQ0NjI3NjEyNSwtMTkxMDg0ODk3LC0xOT
-I0MjIyNTg3LC0yOTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbOTI5NDEyMzcwLC00NDYyNzYxMjUsLTE5MT
+A4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX0=
 -->
