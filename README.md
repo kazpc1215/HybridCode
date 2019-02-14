@@ -99,8 +99,6 @@
 ## hybrid.h
 
 
-### インクルードガード
-
 ```c:hybrid.h
 #ifndef INCLUDED_hybrid_H  //include-guard
 #define INCLUDED_hybrid_H  //include-guard
@@ -111,9 +109,6 @@
 ```
 
 ヘッダーを複数のファイルで読み込む場合、一度読んだものは再度読まないようにする。
-
-
-### ヘッダーをインクルード
 
 ```c:hybrid.h
 #include <stdlib.h>
@@ -435,9 +430,6 @@ parameterは破壊計算のパラメータの構造体。
 execution_timeは実行開始からの時間をもつ構造体。
 
 ## acc.c
-
-
-### 相互重力加速度
 
 ```c:acc.c
 /*相互重力加速度*/
@@ -988,6 +980,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTg2MTk1NzkzNSwtMTkyNDIyMjU4NywtMj
+eyJoaXN0b3J5IjpbLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMj
 kyMTY0NTEyXX0=
 -->
