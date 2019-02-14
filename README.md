@@ -452,6 +452,8 @@ static inline ALWAYS_INLINE double Acceleration_ij(int i, int j, int k, CONST do
 ```
 
 i, j粒子間に働く重力の計算。
+$\frac{G m_j (\vec{x}_j - \vec{x}_i)}{({r_{ij}^2 + \varepsilon^2 )}^{3/2}}$
+
 1. i
 i 粒子。
 2. j
@@ -464,9 +466,6 @@ j 粒子の質量。
 粒子の位置x, y, zの配列。
 6. abs_r[]
 i, j 粒子間の距離。
-
-
-$\frac{G m_j (\vec{x}_j - \vec{x}_i)}{({r_{ij}^2 + \varepsilon^2 )}^{3/2}}$
 
 
 ```c:acc.c
@@ -996,6 +995,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTM0MzYxNTc1MiwtNDQ2Mjc2MTI1LC0xOT
+eyJoaXN0b3J5IjpbMTc0MTU0MjY0OCwtNDQ2Mjc2MTI1LC0xOT
 EwODQ4OTcsLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl19
 -->
