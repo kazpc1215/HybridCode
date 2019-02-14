@@ -178,14 +178,17 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 #define STR(str) STR_(str)
 ```
 
-
+マクロを文字列に変換するマクロ。
 
 
 ```c
-
-
 #define INV_3 0.33333333333333333333
+```
 
+1/3を定義。
+
+
+```c
 #ifndef EXTERN
 #define EXTERN extern
 #endif
@@ -961,5 +964,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODM0NTgxODMxLC0yOTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbMTc1OTQxNDkwOCwtMjkyMTY0NTEyXX0=
 -->
