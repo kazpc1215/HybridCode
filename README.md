@@ -460,7 +460,9 @@ j 粒子。
 ベクトル3成分。
 4. m_j
 j 粒子の質量。
-5. 
+5. x_0[][4]
+粒子の位置x, y, zの配列。
+6. abs_r[]
 
 
 ```c:acc.c
@@ -990,6 +992,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQ3NTAyNzk4LC0xOTEwODQ4OTcsLTE5Mj
-QyMjI1ODcsLTI5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbMjExNzQwNjE0NCwtMTkxMDg0ODk3LC0xOT
+I0MjIyNTg3LC0yOTIxNjQ1MTJdfQ==
 -->
