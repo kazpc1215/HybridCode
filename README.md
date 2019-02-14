@@ -452,6 +452,8 @@ static inline ALWAYS_INLINE double Acceleration_ij(int i, int j, int k, CONST do
 ```
 
 i, j粒子間に働く重力の計算。
+1. i
+a
 
 ```c:acc.c
 /*相互重力加加速度*/
@@ -980,6 +982,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMj
-kyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbNDA0OTAxNDE2LC0xOTEwODQ4OTcsLTE5Mj
+QyMjI1ODcsLTI5MjE2NDUxMl19
 -->
