@@ -383,7 +383,7 @@ Mean Longitude (deg)               100.46435
 //////////////////////////////////////////////////
 ```
 
-
+何年分計算するかを設定。重力定数を1とし、太陽質量
 
 
 ```c
@@ -1010,6 +1010,6 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTU0MjY1OTg1NiwtMTkyNDIyMjU4NywtMj
+eyJoaXN0b3J5IjpbMTY4NTU2MDE2NSwtMTkyNDIyMjU4NywtMj
 kyMTY0NTEyXX0=
 -->
