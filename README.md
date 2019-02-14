@@ -218,12 +218,10 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 #endif
 ```
 
-計算パラメータ。true, falseはそれぞれ1, 0を意味しており、各関数の中で\#if
+計算パラメータ。true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを使って場合分けしているため。
 
 
 ```c
-
-
 EXTERN int global_n;  //グローバル変数.
 EXTERN int global_n_p;
 EXTERN int global_myid;
@@ -231,8 +229,11 @@ EXTERN sfmt_t sfmt;
 EXTERN FILE *fplog;
 
 //////////////////////////////////////////////////
+```
 
+グローバル変数の宣言。
 
+```c
 //////////////////////////////////////////////////
 #define ENERGY_FILE true  //エネルギー計算&ファイル作成.
 #define ORBITALELEMENTS_FILE true  //軌道要素計算&ファイル作成.
@@ -246,7 +247,11 @@ EXTERN FILE *fplog;
 #include <sys/resource.h>
 #endif
 //////////////////////////////////////////////////
+```
 
+
+
+```c
 
 //////////////////////////////////////////////////
 #define INTERACTION_ALL false  //全粒子同士の重力相互作用.
@@ -973,5 +978,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODAxNDY5ODExLC0yOTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbLTk1Njk3MTcyMCwtMjkyMTY0NTEyXX0=
 -->
