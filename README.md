@@ -194,7 +194,7 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 #endif
 ```
 
-グローバル変数をせんげん
+グローバル変数をこのヘッダーで宣言する際に、externを型の前につける。そして、グローバル変数を定義するファイル（hy）
 
 
 ```c
@@ -969,5 +969,5 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjA2NjczOTAyOSwtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbNjE5Nzg1NTQwLC0yOTIxNjQ1MTJdfQ==
 -->
