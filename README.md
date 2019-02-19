@@ -1389,15 +1389,9 @@ double AngularMomentum(CONST struct orbital_elements *ele_p, CONST double x_0[][
 位置。
 3. v_0[][4]
 速度。
-4. v_G[]
-重心速度。
-5. v2_c[]
-速度の修正子の大きさの2乗。
-6. r_c[]
-中心星からの距離。
-7. t_dyn
+4. t_dyn
 システム時間。破壊計算で質量は減少するのでその見積もり用。
-8. *frag_p
+5. *frag_p
 破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。
 
 ## heapsort.c
@@ -1531,11 +1525,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjA2NTIxNDQ5LC0xMTY2NTI0NzUsMTM0Mj
-czOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgz
-LC0xNTY3OTcwNDM1LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xND
-IyNDU1NDk4LDk1MTk1MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3
-MDEyLC0xNzU1NTM2MjksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC
-0xMzQwNzk4MTc1LC01MTk2NTUxODIsMTkxOTAxNTczMSw5ODAx
-NDQxNjldfQ==
+eyJoaXN0b3J5IjpbLTE5MzkxOTg2NjEsLTExNjY1MjQ3NSwxMz
+QyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0
+ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MDk3MDkwNjEsLT
+E0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4
+NTcwMTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC0xOTQyNDc2OT
+csLTEzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4
+MDE0NDE2OV19
 -->
