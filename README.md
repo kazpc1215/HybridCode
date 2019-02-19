@@ -530,6 +530,16 @@ static inline ALWAYS_INLINE double Acceleration_indirect(int i, int k, CONST dou
 加速度のindirect項計算。
 $- G m_i \frac{\vec{x}_i}{r_i}$
 
+1. i
+i 粒子。
+2. k
+ベクトル3成分。
+3. m_i
+i 粒子の質量。
+4. x_0[][4]
+粒子の位置$x, y, z$の配列。
+5. r_0[]
+i粒子の原点からの距離（原点は中心星を）。
 ---
 
 ```c:acc.c
@@ -1014,7 +1024,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTkzOTQzMjUxLDE5MTkwMTU3MzEsOTgwMT
-Q0MTY5LC00NDYyNzYxMjUsLTE5MTA4NDg5NywtMTkyNDIyMjU4
-NywtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbLTIxMTY4OTI4OTksMTkxOTAxNTczMSw5OD
+AxNDQxNjksLTQ0NjI3NjEyNSwtMTkxMDg0ODk3LC0xOTI0MjIy
+NTg3LC0yOTIxNjQ1MTJdfQ==
 -->
