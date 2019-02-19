@@ -545,14 +545,18 @@ i 粒子。
 2. x_0[][4]
 初期位置。
 3. v_0[][4]
-速度。
+初期速度。
 4. a_0[][4]
 加速度。
 5. adot_0[][4]
 加加速度。
 6. x_p[][4]
 位置の予測子。
-, double v_p[][4], double r_p[], double v2_p[], double r_dot_v[], CONST double Dt[]
+7. v_p[][4]
+速度の予測子。
+8. r_p[]
+
+, double v2_p[], double r_dot_v[], CONST double Dt[]
 
 ## acc.c
 
@@ -1650,7 +1654,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTgzNTM3NTIzNSwtMTI2NDU5MzUyMywxMT
+eyJoaXN0b3J5IjpbLTM0NDE3Nzk1NywtMTI2NDU5MzUyMywxMT
 cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
 MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
 kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
