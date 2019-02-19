@@ -493,7 +493,7 @@ static inline ALWAYS_INLINE double dAcceleration_ij(int i, int j, int k, CONST d
 ```
 
 i, j粒子間の加加速度計算。
-$G m_{\ast}  \left[ \frac { (\vec{v}_j - \vec{v}_i) } { ({r_{ij}^2 + \varepsilon^2 )}^{3/2} } - 3 \frac { \left[ (\vec{v}_j - \vec{v}_i) \cdot (\vec{x}_j - \vec{x}_i) \right] (\vec{x}_j - \vec{x}_i) } { ({r_{ij}^2 + \varepsilon^2 )}^{5/2} } \right]$
+$G m_j  \left[ \frac { (\vec{v}_j - \vec{v}_i) } { ({r_{ij}^2 + \varepsilon^2 )}^{3/2} } - 3 \frac { \left[ (\vec{v}_j - \vec{v}_i) \cdot (\vec{x}_j - \vec{x}_i) \right] (\vec{x}_j - \vec{x}_i) } { ({r_{ij}^2 + \varepsilon^2 )}^{5/2} } \right]$
 
 
 ```c:acc.c
@@ -998,7 +998,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTMxMDM0MzQ2OSw5ODAxNDQxNjksLTQ0Nj
+eyJoaXN0b3J5IjpbMTE3ODgzNTYxNyw5ODAxNDQxNjksLTQ0Nj
 I3NjEyNSwtMTkxMDg0ODk3LC0xOTI0MjIyNTg3LC0yOTIxNjQ1
 MTJdfQ==
 -->
