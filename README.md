@@ -939,7 +939,7 @@ double All_dAcceleration(int i, int k, CONST struct orbital_elements *ele_p, CON
 #endif
 
       if(i!=j){
-	adot_0 += dAcceleration_ij(i,j,k,m_j,x_0,v_0,r_dot_v_ij,abs_r);
+	adot_0 += dAcceleration_ij(i,j,k,m_j,x_0,v_0,r_dot_v_ij,abs_r);	
       }
     }
 
@@ -1117,10 +1117,10 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NT
-E5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUz
-NjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NS
-wtNTE5NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC00NDYy
-NzYxMjUsLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0NT
-EyXX0=
+eyJoaXN0b3J5IjpbMjU0MTgwMzMzLDE2MDk3MDkwNjEsLTE0Mj
+I0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcw
+MTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLT
+EzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0
+NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1OD
+csLTI5MjE2NDUxMl19
 -->
