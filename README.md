@@ -2160,7 +2160,12 @@ void InitialOrbitalElements_Tracer(int i, double x_0[][4], struct orbital_elemen
 トレーサーを初期に円盤状に分布させる場合の初期軌道要素。
 hybrid.h 内でパラメータを決定する。
 
-int i, double x_0[][4], struct orbital_elements *ele_p
+1. i
+i 粒子。
+2. x_0[][4]
+初期位置。惑星からある程度離れたところに粒子を配置したいため、
+3. *ele_p
+軌道要素の構造体ポインタ。
 
 
 
@@ -2282,7 +2287,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTQ1MjI5Njk3MiwtMjA3MjE2OTM4NywxOT
+eyJoaXN0b3J5IjpbMTg2MDk3MDU0MSwtMjA3MjE2OTM4NywxOT
 Q4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3
 ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1Mj
 MsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5
