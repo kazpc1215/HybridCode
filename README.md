@@ -880,6 +880,15 @@ double All_Acceleration(int i, int k, CONST struct orbital_elements *ele_p, CONS
 
 i 粒子の加速度。
 
+1. i
+i 粒子。
+2. k
+ベクトル3成分。
+3. x_0[][4]
+粒子の位置$x, y, z$の配列。
+4. r_0[]
+i 粒子の原点からの距離（原点は中心星を含めた重心）。
+
 ```c:acc.c
 /*全加加速度*/
 double All_dAcceleration(int i, int k, CONST struct orbital_elements *ele_p, CONST double x_0[][4], CONST double v_0[][4], CONST double r_dot_v[], CONST double r_dot_v_ij[], CONST double r_0[], CONST double abs_r[]
@@ -1100,9 +1109,9 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODE4NTkzMzkxLDk1MTk1MzA2MSwtMTgzNT
-E5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2MjksLTc4Njc4MDU1
-MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01MTk2NTUxODIsMT
-kxOTAxNTczMSw5ODAxNDQxNjksLTQ0NjI3NjEyNSwtMTkxMDg0
-ODk3LC0xOTI0MjIyNTg3LC0yOTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC0xOD
+M1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOSwtNzg2Nzgw
+NTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNzUsLTUxOTY1NTE4Mi
+wxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2MTI1LC0xOTEw
+ODQ4OTcsLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl19
 -->
