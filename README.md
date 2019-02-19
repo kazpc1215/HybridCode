@@ -2152,6 +2152,9 @@ void InitialOrbitalElements_Tracer(int i, double x_0[][4], struct orbital_elemen
 #endif  /*ORBITING_SMALL_PARTICLE*/
 ```
 
+トレーサーを初期に円盤状に分布させる場合の初期軌道要素。
+
+
 
 
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
@@ -2272,11 +2275,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjk0Mzk2OTY1LC0yMDcyMTY5Mzg3LDE5ND
-gzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMTg0ODc4
-NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2NDU5MzUyMy
-wxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkz
-ODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwND
-M1LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1
-MTk1MzA2MV19
+eyJoaXN0b3J5IjpbMTk2ODQzNjIwOCwtMjA3MjE2OTM4NywxOT
+Q4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3
+ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1Mj
+MsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5
+Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MD
+QzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5
+NTE5NTMwNjFdfQ==
 -->
