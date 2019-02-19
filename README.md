@@ -983,7 +983,7 @@ i 粒子。
 粒子の位置$x, y, z$の配列。
 5. v_0[][4]
 粒子の速度$v_x, v_y, v_z$の配列。
-6. r_dot_v_ij[]
+6. r_dot_v[]
 i 粒子の位置ベクトルと速度ベクトルの内積の配列。
 6. r_dot_v_ij[]
 i 粒子の位置ベクトルと速度ベクトルの内積の配列。
@@ -1141,11 +1141,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY4NzY1NjQyLC0xNTY3OTcwNDM1LDkxOT
-k1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1MzA2
-MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2MjksLT
-c4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01MTk2
-NTUxODIsMTkxOTAxNTczMSw5ODAxNDQxNjksLTQ0NjI3NjEyNS
-wtMTkxMDg0ODk3LC0xOTI0MjIyNTg3LC0yOTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbLTc4OTUzOTQ5NiwtMTU2Nzk3MDQzNSw5MT
+k5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5NTMw
+NjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNjI5LC
+03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwtNTE5
+NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC00NDYyNzYxMj
+UsLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX0=
 
 -->
