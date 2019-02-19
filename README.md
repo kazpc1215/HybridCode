@@ -773,8 +773,12 @@ a_tmp[]などを新たにローカル関数として定義している理由は�
 6. r_p[]
 中心星からの距離の予測子。
 7. x_c[][4]
+位置の修正子。
+8. v_c[][4]
+速度の修正子。
+9. r_c[]
 
-, double v_c[][4], double r_c[], double v2_c[], double r_dot_v[], CONST double a_0[][4], CONST double adot_0[][4], double a[][4], double adot[][4], double adot2_dt2[][4], double adot3_dt3[][4], CONST double dt_[]
+ , double v2_c[], double r_dot_v[], CONST double a_0[][4], CONST double adot_0[][4], double a[][4], double adot[][4], double adot2_dt2[][4], double adot3_dt3[][4], CONST double dt_[]
 #if FRAGMENTATION
 		   , double t_dyn
 		   , CONST struct fragmentation *frag_p
@@ -1079,8 +1083,8 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjEyMzczNjc0LC0xMzQwNzk4MTc1LC01MT
-k2NTUxODIsMTkxOTAxNTczMSw5ODAxNDQxNjksLTQ0NjI3NjEy
-NSwtMTkxMDg0ODk3LC0xOTI0MjIyNTg3LC0yOTIxNjQ1MTJdfQ
-==
+eyJoaXN0b3J5IjpbMjA1NDYwOTM1NywtMTM0MDc5ODE3NSwtNT
+E5NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC00NDYyNzYx
+MjUsLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX
+0=
 -->
