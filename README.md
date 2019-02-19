@@ -495,6 +495,20 @@ static inline ALWAYS_INLINE double dAcceleration_ij(int i, int j, int k, CONST d
 i, j粒子間の加加速度計算。
 $G m_j  \left[ \frac { (\vec{v}_j - \vec{v}_i) } { ({r_{ij}^2 + \varepsilon^2 )}^{3/2} } - 3 \frac { \left[ (\vec{v}_j - \vec{v}_i) \cdot (\vec{x}_j - \vec{x}_i) \right] (\vec{x}_j - \vec{x}_i) } { ({r_{ij}^2 + \varepsilon^2 )}^{5/2} } \right]$
 
+1. i
+i 粒子。
+2. j
+j 粒子。
+3. k
+ベクトル3成分。
+4. m_j
+j 粒子の質量。
+5. x_0[][4]
+粒子の位置$x, y, z$の配列。
+6. v_0[][4]
+粒子の速度$v_x, v_y, v_z$の配列。
+6. abs_r[]
+i, j 粒子間の距離。
 
 ```c:acc.c
 /*加速度indirect項*/
@@ -998,7 +1012,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5OTYyODYyNjksOTgwMTQ0MTY5LC00ND
-YyNzYxMjUsLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0
-NTEyXX0=
+eyJoaXN0b3J5IjpbMTkxOTAxNTczMSw5ODAxNDQxNjksLTQ0Nj
+I3NjEyNSwtMTkxMDg0ODk3LC0xOTI0MjIyNTg3LC0yOTIxNjQ1
+MTJdfQ==
 -->
