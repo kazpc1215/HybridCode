@@ -1237,6 +1237,91 @@ void Coalescence(int i_col, int j_col, double x_0[][4], double v_0[][4], struct 
 ## energy.c
 エネルギー計算
 
+```c:energy.c
+double Calculate_Energy(CONST struct orbital_elements *ele_p, CONST double x_c[][4]
+#if INDIRECT_TERM
+			, CONST double v_c[][4], CONST double v_G[]
+#else
+			, CONST double v2_c[]
+#endif
+			, CONST double r_c[]
+#if FRAGMENTATION
+			, double t_dyn
+			, CONST struct fragmentation *frag_p
+#endif
+			){
+
+  int i,j;
+  double abs_rij;
+  double E[global_n+1];
+  double E_tot;
+  double m_i,m_j;
+
+#if INDIRECT_TERM
+#ifndef M_0
+  E_tot = 0.5 * (v_G[1]*v_G[1] + v_G[2]*v_G[2] + v_G[3]*v_G[3]);
+#else
+  E_tot = 0.5 * M_0 * (v_G[1]*v_G[1] + v_G[2]*v_G[2] + v_G[3]*v_G[3]);
+#endif
+
+#else
+  E_tot = 0.0;
+#endif
+
+  for(i=1;i<=global_n;++i){
+
+#if FRAGMENTATION
+    m_i = MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p);
+#else
+    m_i = ((ele_p+i)->mass);
+#endif
+
+#if INDIRECT_TERM
+    E[i] = 0.5 * m_i * ((v_c[i][1]-v_G[1])*(v_c[i][1]-v_G[1]) + (v_c[i][2]-v_G[2])*(v_c[i][2]-v_G[2]) + (v_c[i][3]-v_G[3])*(v_c[i][3]-v_G[3]));
+#else
+    E[i] = 0.5 * m_i * v2_c[i];
+#endif
+
+#if !INTERACTION_TEST_PARTICLE
+
+#if INTERACTION_PLANET_TRACER
+    if(i<=global_n_p){
+#endif
+
+      for(j=i+1;j<=global_n;++j){
+
+#if FRAGMENTATION
+	m_j = MassDepletion(j,((ele_p+j)->mass),t_dyn,frag_p);
+#else
+	m_j = ((ele_p+j)->mass);
+#endif
+
+	abs_rij = RelativeDistance(i,j,x_c); //絶対値.
+
+#ifndef G
+	E[i] += - m_i * m_j / abs_rij;  //エネルギー計算.
+#else
+	E[i] += - G * m_i * m_j / abs_rij;  //エネルギー計算.
+#endif
+
+      }  //j loop
+
+#if INTERACTION_PLANET_TRACER
+    }
+#endif
+
+#endif  /*!INTERACTION_TEST_PARTICLE*/
+
+#if !defined(G) && !defined(M_0)
+    E_tot += - m_i / r_c[i] + E[i];
+#else
+    E_tot += - G * M_0 * m_i / r_c[i] + E[i];
+#endif
+
+  }  //i loop
+  return E_tot;
+}
+```
 
 ## heapsort.c
 ヒープソート（階層化タイムステップを導入する際に必要）
@@ -1369,11 +1454,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOT
-M4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0
-MzUsOTE5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOT
-UxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1
-MzYyOSwtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNz
-UsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2
-Mjc2MTI1XX0=
+eyJoaXN0b3J5IjpbNzAzNzc1NzUxLC0xMTY2NTI0NzUsMTM0Mj
+czOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgz
+LC0xNTY3OTcwNDM1LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xND
+IyNDU1NDk4LDk1MTk1MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3
+MDEyLC0xNzU1NTM2MjksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC
+0xMzQwNzk4MTc1LC01MTk2NTUxODIsMTkxOTAxNTczMSw5ODAx
+NDQxNjldfQ==
 -->
