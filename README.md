@@ -878,7 +878,7 @@ double All_Acceleration(int i, int k, CONST struct orbital_elements *ele_p, CONS
 }
 ```
 
-
+i 粒子の加速度。
 
 ```c:acc.c
 /*全加加速度*/
@@ -1100,9 +1100,9 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTUxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mz
-g4NTcwMTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC0xOTQyNDc2
-OTcsLTEzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLD
-k4MDE0NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OTcsLTE5MjQy
-MjI1ODcsLTI5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbODE4NTkzMzkxLDk1MTk1MzA2MSwtMTgzNT
+E5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2MjksLTc4Njc4MDU1
+MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01MTk2NTUxODIsMT
+kxOTAxNTczMSw5ODAxNDQxNjksLTQ0NjI3NjEyNSwtMTkxMDg0
+ODk3LC0xOTI0MjIyNTg3LC0yOTIxNjQ1MTJdfQ==
 -->
