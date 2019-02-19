@@ -971,11 +971,24 @@ double All_dAcceleration(int i, int k, CONST struct orbital_elements *ele_p, CON
 }
 ```
 
-abc
+i 粒子の加加速度。
 
----
-
----
+1. i
+i 粒子。
+2. k
+ベクトル3成分。
+3. *ele_p
+軌道要素の構造体のポインタ。
+4. x_0[][4]
+粒子の位置$x, y, z$の配列。
+5. r_0[]
+i 粒子の原点からの距離（原点は中心星を含めた重心）。
+6. abs_r[]
+i, j 粒子間の距離。
+7. t_dyn
+システム時間。破壊計算で質量は減少するのでその見積もり用。
+8. *frag_p
+破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。
 
 
 ## collision.c
@@ -1117,10 +1130,10 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTE5OTU2MzY1LDE2MDk3MDkwNjEsLTE0Mj
-I0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcw
-MTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLT
-EzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0
-NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1OD
-csLTI5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MD
+k3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4
+OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC
+0xOTQyNDc2OTcsLTEzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOTE5
+MDE1NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OT
+csLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl19
 -->
