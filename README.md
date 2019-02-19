@@ -1329,14 +1329,19 @@ double Calculate_Energy(CONST struct orbital_elements *ele_p, CONST double x_c[]
 軌道要素の構造体ポインタ。
 2. x_c[][4]
 位置の修正子。
-3. v_c[][4], CONST double v_G[]
-#else
-			, CONST double v2_c[]
-#endif
-			, CONST double r_c[]
-#if FRAGMENTATION
-			, double t_dyn
-			, CONST struct fragmentation *frag_p
+3. v_c[][4]
+速度の修正子。
+4. v_G[]
+重心速度。
+5. v2_c[]
+速度の修正子の大きさの2乗。
+6. r_c[]
+中心星からの距離。
+7. t_dyn
+システム時間。破壊計算で質量は減少するのでその見積もり用。
+7. *frag_p
+破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。
+
 
 ## heapsort.c
 ヒープソート（階層化タイムステップを導入する際に必要）
@@ -1469,11 +1474,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTgyNTYwOTkxMSwtMTE2NjUyNDc1LDEzND
-I3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4
-MywtMTU2Nzk3MDQzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMT
-QyMjQ1NTQ5OCw5NTE5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1
-NzAxMiwtMTc1NTUzNjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5Ny
-wtMTM0MDc5ODE3NSwtNTE5NjU1MTgyLDE5MTkwMTU3MzEsOTgw
-MTQ0MTY5XX0=
+eyJoaXN0b3J5IjpbLTIwNDMyMzgxNjUsLTExNjY1MjQ3NSwxMz
+QyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0
+ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MDk3MDkwNjEsLT
+E0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4
+NTcwMTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC0xOTQyNDc2OT
+csLTEzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4
+MDE0NDE2OV19
 -->
