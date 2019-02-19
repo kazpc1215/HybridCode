@@ -1690,6 +1690,15 @@ double MassDepletion(int i, double mass, double t_dyn, CONST struct fragmentatio
 
 破壊による質量減少計算。
 
+1. i
+i 粒子。
+2. mass
+i 粒子の質量（減少前）。
+3. t_dyn
+システム時間。
+4. *frag_p
+破壊計算に必要なデータをもつ構造体ポインタ。
+
 ## neighbor.c
 近傍トレーサーの探索、面密度と平均相対速度の計算
 
@@ -1811,7 +1820,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTEwMDQ1MjE3NywtMTI2NDU5MzUyMywxMT
+eyJoaXN0b3J5IjpbLTY4MDM2MjU1MiwtMTI2NDU5MzUyMywxMT
 cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
 MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
 kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
