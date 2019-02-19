@@ -424,10 +424,15 @@ EXTERN struct execution_time exetime;  //グローバル変数
 ```
 
 各構造体の宣言。
-orbital_elementsは軌道要素の構造体（粒子毎にもつので配列）。
-fragmentationは破壊計算に必要なデータをもつ構造体（トレーサー毎にもつので配列）。
-parameterは破壊計算のパラメータの構造体。
-execution_timeは実行開始からの時間をもつ構造体。
+
+1. orbital_elements
+軌道要素の構造体（粒子毎にもつので配列）。
+2. fragmentation
+破壊計算に必要なデータをもつ構造体（トレーサー毎にもつので配列）。
+3. parameter
+破壊計算のパラメータの構造体。
+4. execution_time
+実行開始からの時間をもつ構造体。
 
 
 
@@ -1655,9 +1660,9 @@ i 粒子。
 2. *ele_p
 軌道要素の構造体ポインタ。
 3. *frag_p
-
-, CONST struct parameter *para_p
-
+破壊計算に必要なデータをもつ構造体ポインタ。
+4. *para_p
+破壊計算のパラメータの
 
 ## neighbor.c
 近傍トレーサーの探索、面密度と平均相対速度の計算
@@ -1780,7 +1785,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEwMTczMDM3OTEsLTEyNjQ1OTM1MjMsMT
+eyJoaXN0b3J5IjpbLTIwMzEyMDEyOTIsLTEyNjQ1OTM1MjMsMT
 E3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3
 MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQzNS
 w5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5
