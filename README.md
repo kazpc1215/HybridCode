@@ -1920,7 +1920,11 @@ void NeighborSearch(int i, double t_dyn, CONST struct orbital_elements *ele_p, s
 
 トレーサーの周りに扇型領域を形成し、その領域に入った近傍のトレーサーから、相対速度の2乗平均平方根、面密度、面数密度を計算する。
 
-
+1. i
+i 粒子。
+2. t_dyn
+システム粒子。
+3. *ele_p, struct fragmentation *frag_p, CONST double x_0[][4]
 
 ```c:neighbor.c
 
@@ -2046,11 +2050,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNj
-Q1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3Mzkw
-MzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMT
-U2Nzk3MDQzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1
-NTQ5OCw5NTE5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMi
-wtMTc1NTUzNjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0
-MDc5ODE3NV19
+eyJoaXN0b3J5IjpbODEzMjI3MzA2LDEwNzQzNDc2MTcsMTA5Nz
+A4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1MjQ3
+NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMj
+M5NDA0ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MDk3MDkw
+NjEsLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LD
+E3Mzg4NTcwMTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC0xOTQy
+NDc2OTddfQ==
 -->
