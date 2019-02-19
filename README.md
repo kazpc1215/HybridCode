@@ -2010,6 +2010,31 @@ j 粒子。
 
 ## orbital_elements.c
 
+```c:orbital_elements.c
+/*P計算*/
+double Calculate_P(int i, int k, CONST struct orbital_elements *ele_p){
+  if(k==1){
+    return cos(((ele_p+i)->omega))*cos(((ele_p+i)->Omega)) - sin(((ele_p+i)->omega))*sin(((ele_p+i)->Omega))*cos(((ele_p+i)->inc));
+  }else if(k==2){
+    return cos(((ele_p+i)->omega))*sin(((ele_p+i)->Omega)) + sin(((ele_p+i)->omega))*cos(((ele_p+i)->Omega))*cos(((ele_p+i)->inc));
+  }else{
+    return sin(((ele_p+i)->omega))*sin(((ele_p+i)->inc));
+  }
+}
+
+
+/*Q計算*/
+double Calculate_Q(int i, int k, CONST struct orbital_elements *ele_p){
+  if(k==1){
+    return -sin(((ele_p+i)->omega))*cos(((ele_p+i)->Omega)) - cos(((ele_p+i)->omega))*sin(((ele_p+i)->Omega))*cos(((ele_p+i)->inc));
+  }else if(k==2){
+    return -sin(((ele_p+i)->omega))*sin(((ele_p+i)->Omega)) + cos(((ele_p+i)->omega))*cos(((ele_p+i)->Omega))*cos(((ele_p+i)->inc));
+  }else{
+    return cos(((ele_p+i)->omega))*sin(((ele_p+i)->inc));
+  }
+}
+```
+
 
 
 
@@ -2126,7 +2151,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5OTk0MzU4NzEsLTE2MjU1Mjk0MzAsLT
+eyJoaXN0b3J5IjpbLTE1NDM3MTQ2NDEsLTE2MjU1Mjk0MzAsLT
 IxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcw
 ODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0Nz
 UsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIz
