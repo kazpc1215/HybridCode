@@ -1670,7 +1670,12 @@ double Depletion_Time(int i, CONST struct fragmentation *frag_p){
 }
 ```
 
-は
+破壊による質量減少タイムスケールの XI 倍を、破壊計算を行う間隔の目安とする。
+
+```c
+
+
+
 
 ## neighbor.c
 近傍トレーサーの探索、面密度と平均相対速度の計算
@@ -1793,7 +1798,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTI1Mjg4NjI3NSwtMTI2NDU5MzUyMywxMT
+eyJoaXN0b3J5IjpbLTEyNjI0Nzg3OCwtMTI2NDU5MzUyMywxMT
 cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
 MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
 kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
