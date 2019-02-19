@@ -1053,7 +1053,13 @@ bool Collision_Judgement(int i_sys, CONST struct orbital_elements *ele_p, CONST 
 軌道要素の構造体ポインタ。
 3. x_p[][4]
 位置の予測子。
-4. , double abs_r[], int *i_col, int *j_col
+4. abs_r[]
+i, j 粒子間の距離。
+5. *i_col
+衝突した粒子番号ポインタ。若い方。
+6. *j_col
+衝突した粒子番号ポインタ。方。
+
 
 ## energy.c
 エネルギー計算
@@ -1190,7 +1196,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTc3MTQ5MTM0MSwxMzQyNzM5MDMxLDUxOT
+eyJoaXN0b3J5IjpbLTIzNTg4ODQ0NywxMzQyNzM5MDMxLDUxOT
 M4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0
 MzUsOTE5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOT
 UxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1
