@@ -1573,7 +1573,7 @@ void HeapSort(CONST int NUM_DATA, CONST double t[], CONST double dt[], CONST dou
 3. dt[]
 粒子毎のタイムステップ。
 4. t_tmp
-エネルギー計算など、すべての粒子をそろえた
+エネルギー計算などを行なって、すべての粒子をそろえた時間。粒子毎の時間を常にこの t_tmp を足す必要がある。
 , int index[]
 
 
@@ -1703,7 +1703,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjEwMjcyMTI2NSwtMTI2NDU5MzUyMywxMT
+eyJoaXN0b3J5IjpbMTk1MDU2OTc2MywtMTI2NDU5MzUyMywxMT
 cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
 MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
 kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
