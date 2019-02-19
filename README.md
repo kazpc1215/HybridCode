@@ -1918,11 +1918,13 @@ void NeighborSearch(int i, double t_dyn, CONST struct orbital_elements *ele_p, s
 }
 ```
 
-近傍トレーサーの探索
+トレーサーの周りに扇型領域を形成し、近傍トレーサーの探索
+
 
 
 ```c:neighbor.c
 
+```
 
 面密度と平均相対速度の計算
 
@@ -2044,11 +2046,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2MjM4MjIzNTUsLTEyNjQ1OTM1MjMsMT
-E3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3
-MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQzNS
-w5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5
-NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNj
-I5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwt
-NTE5NjU1MTgyXX0=
+eyJoaXN0b3J5IjpbNzgwNjQ0MDU2LC0xMjY0NTkzNTIzLDExNz
+AyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAw
+MSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOT
+E5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUz
+MDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOS
+wtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNzUsLTUx
+OTY1NTE4Ml19
 -->
