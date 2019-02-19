@@ -452,7 +452,7 @@ static inline ALWAYS_INLINE double Acceleration_ij(int i, int j, int k, CONST do
 ```
 
 i, j粒子間の加速度計算。
-$\frac{G m_j (\vec{x}_j - \vec{x}_i)}{({r_{ij}^2 + \varepsilon^2 )}^{3/2}}$
+$G m_j \frac{(\vec{x}_j - \vec{x}_i)}{({r_{ij}^2 + \varepsilon^2 )}^{3/2}}$
 
 1. i
 i 粒子。
@@ -998,7 +998,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTE3ODgzNTYxNyw5ODAxNDQxNjksLTQ0Nj
-I3NjEyNSwtMTkxMDg0ODk3LC0xOTI0MjIyNTg3LC0yOTIxNjQ1
-MTJdfQ==
+eyJoaXN0b3J5IjpbLTE5OTYyODYyNjksOTgwMTQ0MTY5LC00ND
+YyNzYxMjUsLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0
+NTEyXX0=
 -->
