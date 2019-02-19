@@ -1672,10 +1672,23 @@ double Depletion_Time(int i, CONST struct fragmentation *frag_p){
 
 破壊による質量減少タイムスケールの XI 倍を、破壊計算を行う間隔の目安とする。
 
-```c
+1. i
+i 粒子。
+2. *frag_p
+破壊計算に必要なデータをもつ構造体ポインタ。
 
+```c:massflux.c
+double MassDepletion(int i, double mass, double t_dyn, CONST struct fragmentation *frag_p){
+  double t_frag = ((frag_p+i)->t_frag);
+  double tau_dep = - ((frag_p+i)->sigma) / ((frag_p+i)->flux);
+  if(i > global_n_p && t_dyn > 1.0E-10){  //惑星でない かつ 初期でない.
+    return mass / (1.0 + (t_dyn - t_frag) / tau_dep);
+  }else
+    return mass;  //惑星の場合は変化させない.
+}
+```
 
-
+破壊による質量減少計算。
 
 ## neighbor.c
 近傍トレーサーの探索、面密度と平均相対速度の計算
@@ -1798,7 +1811,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyNjI0Nzg3OCwtMTI2NDU5MzUyMywxMT
+eyJoaXN0b3J5IjpbMTEwMDQ1MjE3NywtMTI2NDU5MzUyMywxMT
 cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
 MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
 kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
