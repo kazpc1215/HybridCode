@@ -1918,7 +1918,7 @@ void NeighborSearch(int i, double t_dyn, CONST struct orbital_elements *ele_p, s
 }
 ```
 
-トレーサーの周りに扇型領域を形成し、近傍トレーサーの探索
+トレーサーの周りに扇型領域を形成し、その領域に入った近傍のトレーサーから、面密度と相対速度の2乗平均平方根を計算する。
 
 
 
@@ -2046,7 +2046,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNzgwNjQ0MDU2LC0xMjY0NTkzNTIzLDExNz
+eyJoaXN0b3J5IjpbMTA5NzA4ODUzLC0xMjY0NTkzNTIzLDExNz
 AyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAw
 MSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOT
 E5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUz
