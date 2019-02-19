@@ -2035,7 +2035,7 @@ double Calculate_Q(int i, int k, CONST struct orbital_elements *ele_p){
 }
 ```
 
-
+$ {\bm P} = \left( \begin{array} { c } { P _ { x } } \\ { P _ { y } } \\ { P _ { z } } \end{array} \right) \equiv \left( \begin{array} { c } { \cos \omega \cos \Omega - \sin \omega \sin \Omega \cos i } \\ { \cos \omega \sin \Omega + \sin \omega \cos \Omega \cos i } \\ { \sin \omega \sin i } \end{array} \right)$
 
 
 ## SFMT.c
@@ -2151,11 +2151,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE1NDM3MTQ2NDEsLTE2MjU1Mjk0MzAsLT
-IxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcw
-ODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0Nz
-UsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIz
-OTQwNDgzLC0xNTY3OTcwNDM1LDkxOTk1NjM2NSwxNjA5NzA5MD
-YxLC0xNDIyNDU1NDk4LDk1MTk1MzA2MSwtMTgzNTE5ODk1Niwx
-NzM4ODU3MDEyXX0=
+eyJoaXN0b3J5IjpbLTM1NjgzMDU3MSwtMTYyNTUyOTQzMCwtMj
+EwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4
+ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1MjQ3NS
+wxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMjM5
+NDA0ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MDk3MDkwNj
+EsLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LDE3
+Mzg4NTcwMTJdfQ==
 -->
