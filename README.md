@@ -757,7 +757,9 @@ void Corrector_sys(int n_ite, int i_sys, CONST struct orbital_elements *ele_p, C
 ```
 
 修正子計算。
-a_tmp[]などを新たにローカル関数として定義している理由は、加速度の関数All_Accelerationと加加速度の関数All_dAcceleration内で並列化をする際に、別の粒子の加速度、加加速とを抜け駆けで更新しないようにするため。
+
+a_tmp[]などを新たにローカル関数として定義している理由は、加速度の関数All_Accelerationと加加速度の関数All_dAcceleration内で並列化をする際に、別の粒子を抜け駆けで更新しないようにするため。
+
 
 ```c:acc.c
 /*全加速度*/
@@ -1059,7 +1061,8 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjIwODcyNjksLTEzNDA3OTgxNzUsLTUxOT
-Y1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2MTI1
-LC0xOTEwODQ4OTcsLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbLTE0MzAxMjA5MDQsLTEzNDA3OTgxNzUsLT
+UxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2
+MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl
+19
 -->
