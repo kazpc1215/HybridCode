@@ -998,6 +998,52 @@ i, j 粒子間の距離。
 
 ## collision.c
 
+```c:collision.c
+bool Collision_Judgement(int i_sys, CONST struct orbital_elements *ele_p, CONST double x_p[][4], double abs_r[], int *i_col, int *j_col){
+
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+  struct timeval realtime_start, realtime_end;
+  struct rusage usage_start, usage_end;
+  gettimeofday(&realtime_start,NULL);
+  getrusage(RUSAGE_SELF,&usage_start);
+#endif
+
+
+  int j;
+
+  for(j=1;j<=global_n;++j){
+    if(i_sys!=j){
+      abs_r[j] = RelativeDistance(i_sys,j,x_p);  //絶対値.
+      if(abs_r[j] < ((ele_p+i_sys)->radius) + ((ele_p+j)->radius)){
+	(*i_col) = Min_int(i_sys,j);
+	(*j_col) = Max_int(i_sys,j);
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+	gettimeofday(&realtime_end,NULL);
+	getrusage(RUSAGE_SELF,&usage_end);
+	exetime.Collision_Judgement[0] += Cal_time(realtime_start,realtime_end);
+	exetime.Collision_Judgement[1] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
+	exetime.Collision_Judgement[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
+#endif
+
+	return (true);  //衝突した場合.
+      }
+    }
+  }
+
+
+#if EXECUTION_TIME && EXECUTION_TIME_FUNC
+  gettimeofday(&realtime_end,NULL);
+  getrusage(RUSAGE_SELF,&usage_end);
+  exetime.Collision_Judgement[0] += Cal_time(realtime_start,realtime_end);
+  exetime.Collision_Judgement[1] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
+  exetime.Collision_Judgement[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
+#endif
+
+  return (false);  //衝突しない場合.
+}
+```
 
 
 
@@ -1136,11 +1182,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNT
-Y3OTcwNDM1LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1
-NDk4LDk1MTk1MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC
-0xNzU1NTM2MjksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQw
-Nzk4MTc1LC01MTk2NTUxODIsMTkxOTAxNTczMSw5ODAxNDQxNj
-ksLTQ0NjI3NjEyNSwtMTkxMDg0ODk3LC0xOTI0MjIyNTg3LC0y
-OTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbMTQzOTc5Nzk1NywtMTUyOTY3MzU2LDIxMj
+M5NDA0ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MDk3MDkw
+NjEsLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LD
+E3Mzg4NTcwMTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC0xOTQy
+NDc2OTcsLTEzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOTE5MDE1Nz
+MxLDk4MDE0NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OTcsLTE5
+MjQyMjI1ODddfQ==
 -->
