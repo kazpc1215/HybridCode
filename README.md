@@ -1564,7 +1564,7 @@ void HeapSort(CONST int NUM_DATA, CONST double t[], CONST double dt[], CONST dou
 }
 ```
 
-配列 a[] に代入した粒子毎の時間とタイムステップの和を、ヒープソートによって小さい順に並べ、並べ終わった時の要素番号を配列 index[] に代入する。
+配列 a[] に代入した粒子毎の時間とタイムステップの和を、ヒープソートによって小さい順に並べ、並べ終わった時の粒子番号を配列 index[] に代入する。
 
 1. NUM_DATA
 要素数。
@@ -1573,8 +1573,10 @@ void HeapSort(CONST int NUM_DATA, CONST double t[], CONST double dt[], CONST dou
 3. dt[]
 粒子毎のタイムステップ。
 4. t_tmp
-エネルギー計算などを行なって、すべての粒子をそろえた時間。粒子毎の時間を常にこの t_tmp を足す必要がある。
-, int index[]
+エネルギー計算などを行なって、すべての粒子をそろえた時間。粒子毎の時間を出力する際には、常にこの t_tmp を足す必要がある。
+5. index[]
+粒子毎の時間とタイムステップの和を小さい順に並べた粒子番号。
+
 
 
 ## massflux.c
@@ -1703,11 +1705,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTk1MDU2OTc2MywtMTI2NDU5MzUyMywxMT
-cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
-MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
-kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
-MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2Mj
-ksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01
-MTk2NTUxODJdfQ==
+eyJoaXN0b3J5IjpbNDc0MTQxMTQwLC0xMjY0NTkzNTIzLDExNz
+AyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAw
+MSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOT
+E5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUz
+MDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOS
+wtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNzUsLTUx
+OTY1NTE4Ml19
 -->
