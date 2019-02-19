@@ -1814,7 +1814,7 @@ double s_3_FRAG(struct parameter *para_p){
 #endif
 ```
 
-質量フラックスを求める際に必要なパラメータを、計算の初期に数値積分d
+質量フラックスを求める際に必要なパラメータ（$s_1(\alpha), s_2(\alpha), s_3(\alpha)$）を、計算の初期設定の段階で数値積分で求めておく。
 
 
 ## neighbor.c
@@ -1939,11 +1939,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNzAzMjM5MTk2LC0xMjY0NTkzNTIzLDExNz
-AyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAw
-MSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOT
-E5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUz
-MDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOS
-wtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNzUsLTUx
-OTY1NTE4Ml19
+eyJoaXN0b3J5IjpbMTcwNjM5ODE0MSwtMTI2NDU5MzUyMywxMT
+cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
+MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
+kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
+MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2Mj
+ksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01
+MTk2NTUxODJdfQ==
 -->
