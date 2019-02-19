@@ -1612,8 +1612,10 @@ void DownHeap(double a[], int index[], int leaf, int root){
 1. a[]
 小さい順に並べ替えたい1次元配列。
 2. index[]
-並べ替えよ粒子番号。
-, int leaf, int root
+a[] の粒子番号。
+3. leaf
+ヒープの葉の方。
+, int root
 
 ## massflux.c
 衝突・破壊の際の定常質量フラックス（Kobayashi & Tanaka, 2010）を計算
@@ -1741,7 +1743,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTU4NDE1MzcxNCwtMTI2NDU5MzUyMywxMT
+eyJoaXN0b3J5IjpbMTY5OTE1NDI1NiwtMTI2NDU5MzUyMywxMT
 cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
 MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
 kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
