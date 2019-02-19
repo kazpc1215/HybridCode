@@ -534,7 +534,7 @@ static inline void Predictor(int i, CONST double x_0[][4], CONST double v_0[][4]
 
 インライン関数。
 
-内積や距離、
+内積や距離の計算や、int型とdouble型の変数の入れ替え、2つの数字の大小、時間計算
 
 
 ## acc.c
@@ -1633,7 +1633,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA0OTQ3ODc1OSwxMTcwMjIzMDA4LC0xMT
+eyJoaXN0b3J5IjpbMTk1ODM4NzAxMiwxMTcwMjIzMDA4LC0xMT
 Y2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1
 NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LDkxOTk1NjM2NSwxNj
 A5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1MzA2MSwtMTgzNTE5
