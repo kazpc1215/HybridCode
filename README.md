@@ -532,6 +532,10 @@ static inline void Predictor(int i, CONST double x_0[][4], CONST double v_0[][4]
 }
 ```
 
+インライン関数。
+
+内積、
+
 
 ## acc.c
 
@@ -1629,7 +1633,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3OTMzNDQ3NiwtMTE2NjUyNDc1LDEzND
+eyJoaXN0b3J5IjpbMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzND
 I3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4
 MywtMTU2Nzk3MDQzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMT
 QyMjQ1NTQ5OCw5NTE5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1
