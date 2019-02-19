@@ -892,6 +892,10 @@ i 粒子。
 i 粒子の原点からの距離（原点は中心星を含めた重心）。
 6. abs_r[]
 i, j 粒子間の距離。
+7. t_dyn
+システム時間。破壊計算で質量は減少するのでその見積もり用。
+8. *frag_p
+破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。
 
 ```c:acc.c
 /*全加加速度*/
@@ -1113,7 +1117,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTE1MDU5NzM4OSwtMTQyMjQ1NTQ5OCw5NT
+eyJoaXN0b3J5IjpbMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NT
 E5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUz
 NjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NS
 wtNTE5NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC00NDYy
