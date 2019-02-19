@@ -1047,6 +1047,9 @@ bool Collision_Judgement(int i_sys, CONST struct orbital_elements *ele_p, CONST 
 
 衝突判定。
 
+1. i_sys
+システム粒子。
+, CONST struct orbital_elements *ele_p, CONST double x_p[][4], double abs_r[], int *i_col, int *j_col
 
 ## energy.c
 エネルギー計算
@@ -1183,11 +1186,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMz
-k0MDQ4MywtMTU2Nzk3MDQzNSw5MTk5NTYzNjUsMTYwOTcwOTA2
-MSwtMTQyMjQ1NTQ5OCw5NTE5NTMwNjEsLTE4MzUxOTg5NTYsMT
-czODg1NzAxMiwtMTc1NTUzNjI5LC03ODY3ODA1NTAsLTE5NDI0
-NzY5NywtMTM0MDc5ODE3NSwtNTE5NjU1MTgyLDE5MTkwMTU3Mz
-EsOTgwMTQ0MTY5LC00NDYyNzYxMjUsLTE5MTA4NDg5NywtMTky
-NDIyMjU4N119
+eyJoaXN0b3J5IjpbMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mj
+k2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LDkxOTk1NjM2
+NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1MzA2MSwtMT
+gzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2MjksLTc4Njc4
+MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01MTk2NTUxOD
+IsMTkxOTAxNTczMSw5ODAxNDQxNjksLTQ0NjI3NjEyNSwtMTkx
+MDg0ODk3XX0=
 -->
