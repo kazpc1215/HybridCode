@@ -557,8 +557,11 @@ i 粒子。
 8. r_p[]
 中心星からの距離の予測子。
 9. v2_p[]
-速度の予測子の
- , double r_dot_v[], CONST double Dt[]
+速度の予測子の大きさの2乗。
+10. r_dot_v[]
+位置ベクトルと速度ベクトルの内積。
+11. Dt[]
+タイムステップ。（システム時間）ー（粒子毎の時間）
 
 ## acc.c
 
@@ -1656,11 +1659,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTgyMTgyNjgyMCwtMTI2NDU5MzUyMywxMT
-cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
-MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
-kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
-MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2Mj
-ksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01
-MTk2NTUxODJdfQ==
+eyJoaXN0b3J5IjpbNDcyMDI1MDgsLTEyNjQ1OTM1MjMsMTE3MD
+IyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3MDAx
+LC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQzNSw5MT
+k5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5NTMw
+NjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNjI5LC
+03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwtNTE5
+NjU1MTgyXX0=
 -->
