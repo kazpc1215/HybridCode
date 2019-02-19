@@ -1126,7 +1126,96 @@ void Energy_Correction(int i_col, int j_col, CONST double x_0[][4], CONST double
 中心星ポテンシャルエネルギーが変わる量を表すポインタ。
 9. *v_imp
 衝突速度を表すポインタ。
+10. t_dyn
+システム時間。破壊計算で質量は減少するのでその見積もり用。
+11. *frag_p
+破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。
 
+```c:collision.c
+void Coalescence(int i_col, int j_col, double x_0[][4], double v_0[][4], struct orbital_elements *ele_p
+#if FRAGMENTATION
+		 , double t_dyn
+		 , struct fragmentation *frag_p
+#endif
+		 ){
+
+  int k;
+
+  //i_colを新しい合体粒子の番号にする.
+#if FRAGMENTATION
+  ((ele_p+i_col)->mass) = MassDepletion(i_col,((ele_p+i_col)->mass),t_dyn,frag_p) + MassDepletion(j_col,((ele_p+j_col)->mass),t_dyn,frag_p);
+#else
+  ((ele_p+i_col)->mass) = ((ele_p+i_col)->mass) + ((ele_p+j_col)->mass);
+#endif
+  ((ele_p+i_col)->radius) = cbrt(3.0/4.0/M_PI*((ele_p+i_col)->mass)*1.989E33/PLANET_DENSITY)/1.496E13;
+  for(k=1;k<=3;++k){
+    x_0[i_col][k] = x_0[0][k];
+    v_0[i_col][k] = v_0[0][k];
+  }
+
+  if(j_col<=global_n_p){
+
+    //惑星同士の衝突合体
+    //j_colとglobal_n_pを入れ替える.
+    *(ele_p+0) = *(ele_p+j_col);  //構造体のためSwap関数は使えない. 0番目の要素はコピーに使うだけ.
+    *(ele_p+j_col) = *(ele_p+global_n_p);
+    *(ele_p+global_n_p) = *(ele_p+0);
+#if FRAGMENTATION
+    *(frag_p+0) = *(frag_p+j_col);  //構造体のためSwap関数は使えない. 0番目の要素はコピーに使うだけ.
+    *(frag_p+j_col) = *(frag_p+global_n_p);
+    *(frag_p+global_n_p) = *(frag_p+0);
+#endif
+    for(k=1;k<=3;++k){
+      Swap_double(&x_0[j_col][k],&x_0[global_n_p][k]);
+      Swap_double(&v_0[j_col][k],&v_0[global_n_p][k]);
+    }
+
+#if N_tr != 0
+    //global_n_pとglobal_nを入れ替える.
+    *(ele_p+0) = *(ele_p+global_n_p);  //構造体のためSWAP関数は使えない. 0番目の要素はコピーに使うだけ.
+    *(ele_p+global_n_p) = *(ele_p+global_n);
+    *(ele_p+global_n) = *(ele_p+0);
+#if FRAGMENTATION
+    *(frag_p+0) = *(frag_p+global_n_p);  //構造体のためSWAP関数は使えない. 0番目の要素はコピーに使うだけ.
+    *(frag_p+global_n_p) = *(frag_p+global_n);
+    *(frag_p+global_n) = *(frag_p+0);
+#endif
+    for(k=1;k<=3;++k){
+      Swap_double(&x_0[global_n_p][k],&x_0[global_n][k]);
+      Swap_double(&v_0[global_n_p][k],&v_0[global_n][k]);
+    }
+#endif
+
+    //global_n_p,global_nを1つ減らす.
+    global_n_p--;
+    global_n--;
+
+  }else if(j_col>global_n_p){
+
+    //惑星-微惑星の衝突合体
+    //j_colとglobal_nを入れ替える.
+    *(ele_p+0) = *(ele_p+j_col);  //構造体のためSwap関数は使えない. 0番目の要素はコピーに使うだけ.
+    *(ele_p+j_col) = *(ele_p+global_n);
+    *(ele_p+global_n) = *(ele_p+0);
+#if FRAGMENTATION
+    *(frag_p+0) = *(frag_p+j_col);  //構造体のためSwap関数は使えない. 0番目の要素はコピーに使うだけ.
+    *(frag_p+j_col) = *(frag_p+global_n);
+    *(frag_p+global_n) = *(frag_p+0);
+#endif
+    for(k=1;k<=3;++k){
+      Swap_double(&x_0[j_col][k],&x_0[global_n][k]);
+      Swap_double(&v_0[j_col][k],&v_0[global_n][k]);
+    }
+
+    //global_nを1つ減らす.
+    global_n--;
+  }
+
+  return;
+}
+```
+
+合体計算。
 
 ## energy.c
 エネルギー計算
@@ -1263,11 +1352,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE4MTI3Njg0OSwxMzQyNzM5MDMxLDUxOT
-M4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0
-MzUsOTE5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOT
-UxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1
-MzYyOSwtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNz
-UsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2
-Mjc2MTI1XX0=
+eyJoaXN0b3J5IjpbLTIwNTk5OTgwNTAsMTM0MjczOTAzMSw1MT
+kzODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcw
+NDM1LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LD
+k1MTk1MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1
+NTM2MjksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MT
+c1LC01MTk2NTUxODIsMTkxOTAxNTczMSw5ODAxNDQxNjksLTQ0
+NjI3NjEyNV19
 -->
