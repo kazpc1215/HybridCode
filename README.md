@@ -2001,7 +2001,10 @@ double SquareRandomVelocity(int i, int j, CONST struct orbital_elements *ele_p){
 
 相対速度の大きさの2乗を、相対離心率と相対軌道傾斜角から求める。
 
-
+1. i
+i 粒子。
+2. *ele_p
+軌道要素の構造体ポインタ。
 
 ## orbital_elements.c
 初期軌道要素の設定（or 初期位置の設定）、軌道要素計算
@@ -2120,11 +2123,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMT
-g0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2NDU5
-MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMS
-w1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3
-OTcwNDM1LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1ND
-k4LDk1MTk1MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0x
-NzU1NTM2MjldfQ==
+eyJoaXN0b3J5IjpbNjQ2MTI3MDk3LC0xNjI1NTI5NDMwLC0yMT
+A0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4
+NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LD
+EzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0
+MDQ4MywtMTU2Nzk3MDQzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MS
+wtMTQyMjQ1NTQ5OCw5NTE5NTMwNjEsLTE4MzUxOTg5NTYsMTcz
+ODg1NzAxMl19
 -->
