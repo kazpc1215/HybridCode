@@ -1564,7 +1564,7 @@ void HeapSort(CONST int NUM_DATA, CONST double t[], CONST double dt[], CONST dou
 }
 ```
 
-ヒープソートによって、配列 a に代入した、粒子毎の時間とタイムステップの和を
+配列 a[] に代入した粒子毎の時間とタイムステップの和を、ヒープソートによって小さい順に並べ、要素番号を配列 index[] に
 
 
 ## massflux.c
@@ -1693,7 +1693,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA5OTY1MDM4NiwtMTI2NDU5MzUyMywxMT
+eyJoaXN0b3J5IjpbMTA0MjkxMDU0NSwtMTI2NDU5MzUyMywxMT
 cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
 MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
 kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
