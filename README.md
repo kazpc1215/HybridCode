@@ -1925,8 +1925,10 @@ i 粒子。
 2. t_dyn
 システム粒子。
 3. *ele_p
+軌道要素の構造体ポインタ。
+4. *frag_p
 
-, struct fragmentation *frag_p, CONST double x_0[][4]
+, CONST double x_0[][4]
 
 ```c:neighbor.c
 
@@ -2052,11 +2054,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOT
-cwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0
-NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMT
-IzOTQwNDgzLC0xNTY3OTcwNDM1LDkxOTk1NjM2NSwxNjA5NzA5
-MDYxLC0xNDIyNDU1NDk4LDk1MTk1MzA2MSwtMTgzNTE5ODk1Ni
-wxNzM4ODU3MDEyLC0xNzU1NTM2MjksLTc4Njc4MDU1MCwtMTk0
-MjQ3Njk3XX0=
+eyJoaXN0b3J5IjpbMTE0MDgyMjE1MywxODQ4Nzg0MTM0LDEwNz
+QzNDc2MTcsMTA5NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMw
+MDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMT
+UyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOTE5OTU2
+MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC
+0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOSwtNzg2
+NzgwNTUwXX0=
 -->
