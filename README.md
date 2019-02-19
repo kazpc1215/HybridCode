@@ -511,7 +511,8 @@ static inline ALWAYS_INLINE double Acceleration_indirect(int i, int k, CONST dou
 }
 ```
 
-abc
+加速度のindirect項計算。
+$- G M_{}$
 
 ---
 
@@ -997,6 +998,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTgwMTQ0MTY5LC00NDYyNzYxMjUsLTE5MT
-A4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbNjc3OTY3ODg2LDk4MDE0NDE2OSwtNDQ2Mj
+c2MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1ODcsLTI5MjE2NDUx
+Ml19
 -->
