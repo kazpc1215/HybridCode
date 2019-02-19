@@ -800,7 +800,7 @@ a_tmp[]などを新たにローカル関数として定義している理由は�
 19. t_dyn
 システム時間。破壊計算で質量は減少するのでその見積もり用。
 20. *frag_p
-破壊計算に必要なデータをもつ構造体
+破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。
 
 ```c:acc.c
 /*全加速度*/
@@ -1102,9 +1102,9 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTU1OTM0Nzc4OSwxNzM4ODU3MDEyLC0xNz
-U1NTM2MjksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4
-MTc1LC01MTk2NTUxODIsMTkxOTAxNTczMSw5ODAxNDQxNjksLT
-Q0NjI3NjEyNSwtMTkxMDg0ODk3LC0xOTI0MjIyNTg3LC0yOTIx
-NjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMT
+c1NTUzNjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5
+ODE3NSwtNTE5NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC
+00NDYyNzYxMjUsLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMjky
+MTY0NTEyXX0=
 -->
