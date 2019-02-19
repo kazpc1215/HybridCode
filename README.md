@@ -1662,7 +1662,15 @@ i 粒子。
 3. *frag_p
 破壊計算に必要なデータをもつ構造体ポインタ。
 4. *para_p
-破壊計算のパラメータの
+破壊計算のパラメータの構造体ポインタ。
+
+```c:massflux.c
+double Depletion_Time(int i, CONST struct fragmentation *frag_p){
+  return - XI * ((frag_p+i)->sigma) / ((frag_p+i)->flux);
+}
+```
+
+は
 
 ## neighbor.c
 近傍トレーサーの探索、面密度と平均相対速度の計算
@@ -1785,11 +1793,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwMzEyMDEyOTIsLTEyNjQ1OTM1MjMsMT
-E3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3
-MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQzNS
-w5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5
-NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNj
-I5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwt
-NTE5NjU1MTgyXX0=
+eyJoaXN0b3J5IjpbMTI1Mjg4NjI3NSwtMTI2NDU5MzUyMywxMT
+cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
+MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
+kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
+MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2Mj
+ksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01
+MTk2NTUxODJdfQ==
 -->
