@@ -1323,6 +1323,21 @@ double Calculate_Energy(CONST struct orbital_elements *ele_p, CONST double x_c[]
 }
 ```
 
+全エネルギー計算。
+
+1. *ele_p
+軌道要素の構造体ポインタ。
+2. x_c[][4]
+位置の修正子。
+3. v_c[][4], CONST double v_G[]
+#else
+			, CONST double v2_c[]
+#endif
+			, CONST double r_c[]
+#if FRAGMENTATION
+			, double t_dyn
+			, CONST struct fragmentation *frag_p
+
 ## heapsort.c
 ヒープソート（階層化タイムステップを導入する際に必要）
 
@@ -1454,11 +1469,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNzAzNzc1NzUxLC0xMTY2NTI0NzUsMTM0Mj
-czOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgz
-LC0xNTY3OTcwNDM1LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xND
-IyNDU1NDk4LDk1MTk1MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3
-MDEyLC0xNzU1NTM2MjksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC
-0xMzQwNzk4MTc1LC01MTk2NTUxODIsMTkxOTAxNTczMSw5ODAx
-NDQxNjldfQ==
+eyJoaXN0b3J5IjpbMTgyNTYwOTkxMSwtMTE2NjUyNDc1LDEzND
+I3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4
+MywtMTU2Nzk3MDQzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMT
+QyMjQ1NTQ5OCw5NTE5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1
+NzAxMiwtMTc1NTUzNjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5Ny
+wtMTM0MDc5ODE3NSwtNTE5NjU1MTgyLDE5MTkwMTU3MzEsOTgw
+MTQ0MTY5XX0=
 -->
