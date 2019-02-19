@@ -844,7 +844,7 @@ double All_Acceleration(int i, int k, CONST struct orbital_elements *ele_p, CONS
 #endif
 
       if(i!=j){
-	a_0 += Acceleration_ij(i,j,k,m_j,x_0,abs_r);
+		a_0 += Acceleration_ij(i,j,k,m_j,x_0,abs_r);
       }
     }
 
@@ -1102,9 +1102,9 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMT
-c1NTUzNjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5
-ODE3NSwtNTE5NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC
-00NDYyNzYxMjUsLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMjky
-MTY0NTEyXX0=
+eyJoaXN0b3J5IjpbLTE0OTE1MDE2NTIsLTE4MzUxOTg5NTYsMT
+czODg1NzAxMiwtMTc1NTUzNjI5LC03ODY3ODA1NTAsLTE5NDI0
+NzY5NywtMTM0MDc5ODE3NSwtNTE5NjU1MTgyLDE5MTkwMTU3Mz
+EsOTgwMTQ0MTY5LC00NDYyNzYxMjUsLTE5MTA4NDg5NywtMTky
+NDIyMjU4NywtMjkyMTY0NTEyXX0=
 -->
