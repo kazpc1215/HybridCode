@@ -2041,6 +2041,12 @@ $\boldsymbol { P } = \left( \begin{array} { c } { P _ { x } } \\ { P _ { y } } \
 
 $\boldsymbol { Q } = \left( \begin{array} { c } { Q _ { x } } \\ { Q _ { y } } \\ { Q _ { z } } \end{array} \right) \equiv \left( \begin{array} { c } { - \sin \omega \cos \Omega - \cos \omega \sin \Omega \cos i } \\ { - \sin \omega \sin \Omega + \cos \omega \cos \Omega \cos i } \\ { \cos \omega \sin i } \end{array} \right)$
 
+
+$\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
+
+
+$\boldsymbol { V } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$
+
 ## SFMT.c
 メルセンヌ・ツイスタ法による乱数生成
 
@@ -2154,11 +2160,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTk0ODM4OTE0NywtMTYyNTUyOTQzMCwtMj
-EwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4
-ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1MjQ3NS
-wxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMjM5
-NDA0ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MDk3MDkwNj
-EsLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LDE3
-Mzg4NTcwMTJdfQ==
+eyJoaXN0b3J5IjpbLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMT
+YyNTUyOTQzMCwtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQz
+NDc2MTcsMTA5NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMD
+gsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUy
+OTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOTE5OTU2Mz
+Y1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC0x
+ODM1MTk4OTU2XX0=
 -->
