@@ -548,7 +548,8 @@ i 粒子。
 速度。
 4. a_0[][4]
 加速度。
-, CONST double adot_0[][4], double x_p[][4], double v_p[][4], double r_p[], double v2_p[], double r_dot_v[], CONST double Dt[]
+5. adot_0[][4]
+, double x_p[][4], double v_p[][4], double r_p[], double v2_p[], double r_dot_v[], CONST double Dt[]
 
 ## acc.c
 
@@ -1646,11 +1647,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMT
-E2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5Njcz
-NTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQzNSw5MTk5NTYzNjUsMT
-YwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5NTMwNjEsLTE4MzUx
-OTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNjI5LC03ODY3ODA1NT
-AsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwtNTE5NjU1MTgyLDE5
-MTkwMTU3MzFdfQ==
+eyJoaXN0b3J5IjpbMTEzNDM2NzI2LC0xMjY0NTkzNTIzLDExNz
+AyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAw
+MSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOT
+E5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUz
+MDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOS
+wtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNzUsLTUx
+OTY1NTE4Ml19
 -->
