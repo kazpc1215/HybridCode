@@ -595,9 +595,16 @@ static inline ALWAYS_INLINE double External_Acceleration(int i, int k, CONST dou
 }
 ```
 
-abc
 
----
+
+1. i
+i 粒子。
+2. k
+ベクトル3成分。
+3. x_0[][4]
+粒子の位置$x, y, z$の配列。
+4. r_0[]
+i 粒子の原点からの距離（原点は中心星を含めた重心）。
 
 ```c:acc.c
 /*外力加加速度*/
@@ -1040,7 +1047,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MD
-E0NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1
-ODcsLTI5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbLTEzMzA3MzkzNiwtNTE5NjU1MTgyLDE5MT
+kwMTU3MzEsOTgwMTQ0MTY5LC00NDYyNzYxMjUsLTE5MTA4NDg5
+NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX0=
 -->
