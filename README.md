@@ -2035,8 +2035,9 @@ double Calculate_Q(int i, int k, CONST struct orbital_elements *ele_p){
 }
 ```
 
-$ {\bm P} = \left( \begin{array} { c } { P _ { x } } \\ { P _ { y } } \\ { P _ { z } } \end{array} \right) \equiv \left( \begin{array} { c } { \cos \omega \cos \Omega - \sin \omega \sin \Omega \cos i } \\ { \cos \omega \sin \Omega + \sin \omega \cos \Omega \cos i } \\ { \sin \omega \sin i } \end{array} \right)$
+$\boldsymbol { P } = \left( \begin{array} { c } { P _ { x } } \\ { P _ { y } } \\ { P _ { z } } \end{array} \right) \equiv \left( \begin{array} { c } { \cos \omega \cos \Omega - \sin \omega \sin \Omega \cos i } \\ { \cos \omega \sin \Omega + \sin \omega \cos \Omega \cos i } \\ { \sin \omega \sin i } \end{array} \right)$
 
+$\boldsymbol { Q } = \left( \begin{array} { c } { Q _ { x } } \\ { Q _ { y } } \\ { Q _ { z } } \end{array} \right) \equiv \left( \begin{array} { c } { - \sin \omega \cos \Omega - \cos \omega \sin \Omega \cos i } \\ { - \sin \omega \sin \Omega + \cos \omega \cos \Omega \cos i } \\ { \cos \omega \sin i } \end{array} \right)$
 
 ## SFMT.c
 メルセンヌ・ツイスタ法による乱数生成
@@ -2151,7 +2152,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTM1NjgzMDU3MSwtMTYyNTUyOTQzMCwtMj
+eyJoaXN0b3J5IjpbLTgxNTY2MTU2NiwtMTYyNTUyOTQzMCwtMj
 EwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4
 ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1MjQ3NS
 wxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMjM5
