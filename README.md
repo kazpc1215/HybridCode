@@ -1648,7 +1648,15 @@ void MassFlux(int i, CONST struct orbital_elements *ele_p, struct fragmentation 
 }
 ```
 
-質量
+衝突カスケードによる質量フラックス計算。
+
+1. i
+i 粒子。
+2. *ele_p
+軌道要素の構造体ポインタ。
+3. *frag_p
+
+, CONST struct parameter *para_p
 
 
 ## neighbor.c
@@ -1772,11 +1780,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTI5MTg0MjY1MCwtMTI2NDU5MzUyMywxMT
-cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
-MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
-kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
-MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2Mj
-ksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01
-MTk2NTUxODJdfQ==
+eyJoaXN0b3J5IjpbLTEwMTczMDM3OTEsLTEyNjQ1OTM1MjMsMT
+E3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3
+MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQzNS
+w5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5
+NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNj
+I5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwt
+NTE5NjU1MTgyXX0=
 -->
