@@ -1619,8 +1619,36 @@ a[] の粒子番号。
 根。
 
 ## massflux.c
-衝突・破壊の際の定常質量フラックス（Kobayashi & Tanaka, 2010）を計算
 
+```c:massflux.c
+void MassFlux(int i, CONST struct orbital_elements *ele_p, struct fragmentation *frag_p, CONST struct parameter *para_p){
+  double F;
+  double a_inv = 1.0/((ele_p+i)->axis);
+  double alpha = (para_p->alpha);
+  double v = ((frag_p+i)->v_ave);
+  double sigma = ((frag_p+i)->sigma);
+  double s_1 = (para_p->s_1);
+  double s_2 = (para_p->s_2);
+  double s_3 = (para_p->s_3);
+  double Q_D = (para_p->Q_D);
+  double h_0 = (para_p->h_0);
+
+#if !defined(G) && !defined(M_0)
+  F = - (2.0 - alpha) * (2.0 - alpha) / cbrt(M_MAX) * sigma * sigma * sqrt(a_inv * a_inv * a_inv) * h_0;
+#else
+  F = - (2.0 - alpha) * (2.0 - alpha) / cbrt(M_MAX) * sigma * sigma * sqrt(G * M_0 * a_inv * a_inv * a_inv) * h_0;
+#endif
+
+  F *= pow(v * v * 0.5 / Q_D, alpha - 1.0);
+  F *= ((- log(EPSILON_FRAG) + 1.0 / (2.0-B_FRAG)) * s_1 + s_2 + s_3);
+
+  ((frag_p+i)->flux) = F;
+
+  return;
+}
+```
+
+質量
 
 
 ## neighbor.c
@@ -1744,11 +1772,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTcwMTgxMjM4LC0xMjY0NTkzNTIzLDExNz
-AyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAw
-MSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOT
-E5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUz
-MDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOS
-wtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNzUsLTUx
-OTY1NTE4Ml19
+eyJoaXN0b3J5IjpbMTI5MTg0MjY1MCwtMTI2NDU5MzUyMywxMT
+cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
+MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
+kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
+MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2Mj
+ksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01
+MTk2NTUxODJdfQ==
 -->
