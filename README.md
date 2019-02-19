@@ -1857,8 +1857,8 @@ void NeighborSearch(int i, double t_dyn, CONST struct orbital_elements *ele_p, s
     l = 1;
     for(j=global_n_p+1;j<=global_n;j++){  //惑星抜き.
       if(j!=i){
-	radius[j] = sqrt(x_0[j][1]*x_0[j][1] + x_0[j][2]*x_0[j][2]);
-	theta[j] = atan2(x_0[j][2],x_0[j][1]);  //[-pi:pi]
+		radius[j] = sqrt(x_0[j][1]*x_0[j][1] + x_0[j][2]*x_0[j][2]);
+		theta[j] = atan2(x_0[j][2],x_0[j][1]);  //[-pi:pi]
 	if((radius[j]-radius[i]>=0.0 && radius[j]-radius[i]<=((frag_p+i)->delta_r_out)) || (radius[i]-radius[j]>=0.0 && radius[i]-radius[j]<=((frag_p+i)->delta_r_in))){  //動径方向.
 	  if(fabs(theta[j] - theta[i])<=delta_theta || 2.0*M_PI - fabs(theta[j] - theta[i])<=delta_theta){  //角度方向.
 	    ((frag_p+i)->neighborlist[l]) = j;
@@ -1891,9 +1891,9 @@ void NeighborSearch(int i, double t_dyn, CONST struct orbital_elements *ele_p, s
       M += MassDepletion(((frag_p+i)->neighborlist[j]),((ele_p+((frag_p+i)->neighborlist[j]))->mass),t_dyn,frag_p);  //領域iの総質量. 周りのトレーサーjの質量を予測してから足す.
 
       if(isnan(SquareRandomVelocity(i,((frag_p+i)->neighborlist[j]),ele_p))){
-	fprintf(fplog,"i=%d,j=%d\tvij is nan.\n",i,((frag_p+i)->neighborlist[j]));
-	fprintf(fplog,"i=%d\taxis=%e\tecc=%e\tinc=%e\tu=%e\tOmega=%e\tomega=%e\n",i,((ele_p+i)->axis),((ele_p+i)->ecc),((ele_p+i)->inc),((ele_p+i)->u),((ele_p+i)->Omega),((ele_p+i)->omega));
-	fprintf(fplog,"j=%d\taxis=%e\tecc=%e\tinc=%e\tu=%e\tOmega=%e\tomega=%e\n",((frag_p+i)->neighborlist[j]),((ele_p+((frag_p+i)->neighborlist[j]))->axis),((ele_p+((frag_p+i)->neighborlist[j]))->ecc),((ele_p+((frag_p+i)->neighborlist[j]))->inc),((ele_p+((frag_p+i)->neighborlist[j]))->u),((ele_p+((frag_p+i)->neighborlist[j]))->Omega),((ele_p+((frag_p+i)->neighborlist[j]))->omega));
+		fprintf(fplog,"i=%d,j=%d\tvij is nan.\n",i,((frag_p+i)->neighborlist[j]));
+		fprintf(fplog,"i=%d\taxis=%e\tecc=%e\tinc=%e\tu=%e\tOmega=%e\tomega=%e\n",i,((ele_p+i)->axis),((ele_p+i)->ecc),((ele_p+i)->inc),((ele_p+i)->u),((ele_p+i)->Omega),((ele_p+i)->omega));
+		fprintf(fplog,"j=%d\taxis=%e\tecc=%e\tinc=%e\tu=%e\tOmega=%e\tomega=%e\n",((frag_p+i)->neighborlist[j]),((ele_p+((frag_p+i)->neighborlist[j]))->axis),((ele_p+((frag_p+i)->neighborlist[j]))->ecc),((ele_p+((frag_p+i)->neighborlist[j]))->inc),((ele_p+((frag_p+i)->neighborlist[j]))->u),((ele_p+((frag_p+i)->neighborlist[j]))->Omega),((ele_p+((frag_p+i)->neighborlist[j]))->omega));
       }
 
     }
@@ -1918,7 +1918,7 @@ void NeighborSearch(int i, double t_dyn, CONST struct orbital_elements *ele_p, s
 }
 ```
 
-トレーサーの周りに扇型領域を形成し、その領域に入った近傍のトレーサーから、面密度と相対速度の2乗平均平方根を計算する。
+トレーサーの周りに扇型領域を形成し、その領域に入った近傍のトレーサーから、相対速度の2乗平均平方根、面密度、面数密度を計算する。
 
 
 
@@ -2046,11 +2046,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA5NzA4ODUzLC0xMjY0NTkzNTIzLDExNz
-AyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAw
-MSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOT
-E5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUz
-MDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOS
-wtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNzUsLTUx
-OTY1NTE4Ml19
+eyJoaXN0b3J5IjpbMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNj
+Q1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3Mzkw
+MzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMT
+U2Nzk3MDQzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1
+NTQ5OCw5NTE5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMi
+wtMTc1NTUzNjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0
+MDc5ODE3NV19
 -->
