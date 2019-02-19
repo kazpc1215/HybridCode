@@ -792,10 +792,11 @@ a_tmp[]などを新たにローカル関数として定義している理由は�
 15. adot[][4]
 次のステップの加加速度。
 16. adot2_dt2[][4]
-次のステップの加速度の第2次導関数。
+次のステップの加速度の第2次導関数 × タイムステップの2乗。
 17. adot3_dt3[][4]
-次のステップの加速度の第3次導関数。
-, CONST double dt_[]
+次のステップの加速度の第3次導関数 × タイムステップの3乗。
+18. dt_[]
+タイm
 #if FRAGMENTATION
 		   , double t_dyn
 		   , CONST struct fragmentation *frag_p
@@ -1100,8 +1101,8 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTE2NDY2NjAzNSwtMTk0MjQ3Njk3LC0xMz
-QwNzk4MTc1LC01MTk2NTUxODIsMTkxOTAxNTczMSw5ODAxNDQx
-NjksLTQ0NjI3NjEyNSwtMTkxMDg0ODk3LC0xOTI0MjIyNTg3LC
-0yOTIxNjQ1MTJdfQ==
+eyJoaXN0b3J5IjpbNTM2NTU5MzExLC0xOTQyNDc2OTcsLTEzND
+A3OTgxNzUsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2
+OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1ODcsLT
+I5MjE2NDUxMl19
 -->
