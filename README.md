@@ -798,7 +798,7 @@ a_tmp[]などを新たにローカル関数として定義している理由は�
 18. dt_[]
 粒子毎のタイムステップ。
 19. t_dyn
-システム時間。質量
+システム時間。破壊計算で質量は減少するため。
 		   , CONST struct fragmentation *frag_p
 
 ```c:acc.c
@@ -1101,8 +1101,8 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC0xOT
-QyNDc2OTcsLTEzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOTE5MDE1
-NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OTcsLT
-E5MjQyMjI1ODcsLTI5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbMTczODg1NzAxMiwtMTc1NTUzNjI5LC03OD
+Y3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwtNTE5NjU1
+MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC00NDYyNzYxMjUsLT
+E5MTA4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX0=
 -->
