@@ -760,6 +760,16 @@ void Corrector_sys(int n_ite, int i_sys, CONST struct orbital_elements *ele_p, C
 
 a_tmp[]などを新たにローカル関数として定義している理由は、加速度の関数All_Accelerationと加加速度の関数All_dAcceleration内で並列化をする際に、別の粒子を抜け駆けで更新しないようにするため。
 
+1. n_ite
+イテレーション回数。
+2. i_sys
+システム粒子。
+3. *ele_p
+軌道要素
+, CONST double x_p[][4], CONST double v_p[][4], CONST double r_p[], double x_c[][4], double v_c[][4], double r_c[], double v2_c[], double r_dot_v[], CONST double a_0[][4], CONST double adot_0[][4], double a[][4], double adot[][4], double adot2_dt2[][4], double adot3_dt3[][4], CONST double dt_[]
+#if FRAGMENTATION
+		   , double t_dyn
+		   , CONST struct fragmentation *frag_p
 
 ```c:acc.c
 /*全加速度*/
@@ -1061,7 +1071,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE0MzAxMjA5MDQsLTEzNDA3OTgxNzUsLT
+eyJoaXN0b3J5IjpbLTEwNzk1MTA1NTIsLTEzNDA3OTgxNzUsLT
 UxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2
 MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl
 19
