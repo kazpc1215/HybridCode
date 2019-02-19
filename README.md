@@ -625,17 +625,20 @@ static inline ALWAYS_INLINE double External_dAcceleration(int i, int k, CONST do
 }
 ```
 
+加加速度の外力項。
+$- G M_{\ast} \left( \frac{\vec{v}_i}{r_i^3} - 3 \frac{(\vec{})}{} \right)$
+
 1. i
 i 粒子。
 2. k
 ベクトル3成分。
-4. x_0[][4]
+3. x_0[][4]
 粒子の位置$x, y, z$の配列。
-5. v_0[][4]
+4. v_0[][4]
 粒子の速度$v_x, v_y, v_z$の配列。
-6. r_0[]
+5. r_0[]
 i 粒子の原点からの距離（原点は中心星を含めた重心）。
-7. r_dot_v_ij[]
+6. r_dot_v_ij[]
 i 粒子の位置ベクトルと速度ベクトルの内積の配列。
 
 ```c:acc.c
@@ -1057,7 +1060,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQyNjg5NDQ1MywtNTE5NjU1MTgyLDE5MT
-kwMTU3MzEsOTgwMTQ0MTY5LC00NDYyNzYxMjUsLTE5MTA4NDg5
-NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX0=
+eyJoaXN0b3J5IjpbODU0NTA1MTc0LC01MTk2NTUxODIsMTkxOT
+AxNTczMSw5ODAxNDQxNjksLTQ0NjI3NjEyNSwtMTkxMDg0ODk3
+LC0xOTI0MjIyNTg3LC0yOTIxNjQ1MTJdfQ==
 -->
