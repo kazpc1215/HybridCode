@@ -539,7 +539,7 @@ i 粒子の質量。
 4. x_0[][4]
 粒子の位置$x, y, z$の配列。
 5. r_0[]
-i粒子の原点からの距離（原点は中心星を含めた重心）。
+i 粒子の原点からの距離（原点は中心星を含めた重心）。
 
 
 ```c:acc.c
@@ -571,14 +571,13 @@ i 粒子。
 i 粒子の質量。
 4. x_0[][4]
 粒子の位置$x, y, z$の配列。
-6. v_0[][4]
+5. v_0[][4]
 粒子の速度$v_x, v_y, v_z$の配列。
-5. r_0[]
-i粒子の原点からの距離（原点は中心星を含めた重心）。
+6. r_0[]
+i 粒子の原点からの距離（原点は中心星を含めた重心）。
 7. r_dot_v_ij[]
-位置ベクトルと速度ベクトルの内積の配列。
-8. abs_r[]
-i, j 粒子間の距離。
+i 粒子の位置ベクトルと速度ベクトルの内積の配列。
+
 
 
 ```c:acc.c
@@ -1041,7 +1040,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQ5OTQ5MjI4NSwxOTE5MDE1NzMxLDk4MD
+eyJoaXN0b3J5IjpbLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MD
 E0NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1
 ODcsLTI5MjE2NDUxMl19
 -->
