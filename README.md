@@ -1061,6 +1061,53 @@ i, j 粒子間の距離。
 衝突した粒子番号ポインタ。もう一つ。
 
 
+```c:collision.c
+void Energy_Correction(int i_col, int j_col, CONST double x_0[][4], CONST double v_0[][4], CONST struct orbital_elements *ele_p, double *dE_heat, double *dE_grav, double *dE_c, double *v_imp
+#if FRAGMENTATION
+		       , double t_dyn
+		       , CONST struct fragmentation *frag_p
+#endif
+		       ){
+
+  double m_1, m_2;
+  double abs_v2 = SquareOfRelativeVelocity(i_col,j_col,v_0);  //相対速度2乗.
+  double r_p12 = RelativeDistance(i_col,j_col,x_0);  //2粒子間の距離.
+  double r_g12 = RadiusFromCenter(0,x_0);  //2粒子の重心と中心星との距離.
+  double r_1 = RadiusFromCenter(i_col,x_0);
+  double r_2 = RadiusFromCenter(j_col,x_0);
+
+#if FRAGMENTATION
+  m_1 = MassDepletion(i_col,((ele_p+i_col)->mass),t_dyn,frag_p);
+  m_2 = MassDepletion(j_col,((ele_p+j_col)->mass),t_dyn,frag_p);
+#else
+  m_1 = ((ele_p+i_col)->mass);
+  m_2 = ((ele_p+j_col)->mass);
+#endif
+
+  (*dE_heat) = - 0.5 * m_1 * m_2 / (m_1 + m_2) * abs_v2;  //完全合体することで、相対速度分の運動エネルギーが熱エネルギーとなって散逸する.
+
+#ifndef G
+  (*dE_grav) = m_1 * m_2 / r_p12;  //2粒子間の距離に対応する相互重力エネルギーがなくなっている.
+#else
+  (*dE_grav) = G * m_1 * m_2 / r_p12;  //2粒子間の距離に対応する相互重力エネルギーがなくなっている.
+#endif
+
+#if !defined(G) && !defined(M_0)
+  (*dE_c) = - (m_1 + m_2) / r_g12 + m_1 / r_1 + m_2 / r_2;  //中心星ポテンシャルエネルギーが変わる.
+#else
+  (*dE_c) = G * M_0 * (- (m_1 + m_2) / r_g12 + m_1 / r_1 + m_2 / r_2);  //中心星ポテンシャルエネルギーが変わる.
+#endif
+
+  (*v_imp) = sqrt(abs_v2);
+
+  fprintf(fplog,"dE_heat=%e\tdE_grav=%e\tdE_c=%e\tv_imp=%e\n",(*dE_heat),(*dE_grav),(*dE_c),(*v_imp));
+
+  return;
+}
+```
+
+衝突時のエネルギー補正。
+
 ## energy.c
 エネルギー計算
 
@@ -1196,7 +1243,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjAwOTkxMjAwLDEzNDI3MzkwMzEsNTE5Mz
+eyJoaXN0b3J5IjpbMTIzNjU4NTU2LDEzNDI3MzkwMzEsNTE5Mz
 g3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQz
 NSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NT
 E5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUz
