@@ -756,9 +756,7 @@ void Corrector_sys(int n_ite, int i_sys, CONST struct orbital_elements *ele_p, C
 }
 ```
 
-abc
-
----
+修正子計算。
 
 ```c:acc.c
 /*全加速度*/
@@ -1060,7 +1058,8 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOT
-E5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4
-OTcsLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbLTE3MjQxNzI1MjgsLTEzNDA3OTgxNzUsLT
+UxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2
+MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl
+19
 -->
