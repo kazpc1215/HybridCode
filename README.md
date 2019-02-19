@@ -435,7 +435,106 @@ execution_timeは実行開始からの時間をもつ構造体。
 
 インクルードガードあり。
 
-関数のせんg
+関数の宣言が主だが、。
+
+```c:func.h
+//わざとインクルードガードから外し、static付きで定義
+//inline関数
+
+/*x_i,v_iの内積*/
+static inline double InnerProduct(int i, CONST double x[][4], CONST double v[][4]){
+  return x[i][1]*v[i][1] + x[i][2]*v[i][2] + x[i][3]*v[i][3];
+}
+
+/*中心星からの距離*/
+static inline double RadiusFromCenter(int i, CONST double x[][4]){
+  return sqrt(x[i][1]*x[i][1] + x[i][2]*x[i][2] + x[i][3]*x[i][3]);
+}
+
+/*速度の2乗*/
+static inline double SquareOfVelocity(int i, CONST double v[][4]){
+  return v[i][1]*v[i][1] + v[i][2]*v[i][2] + v[i][3]*v[i][3];
+}
+
+/*相対距離*/
+static inline double RelativeDistance(int i, int j, CONST double x[][4]){
+  return sqrt((x[j][1] - x[i][1])*(x[j][1] - x[i][1]) + (x[j][2] - x[i][2])*(x[j][2] - x[i][2]) + (x[j][3] - x[i][3])*(x[j][3] - x[i][3]));
+}
+
+/*相対速度の2乗*/
+static inline double SquareOfRelativeVelocity(int i, int j, CONST double v[][4]){
+  return (v[j][1] - v[i][1])*(v[j][1] - v[i][1]) + (v[j][2] - v[i][2])*(v[j][2] - v[i][2]) + (v[j][3] - v[i][3])*(v[j][3] - v[i][3]);
+}
+
+/*x_ij, v_ijの内積*/
+static inline double RelativeInnerProduct(int i, int j, CONST double x[][4], CONST double v[][4]){
+  return (x[j][1] - x[i][1])*(v[j][1] - v[i][1]) + (x[j][2] - x[i][2])*(v[j][2] - v[i][2]) + (x[j][3] - x[i][3])*(v[j][3] - v[i][3]);
+}
+
+/*Swap*/
+static inline void Swap_double(double *a, double *b){
+  double tmp;
+  tmp = (*a);
+  (*a) = (*b);
+  (*b) = tmp;
+  return;
+}
+
+
+static inline void Swap_int(int *a, int *b){
+  int tmp;
+  tmp = (*a);
+  (*a) = (*b);
+  (*b) = tmp;
+  return;
+}
+
+
+static inline int Min_int(int a, int b){
+  if(a < b){
+    return a;
+  }else{
+    return b;
+  }
+}
+
+
+static inline int Max_int(int a, int b){
+  if(a > b){
+    return a;
+  }else{
+    return b;
+  }
+}
+
+
+static inline double Cal_time(struct timeval time1, struct timeval time2){
+  return (double)(time2.tv_sec - time1.tv_sec) + (double)(time2.tv_usec - time1.tv_usec)*1.0E-6;
+}
+
+
+static inline void Predictor(int i, CONST double x_0[][4], CONST double v_0[][4], CONST double a_0[][4], CONST double adot_0[][4], double x_p[][4], double v_p[][4], double r_p[], double v2_p[], double r_dot_v[], CONST double Dt[]){
+
+  int k;
+  double dt = Dt[i];
+
+  for(k=1;k<=3;++k){
+    //x_p[i][k] = x_0[i][k] + v_0[i][k]*Dt[i] + a_0[i][k]*Dt[i]*Dt[i]/2.0 + adot_0[i][k]*Dt[i]*Dt[i]*Dt[i]/6.0;
+    //v_p[i][k] = v_0[i][k] + a_0[i][k]*Dt[i] + adot_0[i][k]*Dt[i]*Dt[i]/2.0;
+
+    x_p[i][k] = x_0[i][k] + dt * (v_0[i][k] + dt * 0.5 * (a_0[i][k] + adot_0[i][k] * dt * INV_3));
+    v_p[i][k] = v_0[i][k] + dt * (a_0[i][k] + adot_0[i][k] * dt * 0.5);
+  }
+
+
+  r_p[i] = RadiusFromCenter(i,x_p);  //中心星からの距離.
+  v2_p[i] = SquareOfVelocity(i,v_p); //速度の2乗.
+  r_dot_v[i] = InnerProduct(i,x_p,v_p);  //r_i,v_iの内積.
+
+  return;
+}
+```
+
 
 ## acc.c
 
@@ -1533,11 +1632,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2NzA5MDc3MjMsLTExNjY1MjQ3NSwxMz
-QyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0
-ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MDk3MDkwNjEsLT
-E0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4
-NTcwMTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC0xOTQyNDc2OT
-csLTEzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4
-MDE0NDE2OV19
+eyJoaXN0b3J5IjpbMTA4OTY3NzA4MywtMTE2NjUyNDc1LDEzND
+I3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4
+MywtMTU2Nzk3MDQzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMT
+QyMjQ1NTQ5OCw5NTE5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1
+NzAxMiwtMTc1NTUzNjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5Ny
+wtMTM0MDc5ODE3NSwtNTE5NjU1MTgyLDE5MTkwMTU3MzEsOTgw
+MTQ0MTY5XX0=
 -->
