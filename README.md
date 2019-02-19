@@ -1108,6 +1108,13 @@ void Energy_Correction(int i_col, int j_col, CONST double x_0[][4], CONST double
 
 衝突時のエネルギー補正。
 
+1. i_col
+衝突した粒子
+, int j_col, CONST double x_0[][4], CONST double v_0[][4], CONST struct orbital_elements *ele_p, double *dE_heat, double *dE_grav, double *dE_c, double *v_imp
+#if FRAGMENTATION
+		       , double t_dyn
+		       , CONST struct fragmentation *frag_p
+
 ## energy.c
 エネルギー計算
 
@@ -1243,11 +1250,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTIzNjU4NTU2LDEzNDI3MzkwMzEsNTE5Mz
-g3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQz
-NSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NT
-E5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUz
-NjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NS
-wtNTE5NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC00NDYy
-NzYxMjVdfQ==
+eyJoaXN0b3J5IjpbLTEyNTM2MzY0MjEsMTM0MjczOTAzMSw1MT
+kzODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcw
+NDM1LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LD
+k1MTk1MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1
+NTM2MjksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MT
+c1LC01MTk2NTUxODIsMTkxOTAxNTczMSw5ODAxNDQxNjksLTQ0
+NjI3NjEyNV19
 -->
