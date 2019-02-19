@@ -539,8 +539,8 @@ i 粒子の質量。
 4. x_0[][4]
 粒子の位置$x, y, z$の配列。
 5. r_0[]
-i粒子の原点からの距離（原点は中心星を）。
----
+i粒子の原点からの距離（原点は中心星を含めた重心）。
+
 
 ```c:acc.c
 /*加加速度indirect項*/
@@ -1024,7 +1024,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIxMTY4OTI4OTksMTkxOTAxNTczMSw5OD
+eyJoaXN0b3J5IjpbLTE0NTUwMTgxODcsMTkxOTAxNTczMSw5OD
 AxNDQxNjksLTQ0NjI3NjEyNSwtMTkxMDg0ODk3LC0xOTI0MjIy
 NTg3LC0yOTIxNjQ1MTJdfQ==
 -->
