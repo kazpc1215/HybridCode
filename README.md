@@ -2003,7 +2003,9 @@ double SquareRandomVelocity(int i, int j, CONST struct orbital_elements *ele_p){
 
 1. i
 i 粒子。
-2. *ele_p
+2. j
+j 粒子。
+3. *ele_p
 軌道要素の構造体ポインタ。
 
 ## orbital_elements.c
@@ -2123,7 +2125,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjQ2MTI3MDk3LC0xNjI1NTI5NDMwLC0yMT
+eyJoaXN0b3J5IjpbMzM1ODkzMDA0LC0xNjI1NTI5NDMwLC0yMT
 A0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4
 NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LD
 EzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0
