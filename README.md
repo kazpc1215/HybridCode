@@ -507,7 +507,9 @@ j 粒子の質量。
 粒子の位置$x, y, z$の配列。
 6. v_0[][4]
 粒子の速度$v_x, v_y, v_z$の配列。
-6. abs_r[]
+7. r_dot_v_ij[]
+
+9. abs_r[]
 i, j 粒子間の距離。
 
 ```c:acc.c
@@ -1012,7 +1014,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTkxOTAxNTczMSw5ODAxNDQxNjksLTQ0Nj
-I3NjEyNSwtMTkxMDg0ODk3LC0xOTI0MjIyNTg3LC0yOTIxNjQ1
-MTJdfQ==
+eyJoaXN0b3J5IjpbLTIxMzk4ODI2MTgsMTkxOTAxNTczMSw5OD
+AxNDQxNjksLTQ0NjI3NjEyNSwtMTkxMDg0ODk3LC0xOTI0MjIy
+NTg3LC0yOTIxNjQ1MTJdfQ==
 -->
