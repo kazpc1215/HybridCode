@@ -1924,7 +1924,9 @@ void NeighborSearch(int i, double t_dyn, CONST struct orbital_elements *ele_p, s
 i 粒子。
 2. t_dyn
 システム粒子。
-3. *ele_p, struct fragmentation *frag_p, CONST double x_0[][4]
+3. *ele_p
+
+, struct fragmentation *frag_p, CONST double x_0[][4]
 
 ```c:neighbor.c
 
@@ -2050,11 +2052,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODEzMjI3MzA2LDEwNzQzNDc2MTcsMTA5Nz
-A4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1MjQ3
-NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMj
-M5NDA0ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MDk3MDkw
-NjEsLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LD
-E3Mzg4NTcwMTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC0xOTQy
-NDc2OTddfQ==
+eyJoaXN0b3J5IjpbMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOT
+cwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0
+NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMT
+IzOTQwNDgzLC0xNTY3OTcwNDM1LDkxOTk1NjM2NSwxNjA5NzA5
+MDYxLC0xNDIyNDU1NDk4LDk1MTk1MzA2MSwtMTgzNTE5ODk1Ni
+wxNzM4ODU3MDEyLC0xNzU1NTM2MjksLTc4Njc4MDU1MCwtMTk0
+MjQ3Njk3XX0=
 -->
