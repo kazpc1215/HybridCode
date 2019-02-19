@@ -576,7 +576,7 @@ i 粒子の質量。
 6. r_0[]
 i 粒子の原点からの距離（原点は中心星を含めた重心）。
 7. r_dot_v_ij[]
-i 粒子の位置ベクトルと速度ベクトルの内積の配列。
+i, j 粒子の相対位置ベクトルと相対速度ベクトルの内積の配列。
 
 
 
@@ -755,7 +755,6 @@ void Corrector_sys(int n_ite, int i_sys, CONST struct orbital_elements *ele_p, C
   return;
 }
 ```
-
 
 修正子計算。
 
@@ -1141,7 +1140,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTc4OTUzOTQ5NiwtMTU2Nzk3MDQzNSw5MT
+eyJoaXN0b3J5IjpbMTE1MTY4MjA3MiwtMTU2Nzk3MDQzNSw5MT
 k5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5NTMw
 NjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNjI5LC
 03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwtNTE5
