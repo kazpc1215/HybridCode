@@ -1119,7 +1119,7 @@ void Energy_Correction(int i_col, int j_col, CONST double x_0[][4], CONST double
 5. *ele_p
 軌道要素の構造体ポインタ。
 6. *dE_heat
-エネルギ
+相対速度分のエネルギー
 , double *dE_grav, double *dE_c, double *v_imp
 #if FRAGMENTATION
 		       , double t_dyn
@@ -1260,7 +1260,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNDEwMjI1MjE3LDEzNDI3MzkwMzEsNTE5Mz
+eyJoaXN0b3J5IjpbODIwNzY2NDg0LDEzNDI3MzkwMzEsNTE5Mz
 g3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQz
 NSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NT
 E5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUz
