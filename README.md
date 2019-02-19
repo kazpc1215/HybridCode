@@ -1119,15 +1119,14 @@ void Energy_Correction(int i_col, int j_col, CONST double x_0[][4], CONST double
 5. *ele_p
 軌道要素の構造体ポインタ。
 6. *dE_heat
-合体時に相対速度分の運動エネルギーが熱として散逸する。
+合体時に相対速度分の運動エネルギーが熱として散逸する量を表すポインタ。
 7. *dE_grav
-衝突した2粒子間の相互重力エネルギーが消える。
+衝突した2粒子間の相互重力エネルギーが消える量を表すポインタ。
 8. *dE_c
+中心星ポテンシャルエネルギーが変わる量を表すポインタ。
+9. *v_imp
+衝突速度を表すポインタ。
 
-, double *v_imp
-#if FRAGMENTATION
-		       , double t_dyn
-		       , CONST struct fragmentation *frag_p
 
 ## energy.c
 エネルギー計算
@@ -1264,11 +1263,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNDA2NjE5OTYsMTM0MjczOTAzMSw1MTkzOD
-cwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1
-LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MT
-k1MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2
-MjksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC
-01MTk2NTUxODIsMTkxOTAxNTczMSw5ODAxNDQxNjksLTQ0NjI3
-NjEyNV19
+eyJoaXN0b3J5IjpbLTE4MTI3Njg0OSwxMzQyNzM5MDMxLDUxOT
+M4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0
+MzUsOTE5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOT
+UxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1
+MzYyOSwtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNz
+UsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2
+Mjc2MTI1XX0=
 -->
