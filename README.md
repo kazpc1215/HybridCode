@@ -435,12 +435,9 @@ execution_timeは実行開始からの時間をもつ構造体。
 
 インクルードガードあり。
 
-関数の宣言が主だが、。
+関数の宣言が主だが、複数のファイルにある関数からよく呼ばれるような簡単な関数を、インライン関数として定義する。
 
 ```c:func.h
-//わざとインクルードガードから外し、static付きで定義
-//inline関数
-
 /*x_i,v_iの内積*/
 static inline double InnerProduct(int i, CONST double x[][4], CONST double v[][4]){
   return x[i][1]*v[i][1] + x[i][2]*v[i][2] + x[i][3]*v[i][3];
@@ -1632,7 +1629,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA4OTY3NzA4MywtMTE2NjUyNDc1LDEzND
+eyJoaXN0b3J5IjpbLTE3OTMzNDQ3NiwtMTE2NjUyNDc1LDEzND
 I3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4
 MywtMTU2Nzk3MDQzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMT
 QyMjQ1NTQ5OCw5NTE5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1
