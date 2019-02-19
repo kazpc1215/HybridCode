@@ -2077,6 +2077,11 @@ void InitialOrbitalElements_Planet(int i,struct orbital_elements *ele_p){
 惑星の初期軌道要素を設定。
 hybrid.h 内でパラメータを決定する。
 
+1. i
+i 粒子。
+2. *ele_p
+軌道要素の構造体ポインタ。
+
 ```c:orbital_elements.c
 #if ORBITING_SMALL_PARTICLE
 /*トレーサーの初期軌道要素*/
@@ -2153,7 +2158,9 @@ void InitialOrbitalElements_Tracer(int i, double x_0[][4], struct orbital_elemen
 ```
 
 トレーサーを初期に円盤状に分布させる場合の初期軌道要素。
+hybrid.h 内でパラメータを決定する。
 
+int i, double x_0[][4], struct orbital_elements *ele_p
 
 
 
@@ -2275,7 +2282,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTk2ODQzNjIwOCwtMjA3MjE2OTM4NywxOT
+eyJoaXN0b3J5IjpbLTQ1MjI5Njk3MiwtMjA3MjE2OTM4NywxOT
 Q4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3
 ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1Mj
 MsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5
