@@ -508,8 +508,14 @@ static inline int Max_int(int a, int b){
 static inline double Cal_time(struct timeval time1, struct timeval time2){
   return (double)(time2.tv_sec - time1.tv_sec) + (double)(time2.tv_usec - time1.tv_usec)*1.0E-6;
 }
+```
+
+インライン関数。
+
+内積や距離の計算や、int型とdouble型の変数の入れ替え、2つの数字の大小、実行時間計算
 
 
+```c:func.h
 static inline void Predictor(int i, CONST double x_0[][4], CONST double v_0[][4], CONST double a_0[][4], CONST double adot_0[][4], double x_p[][4], double v_p[][4], double r_p[], double v2_p[], double r_dot_v[], CONST double Dt[]){
 
   int k;
@@ -532,10 +538,13 @@ static inline void Predictor(int i, CONST double x_0[][4], CONST double v_0[][4]
 }
 ```
 
-インライン関数。
+予測子計算（インライン関数）。
 
-内積や距離の計算や、int型とdouble型の変数の入れ替え、2つの数字の大小、時間計算
+1. i
+i 粒子。
+2. x_0[][4]
 
+, CONST double v_0[][4], CONST double a_0[][4], CONST double adot_0[][4], double x_p[][4], double v_p[][4], double r_p[], double v2_p[], double r_dot_v[], CONST double Dt[]
 
 ## acc.c
 
@@ -1633,7 +1642,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTk1ODM4NzAxMiwxMTcwMjIzMDA4LC0xMT
+eyJoaXN0b3J5IjpbMTY0NzQwMDIzNywxMTcwMjIzMDA4LC0xMT
 Y2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1
 NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LDkxOTk1NjM2NSwxNj
 A5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1MzA2MSwtMTgzNTE5
