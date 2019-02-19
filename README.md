@@ -555,8 +555,10 @@ i 粒子。
 7. v_p[][4]
 速度の予測子。
 8. r_p[]
-
-, double v2_p[], double r_dot_v[], CONST double Dt[]
+中心星からの距離の予測子。
+9. v2_p[]
+速度の予測子の
+ , double r_dot_v[], CONST double Dt[]
 
 ## acc.c
 
@@ -1654,7 +1656,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTM0NDE3Nzk1NywtMTI2NDU5MzUyMywxMT
+eyJoaXN0b3J5IjpbLTgyMTgyNjgyMCwtMTI2NDU5MzUyMywxMT
 cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
 MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
 kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
