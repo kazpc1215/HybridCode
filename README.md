@@ -765,8 +765,14 @@ a_tmp[]などを新たにローカル関数として定義している理由は�
 2. i_sys
 システム粒子。
 3. *ele_p
-軌道要素
-, CONST double x_p[][4], CONST double v_p[][4], CONST double r_p[], double x_c[][4], double v_c[][4], double r_c[], double v2_c[], double r_dot_v[], CONST double a_0[][4], CONST double adot_0[][4], double a[][4], double adot[][4], double adot2_dt2[][4], double adot3_dt3[][4], CONST double dt_[]
+軌道要素の構造体のポインタ。
+4. x_p[][4]
+位置の予測子。
+5. v_p[][4]
+速度の予測子。
+6. r_p[]
+
+, double x_c[][4], double v_c[][4], double r_c[], double v2_c[], double r_dot_v[], CONST double a_0[][4], CONST double adot_0[][4], double a[][4], double adot[][4], double adot2_dt2[][4], double adot3_dt3[][4], CONST double dt_[]
 #if FRAGMENTATION
 		   , double t_dyn
 		   , CONST struct fragmentation *frag_p
@@ -1071,8 +1077,8 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEwNzk1MTA1NTIsLTEzNDA3OTgxNzUsLT
-UxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2
-MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl
-19
+eyJoaXN0b3J5IjpbMTUxNTMzMDM2OCwtMTM0MDc5ODE3NSwtNT
+E5NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC00NDYyNzYx
+MjUsLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX
+0=
 -->
