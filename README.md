@@ -981,6 +981,8 @@ i 粒子。
 軌道要素の構造体のポインタ。
 4. x_0[][4]
 粒子の位置$x, y, z$の配列。
+5. v_0[][4]
+粒子の速度$v_x, v_y, v_z$の配列。
 5. r_0[]
 i 粒子の原点からの距離（原点は中心星を含めた重心）。
 6. abs_r[]
@@ -990,6 +992,11 @@ i, j 粒子間の距離。
 8. *frag_p
 破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。
 
+
+5. r_0[]
+i 粒子の原点からの距離（原点は中心星を含めた重心）。
+6. r_dot_v_ij[]
+i 粒子の位置ベクトルと速度ベクトルの内積の配列。
 
 ## collision.c
 衝突判定、衝突前後の操作
@@ -1130,10 +1137,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MD
-k3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4
-OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOSwtNzg2NzgwNTUwLC
-0xOTQyNDc2OTcsLTEzNDA3OTgxNzUsLTUxOTY1NTE4MiwxOTE5
-MDE1NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OT
-csLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl19
+eyJoaXN0b3J5IjpbLTIwMDQ3NDk5NCwtMTU2Nzk3MDQzNSw5MT
+k5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5NTMw
+NjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNjI5LC
+03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwtNTE5
+NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC00NDYyNzYxMj
+UsLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX0=
+
 -->
