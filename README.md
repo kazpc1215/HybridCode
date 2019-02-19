@@ -1927,11 +1927,76 @@ i 粒子。
 3. *ele_p
 軌道要素の構造体ポインタ。
 4. *frag_p
-
-, CONST double x_0[][4]
+破壊計算に必要なデータをもつ構造体ポインタ。
+5. x_0[][4]
+位置。
 
 ```c:neighbor.c
+double SquareRandomVelocity(int i, int j, CONST struct orbital_elements *ele_p){
+  double eij2;
+  double iij2;
 
+  eij2 = ((ele_p+i)->ecc) * ((ele_p+i)->ecc) + ((ele_p+j)->ecc) * ((ele_p+j)->ecc) - 2.0 * ((ele_p+i)->ecc) * ((ele_p+j)->ecc) * cos(((ele_p+i)->omega) + ((ele_p+i)->Omega) - ((ele_p+j)->omega) - ((ele_p+j)->Omega));
+
+  iij2 = ((ele_p+i)->inc) * ((ele_p+i)->inc) + ((ele_p+j)->inc) * ((ele_p+j)->inc) - 2.0 * ((ele_p+i)->inc) * ((ele_p+j)->inc) * cos(((ele_p+i)->Omega) - ((ele_p+j)->Omega));
+
+
+  /*
+  if(isnan((ele_p+i)->ecc)){
+    fprintf(fplog,"i=%d\tecc is nan. (in RandomVelocity)\n",i);
+  }
+  if(isnan((ele_p+j)->ecc)){
+    fprintf(fplog,"j=%d\tecc is nan. (in RandomVelocity)\n",j);
+  }
+  if(isnan((ele_p+i)->inc)){
+    fprintf(fplog,"i=%d\tinc is nan. (in RandomVelocity).\n",i);
+  }
+  if(isnan((ele_p+j)->inc)){
+    fprintf(fplog,"j=%d\tinc is nan. (in RandomVelocity)\n",j);
+  }
+  if(isnan((ele_p+i)->omega)){
+    fprintf(fplog,"i=%d\tomega is nan. (in RandomVelocity)\n",i);
+  }
+  if(isnan((ele_p+j)->omega)){
+    fprintf(fplog,"j=%d\tomega is nan. (in RandomVelocity)\n",j);
+  }
+  if(isnan((ele_p+i)->Omega)){
+    fprintf(fplog,"i=%d\tOmega is nan. (in RandomVelocity)\n",i);
+  }
+  if(isnan((ele_p+j)->Omega)){
+    fprintf(fplog,"j=%d\tOmega is nan. (in RandomVelocity)\n",j);
+  }
+  if(isnan(eij2)){
+    fprintf(fplog,"i=%d,j=%d\teij2 is nan. (in RandomVelocity)\n",i,j);
+    return -1;
+  }
+  if(isnan(iij2)){
+    fprintf(fplog,"i=%d,j=%d\tiij2 is nan. (in RandomVelocity)\n",i,j);
+    return -1;
+  }
+  if(isnan((ele_p+i)->axis)){
+    fprintf(fplog,"i=%d\taxis is nan. (in RandomVelocity)\taxis=%f\n",i,((ele_p+i)->axis));
+  }
+  */
+
+  if(
+#if !defined(G) && !defined(M_0)
+     isnan(sqrt((eij2 + iij2)/((ele_p+i)->axis)))
+#else
+     isnan(sqrt((eij2 + iij2)*G*M_0/((ele_p+i)->axis)))
+#endif
+     ){
+    fprintf(fplog,"i=%d,j=%d\tvij is nan.(in RandomVelocity)\n",i,j);
+    fprintf(fplog,"eij2=%e\tiij2=%e\taxis=%e\n",eij2,iij2,((ele_p+i)->axis));
+  }
+
+
+#if !defined(G) && !defined(M_0)
+  return (eij2 + iij2) / ((ele_p+i)->axis);
+#else
+  return (eij2 + iij2) * G * M_0 / ((ele_p+i)->axis);
+#endif
+}
 ```
 
 面密度と平均相対速度の計算
@@ -2054,11 +2119,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTE0MDgyMjE1MywxODQ4Nzg0MTM0LDEwNz
-QzNDc2MTcsMTA5NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMw
-MDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMT
-UyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOTE5OTU2
-MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUzMDYxLC
-0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOSwtNzg2
-NzgwNTUwXX0=
+eyJoaXN0b3J5IjpbLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMD
+c0MzQ3NjE3LDEwOTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIz
+MDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLT
+E1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LDkxOTk1
+NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1MzA2MS
+wtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2MjksLTc4
+Njc4MDU1MF19
 -->
