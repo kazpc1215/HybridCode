@@ -1529,7 +1529,40 @@ double AngularMomentum(CONST struct orbital_elements *ele_p, CONST double x_0[][
 破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。
 
 ## heapsort.c
-ヒープソート（階層化タイムステップを導入する際に必要）
+
+```c
+/* ヒープソートを行う */
+void HeapSort(CONST int NUM_DATA, CONST double t[], CONST double dt[], CONST double t_tmp, int index[]){
+
+  int i, n;
+  int leaf, root;
+  double a[NUM_DATA+1];
+
+  n = NUM_DATA;
+
+  for(i=1;i<=n;i++){
+    index[i] = i;
+    a[i] = t[i] + dt[i] + t_tmp;
+  }
+
+  leaf = n;                           /* 初期値は末尾の要素 */
+  root = n/2;                         /* 初期値はその親 */
+
+  while(root >= 1){                   /* 半順序木を構成 */
+    DownHeap(a,index,leaf,root);
+    root--;
+  }
+
+  while(leaf >= 1){
+    Swap_double(&a[1],&a[leaf]);      /* 半順序木の根と末尾の要素を交換 */
+    Swap_int(&index[1],&index[leaf]);
+    leaf--;                           /* 末尾の要素を半順序木から外す */
+    DownHeap(a,index,leaf,1);         /* 半順序木を再構成する */
+  }
+
+  return;
+}
+```
 
 
 
@@ -1659,11 +1692,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyMTA4NjM5MTEsLTEyNjQ1OTM1MjMsMT
-E3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3
-MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQzNS
-w5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5
-NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNj
-I5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwt
-NTE5NjU1MTgyXX0=
+eyJoaXN0b3J5IjpbLTMzMjMwOTQxOSwtMTI2NDU5MzUyMywxMT
+cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
+MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
+kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
+MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2Mj
+ksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01
+MTk2NTUxODJdfQ==
 -->
