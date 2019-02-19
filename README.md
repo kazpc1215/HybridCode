@@ -2046,7 +2046,37 @@ i 粒子。
 2. k
 ベクトル3成分。
 3. *ele_p
-こ
+軌道要素の構造体ポインタ。
+
+```c:orbital_elements.c
+/*惑星の初期軌道要素*/
+void InitialOrbitalElements_Planet(int i,struct orbital_elements *ele_p){
+
+  sprintf((ele_p+i)->name,"Planet%02d",i);
+  (ele_p+i)->mass = PLANET_MASS;
+  //(ele_p+i)->axis = PLANET_AXIS;  //軌道長半径axisはすでに求めてある.
+  (ele_p+i)->ecc = PLANET_ECC;
+  (ele_p+i)->inc = PLANET_INC;
+  (ele_p+i)->u = rand_func() * 2.0 * M_PI;
+  (ele_p+i)->omega = rand_func() * 2.0 * M_PI;
+  (ele_p+i)->Omega = rand_func() * 2.0 * M_PI;
+
+#ifndef M_0
+  (ele_p+i)->r_h = ((ele_p+i)->axis)*cbrt(((ele_p+i)->mass)/3.0);
+#else
+  (ele_p+i)->r_h = ((ele_p+i)->axis)*cbrt(((ele_p+i)->mass)/M_0/3.0);
+#endif
+
+  (ele_p+i)->radius = cbrt(3.0/4.0/M_PI*((ele_p+i)->mass)*1.989E33/PLANET_DENSITY)/1.496E13;
+  (ele_p+i)->orinum = i;
+
+  return;
+}
+```
+
+惑星の初期軌道要素を設定。
+
+
 
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
 
@@ -2166,11 +2196,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5MDE5MTI3MDAsLTIwNzIxNjkzODcsMT
-k0ODM4OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1MzU4MSwxODQ4
-Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4ODUzLC0xMjY0NTkzNT
-IzLDExNzAyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUx
-OTM4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5Nz
-A0MzUsOTE5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgs
-OTUxOTUzMDYxXX0=
+eyJoaXN0b3J5IjpbLTcwMTI0MDU5LC0yMDcyMTY5Mzg3LDE5ND
+gzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMTg0ODc4
+NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2NDU5MzUyMy
+wxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkz
+ODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwND
+M1LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1
+MTk1MzA2MV19
 -->
