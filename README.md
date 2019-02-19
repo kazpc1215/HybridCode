@@ -1016,15 +1016,15 @@ bool Collision_Judgement(int i_sys, CONST struct orbital_elements *ele_p, CONST 
     if(i_sys!=j){
       abs_r[j] = RelativeDistance(i_sys,j,x_p);  //絶対値.
       if(abs_r[j] < ((ele_p+i_sys)->radius) + ((ele_p+j)->radius)){
-	(*i_col) = Min_int(i_sys,j);
-	(*j_col) = Max_int(i_sys,j);
+		(*i_col) = Min_int(i_sys,j);
+		(*j_col) = Max_int(i_sys,j);
 
 #if EXECUTION_TIME && EXECUTION_TIME_FUNC
-	gettimeofday(&realtime_end,NULL);
-	getrusage(RUSAGE_SELF,&usage_end);
-	exetime.Collision_Judgement[0] += Cal_time(realtime_start,realtime_end);
-	exetime.Collision_Judgement[1] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
-	exetime.Collision_Judgement[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
+		gettimeofday(&realtime_end,NULL);
+		getrusage(RUSAGE_SELF,&usage_end);
+		exetime.Collision_Judgement[0] += Cal_time(realtime_start,realtime_end);
+		exetime.Collision_Judgement[1] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
+		exetime.Collision_Judgement[2] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
 #endif
 
 	return (true);  //衝突した場合.
@@ -1196,11 +1196,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNDg1MDY3Mzc2LDEzNDI3MzkwMzEsNTE5Mz
-g3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQz
-NSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NT
-E5NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUz
-NjI5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NS
-wtNTE5NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC00NDYy
-NzYxMjVdfQ==
+eyJoaXN0b3J5IjpbLTQ1MjY0NzMwNCwxMzQyNzM5MDMxLDUxOT
+M4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0
+MzUsOTE5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOT
+UxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1
+MzYyOSwtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNz
+UsLTUxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2
+Mjc2MTI1XX0=
 -->
