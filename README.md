@@ -1699,8 +1699,127 @@ i 粒子の質量（減少前）。
 4. *frag_p
 破壊計算に必要なデータをもつ構造体ポインタ。
 
+```c:massflux.c
+#if FRAGMENTATION
+double s_1_FRAG_trapezoid(int n, double dx, double ini, CONST struct parameter *para_p){
+  return 0.5 * dx * (s_1_FRAG_integrand(ini + n * dx, para_p) + s_1_FRAG_integrand(ini + (n + 1) * dx, para_p));
+}
+#endif
+
+
+#if FRAGMENTATION
+double s_2_FRAG_trapezoid(int n, double dx, double ini, CONST struct parameter *para_p){
+  return 0.5 * dx * (s_2_FRAG_integrand(ini + n * dx, para_p) + s_2_FRAG_integrand(ini + (n + 1) * dx, para_p));
+}
+#endif
+
+
+#if FRAGMENTATION
+double s_3_FRAG_trapezoid(int n, double dx, double ini, CONST struct parameter *para_p){
+  return 0.5 * dx * (s_3_FRAG_integrand(ini + n * dx, para_p) + s_3_FRAG_integrand(ini + (n + 1) * dx, para_p));
+}
+#endif
+
+
+#if FRAGMENTATION
+double s_1_FRAG_integrand(double x, CONST struct parameter *para_p){
+  return exp((2.0 - (para_p->alpha)) * x) / (1.0 + exp(x));
+}
+#endif
+
+
+#if FRAGMENTATION
+double s_2_FRAG_integrand(double x, CONST struct parameter *para_p){
+  return - exp((2.0 - (para_p->alpha)) * x) / (1.0 + exp(x)) * (x - 2.0 * log(1 + exp(x)));
+}
+#endif
+
+
+#if FRAGMENTATION
+double s_3_FRAG_integrand(double x, CONST struct parameter *para_p){
+  return exp((1.0 - (para_p->alpha)) * x) / (1.0 + exp(x)) * log(1.0 + exp(x));
+}
+#endif
+
+
+#if FRAGMENTATION
+double s_1_FRAG(struct parameter *para_p){
+  int n, n_max;
+  double dx, sum=0.0, sum_pre=0.0;
+  double ini=-36.0, fin=36.0;
+  double eps=1.0E-7;
+
+  n_max = 1;
+  do{
+    dx = (fin - ini) / (double)n_max;
+    sum_pre = sum;
+    sum=0;
+    for(n=0;n<n_max;n++){
+      sum += s_1_FRAG_trapezoid(n, dx, ini, para_p);
+    }
+    //fprintf(fplog,"n_max=%d\n",n_max);
+    n_max *= 2;
+  }while(fabs(sum_pre-sum)>eps);
+
+  return sum;
+}
+#endif
+
+
+#if FRAGMENTATION
+double s_2_FRAG(struct parameter *para_p){
+  int n, n_max;
+  double dx, sum=0.0, sum_pre=0.0;
+  double ini=-36.0, fin=36.0;
+  double eps=1.0E-7;
+
+  n_max = 1;
+  do{
+    dx = (fin - ini) / (double)n_max;
+    sum_pre = sum;
+    sum=0;
+    for(n=0;n<n_max;n++){
+      sum += s_2_FRAG_trapezoid(n, dx, ini, para_p);
+    }
+    //fprintf(fplog,"n_max=%d\n",n_max);
+    n_max *= 2;
+  }while(fabs(sum_pre-sum)>eps);
+
+  return sum;
+}
+#endif
+
+
+#if FRAGMENTATION
+double s_3_FRAG(struct parameter *para_p){
+  int n, n_max;
+  double dx,sum=0.0, sum_pre=0.0;
+  double ini=-36.0, fin=36.0;
+  double eps=1.0E-7;
+
+  n_max = 1;
+  do{
+    dx = (fin - ini) / (double)n_max;
+    sum_pre = sum;
+    sum=0;
+    for(n=0;n<n_max;n++){
+      sum += s_3_FRAG_trapezoid(n, dx, ini, para_p);
+    }
+    //fprintf(fplog,"n_max=%d\n",n_max);
+    n_max *= 2;
+  }while(fabs(sum_pre-sum)>eps);
+
+  return sum;
+}
+#endif
+```
+
+質量フラックスを求める際に必要なパラメータを、計算の初期に数値積分d
+
+
 ## neighbor.c
 近傍トレーサーの探索、面密度と平均相対速度の計算
+
 
 
 ## orbital_elements.c
@@ -1820,11 +1939,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY4MDM2MjU1MiwtMTI2NDU5MzUyMywxMT
-cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
-MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
-kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
-MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2Mj
-ksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01
-MTk2NTUxODJdfQ==
+eyJoaXN0b3J5IjpbNzAzMjM5MTk2LC0xMjY0NTkzNTIzLDExNz
+AyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAw
+MSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOT
+E5OTU2MzY1LDE2MDk3MDkwNjEsLTE0MjI0NTU0OTgsOTUxOTUz
+MDYxLC0xODM1MTk4OTU2LDE3Mzg4NTcwMTIsLTE3NTU1MzYyOS
+wtNzg2NzgwNTUwLC0xOTQyNDc2OTcsLTEzNDA3OTgxNzUsLTUx
+OTY1NTE4Ml19
 -->
