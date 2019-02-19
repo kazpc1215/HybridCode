@@ -1571,8 +1571,10 @@ void HeapSort(CONST int NUM_DATA, CONST double t[], CONST double dt[], CONST dou
 2. t[]
 粒子毎の時間。
 3. dt[]
-
-, CONST double t_tmp, int index[]
+粒子毎のタイムステップ。
+4. t_tmp
+時間
+, int index[]
 
 
 ## massflux.c
@@ -1701,11 +1703,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTYyMjg1OTA1MywtMTI2NDU5MzUyMywxMT
-cwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcw
-MDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LD
-kxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1
-MzA2MSwtMTgzNTE5ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2Mj
-ksLTc4Njc4MDU1MCwtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01
-MTk2NTUxODJdfQ==
+eyJoaXN0b3J5IjpbLTIwNDg5MzA1NTYsLTEyNjQ1OTM1MjMsMT
+E3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3
+MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQzNS
+w5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5
+NTMwNjEsLTE4MzUxOTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNj
+I5LC03ODY3ODA1NTAsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwt
+NTE5NjU1MTgyXX0=
 -->
