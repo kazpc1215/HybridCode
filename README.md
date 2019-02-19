@@ -2077,9 +2077,82 @@ void InitialOrbitalElements_Planet(int i,struct orbital_elements *ele_p){
 惑星の初期軌道要素を設定。
 hybrid.h 内でパラメータを決定する。
 
-```c:
+```c:orbital_elements.c
+#if ORBITING_SMALL_PARTICLE
+/*トレーサーの初期軌道要素*/
+void InitialOrbitalElements_Tracer(int i, double x_0[][4], struct orbital_elements *ele_p){
 
+  //惑星の位置x_0[][4]はすでに求めてあることが前提.
+#if N_p == 3
+  double orbital_r_min = ((ele_p+1)->axis) / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+  double orbital_r_max = ((ele_p+3)->axis) * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#elif N_p == 1
+  double orbital_r_min = ((ele_p+1)->axis) / MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+  double orbital_r_max = ((ele_p+1)->axis) * MutualHillRadius_to_SemimajorAxis(0.5*DELTA_HILL);
+#endif
+
+  int j=0,k=0,flag=0;
+  //double peri=0.0,apo=0.0;
+  double orbital_r=0.0;
+
+  //double index = 0.5;  //f(x) = C x^{-p}.
+
+  sprintf((ele_p+i)->name,"tracer%06d",i-global_n_p);
+  (ele_p+i)->mass = M_TOT/(double)(global_n-global_n_p);  //質量.
+
+  do{
+    flag = 0;
+
+    (ele_p+i)->axis = rand_func() * (orbital_r_max - orbital_r_min) + orbital_r_min;  //面密度がa^{-1}に比例する分布. ==> 面数密度が一様.
+    //(ele_p+i)->axis = pow((pow(orbital_r_max,1.0-index) - pow(orbital_r_min,1.0-index)) * rand_func() + pow(orbital_r_min,1.0-index), 1.0/(1.0-index));  //べき分布.
+
+#if RAYLEIGH_DISTRIBUTION
+    (ele_p+i)->ecc = sqrt(-log(rand_func())) * ECC_RMS;  //離心率.  //Rayleigh分布.
+    (ele_p+i)->inc = sqrt(-log(rand_func())) * INC_RMS;  //軌道傾斜角.  //Rayleigh分布.
+#else
+    (ele_p+i)->ecc = ECC_RMS;  //離心率.
+    (ele_p+i)->inc = INC_RMS;  //軌道傾斜角.
+#endif
+    (ele_p+i)->u = rand_func() * 2.0 * M_PI;
+    (ele_p+i)->omega = rand_func() * 2.0 * M_PI;
+    (ele_p+i)->Omega = rand_func() * 2.0 * M_PI;
+
+    for(k=1;k<=3;++k){
+      x_0[i][k] = ((ele_p+i)->axis) * Calculate_P(i,k,ele_p) * (cos(((ele_p+i)->u)) - ((ele_p+i)->ecc)) + ((ele_p+i)->axis) * sqrt(1.0 - ((ele_p+i)->ecc) * ((ele_p+i)->ecc)) * Calculate_Q(i,k,ele_p) * sin(((ele_p+i)->u));
+    }
+
+    //peri = ((ele_p+i)->axis)*(1.0 - (ele_p+i)->ecc);
+    //apo = ((ele_p+i)->axis)*(1.0 + (ele_p+i)->ecc);
+    orbital_r = RadiusFromCenter(i,x_0);
+
+    if(orbital_r > orbital_r_min && orbital_r < orbital_r_max){  //orbital_r_minからorbital_r_maxの範囲にいる場合.
+
+      for(j=1;j<=global_n_p;++j){
+		if(i!=j){
+		  if(RelativeDistance(i,j,x_0)>SEPARATE_HILL*((ele_p+j)->r_h)){  //それぞれの惑星からSEPARATE_HILLヒル以上離れている場合.
+		    flag += 1;
+		  }
+		}
+      }
+    }
+  }while(flag < global_n_p);  //orbital_r_minからorbital_r_maxの範囲にいる場合，かつglobal_n_p個の全ての惑星からSEPARATE_HILLヒル以上離れている場合のみ抜け出せるループ.
+
+
+#ifndef M_0
+  (ele_p+i)->r_h = ((ele_p+i)->axis) * cbrt(((ele_p+i)->mass) / 3.0);
+#else
+  (ele_p+i)->r_h = ((ele_p+i)->axis) * cbrt(((ele_p+i)->mass) / M_0 / 3.0);
+#endif
+
+  (ele_p+i)->radius = cbrt(3.0 / 4.0 / M_PI * ((ele_p+i)->mass) * 1.989E33 / PLANET_DENSITY) / 1.496E13;
+  (ele_p+i)->orinum = i;
+
+  return;
+}
+#endif  /*ORBITING_SMALL_PARTICLE*/
 ```
+
+
 
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
 
@@ -2199,11 +2272,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjA4Mjg4NDk3NiwtMjA3MjE2OTM4NywxOT
-Q4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3
-ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1Mj
-MsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5
-Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MD
-QzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5
-NTE5NTMwNjFdfQ==
+eyJoaXN0b3J5IjpbNjk0Mzk2OTY1LC0yMDcyMTY5Mzg3LDE5ND
+gzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMTg0ODc4
+NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2NDU5MzUyMy
+wxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1MTkz
+ODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0xNTY3OTcwND
+M1LDkxOTk1NjM2NSwxNjA5NzA5MDYxLC0xNDIyNDU1NDk4LDk1
+MTk1MzA2MV19
 -->
