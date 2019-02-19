@@ -625,9 +625,18 @@ static inline ALWAYS_INLINE double External_dAcceleration(int i, int k, CONST do
 }
 ```
 
-abc
-
----
+1. i
+i 粒子。
+2. k
+ベクトル3成分。
+4. x_0[][4]
+粒子の位置$x, y, z$の配列。
+5. v_0[][4]
+粒子の速度$v_x, v_y, v_z$の配列。
+6. r_0[]
+i 粒子の原点からの距離（原点は中心星を含めた重心）。
+7. r_dot_v_ij[]
+i 粒子の位置ベクトルと速度ベクトルの内積の配列。
 
 ```c:acc.c
 /*i_sys のみの修正子*/
@@ -1048,7 +1057,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY5Njg4MDMxMiwtNTE5NjU1MTgyLDE5MT
+eyJoaXN0b3J5IjpbMTQyNjg5NDQ1MywtNTE5NjU1MTgyLDE5MT
 kwMTU3MzEsOTgwMTQ0MTY5LC00NDYyNzYxMjUsLTE5MTA4NDg5
 NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX0=
 -->
