@@ -561,7 +561,7 @@ static inline ALWAYS_INLINE double dAcceleration_indirect(int i, int k, CONST do
 ```
 
 加加速度のindirect項計算。
-$- G m_i \frac{\vec{V}_i}{r_i}$
+$- G m_i \left( \frac{\vec{v}_i}{r_i^3} - 3  \right)$
 
 1. i
 i 粒子。
@@ -1034,7 +1034,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTExNTg5OTM5MSwxOTE5MDE1NzMxLDk4MD
+eyJoaXN0b3J5IjpbLTc1NTAxNjM0NCwxOTE5MDE1NzMxLDk4MD
 E0NDE2OSwtNDQ2Mjc2MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1
 ODcsLTI5MjE2NDUxMl19
 -->
