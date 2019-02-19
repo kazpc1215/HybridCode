@@ -783,8 +783,12 @@ a_tmp[]などを新たにローカル関数として定義している理由は�
 11. r_dot_v[]
 位置ベクトルと速度ベクトルの内積。
 12. a_0[][4]
-加速度。
-13. , CONST double adot_0[][4], double a[][4], double adot[][4], double adot2_dt2[][4], double adot3_dt3[][4], CONST double dt_[]
+前のステップの加速度。
+13. adot_0[][4]
+前のステップの加加速度。
+14. a[][4]
+加速度
+, double adot[][4], double adot2_dt2[][4], double adot3_dt3[][4], CONST double dt_[]
 #if FRAGMENTATION
 		   , double t_dyn
 		   , CONST struct fragmentation *frag_p
@@ -1089,8 +1093,8 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5ODA0NTQ3MDUsLTEzNDA3OTgxNzUsLT
-UxOTY1NTE4MiwxOTE5MDE1NzMxLDk4MDE0NDE2OSwtNDQ2Mjc2
-MTI1LC0xOTEwODQ4OTcsLTE5MjQyMjI1ODcsLTI5MjE2NDUxMl
-19
+eyJoaXN0b3J5IjpbMTI2OTk5NDQ2NSwtMTM0MDc5ODE3NSwtNT
+E5NjU1MTgyLDE5MTkwMTU3MzEsOTgwMTQ0MTY5LC00NDYyNzYx
+MjUsLTE5MTA4NDg5NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX
+0=
 -->
