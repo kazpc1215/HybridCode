@@ -595,8 +595,8 @@ static inline ALWAYS_INLINE double External_Acceleration(int i, int k, CONST dou
 }
 ```
 
-加速度の外力
-$- G M_{\ast}$
+加速度の外力項。
+$- G M_{\ast} \frac{\vec{x}_i}{r_i^3}$
 
 1. i
 i 粒子。
@@ -1048,7 +1048,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE1MDk2ODE2MiwtNTE5NjU1MTgyLDE5MT
+eyJoaXN0b3J5IjpbLTY5Njg4MDMxMiwtNTE5NjU1MTgyLDE5MT
 kwMTU3MzEsOTgwMTQ0MTY5LC00NDYyNzYxMjUsLTE5MTA4NDg5
 NywtMTkyNDIyMjU4NywtMjkyMTY0NTEyXX0=
 -->
