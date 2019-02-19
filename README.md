@@ -429,6 +429,14 @@ fragmentationは破壊計算に必要なデータをもつ構造体（トレー�
 parameterは破壊計算のパラメータの構造体。
 execution_timeは実行開始からの時間をもつ構造体。
 
+
+
+## func.h
+
+インクルードガードあり。
+
+関数のせんg
+
 ## acc.c
 
 ```c:acc.c
@@ -1525,7 +1533,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5MzkxOTg2NjEsLTExNjY1MjQ3NSwxMz
+eyJoaXN0b3J5IjpbLTE2NzA5MDc3MjMsLTExNjY1MjQ3NSwxMz
 QyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0
 ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2MDk3MDkwNjEsLT
 E0MjI0NTU0OTgsOTUxOTUzMDYxLC0xODM1MTk4OTU2LDE3Mzg4
