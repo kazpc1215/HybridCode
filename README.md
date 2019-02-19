@@ -543,8 +543,12 @@ static inline void Predictor(int i, CONST double x_0[][4], CONST double v_0[][4]
 1. i
 i 粒子。
 2. x_0[][4]
-
-, CONST double v_0[][4], CONST double a_0[][4], CONST double adot_0[][4], double x_p[][4], double v_p[][4], double r_p[], double v2_p[], double r_dot_v[], CONST double Dt[]
+位置。
+3. v_0[][4]
+速度。
+4. a_0[][4]
+加速度。
+, CONST double adot_0[][4], double x_p[][4], double v_p[][4], double r_p[], double v2_p[], double r_dot_v[], CONST double Dt[]
 
 ## acc.c
 
@@ -1642,11 +1646,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY0NzQwMDIzNywxMTcwMjIzMDA4LC0xMT
-Y2NTI0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1
-NiwyMTIzOTQwNDgzLC0xNTY3OTcwNDM1LDkxOTk1NjM2NSwxNj
-A5NzA5MDYxLC0xNDIyNDU1NDk4LDk1MTk1MzA2MSwtMTgzNTE5
-ODk1NiwxNzM4ODU3MDEyLC0xNzU1NTM2MjksLTc4Njc4MDU1MC
-wtMTk0MjQ3Njk3LC0xMzQwNzk4MTc1LC01MTk2NTUxODIsMTkx
-OTAxNTczMV19
+eyJoaXN0b3J5IjpbLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMT
+E2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5Njcz
+NTYsMjEyMzk0MDQ4MywtMTU2Nzk3MDQzNSw5MTk5NTYzNjUsMT
+YwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5NTE5NTMwNjEsLTE4MzUx
+OTg5NTYsMTczODg1NzAxMiwtMTc1NTUzNjI5LC03ODY3ODA1NT
+AsLTE5NDI0NzY5NywtMTM0MDc5ODE3NSwtNTE5NjU1MTgyLDE5
+MTkwMTU3MzFdfQ==
 -->
