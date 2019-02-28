@@ -99,17 +99,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>天文台のXC50にて、ジョブを投げるシェルスクリプト</p>
 <h1 id="ソースコードの詳細">3.ソースコードの詳細</h1>
 <h2 id="hybrid.h-1">hybrid.h</h2>
-<hr />
-<h3 id="インクルードガード">インクルードガード</h3>
 <div class="sourceCode"><pre class="sourceCode c:hybrid.h"><code class="sourceCode c"><span class="pp">#ifndef INCLUDED_hybrid_H  </span><span class="co">//include-guard</span>
 <span class="pp">#define INCLUDED_hybrid_H  </span><span class="co">//include-guard</span>
 .
 .
 .
 <span class="pp">#endif </span><span class="co">//include-guard</span></code></pre></div>
-<p>ヘッダーを複数のファイルで読み込む場合、一度読んだものは再度読まないようにする。</p>
-<hr />
-<h3 id="ヘッダーをインクルード">ヘッダーをインクルード</h3>
+<p>このヘッダーファイルを複数のファイルで読み込む場合、一度読んだものは再度読まないようにする。</p>
 <div class="sourceCode"><pre class="sourceCode c:hybrid.h"><code class="sourceCode c"><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span>
 <span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span>
 <span class="pp">#include </span><span class="im">&lt;math.h&gt;</span>
@@ -130,34 +126,28 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>mpi.h : MPI並列に使う。Macには標準では入っていないので、Macportsとかで入れ、コンパイルオプションでライブラリなどを指定する。天文台のXC50ではコンパイルオプションはいらない。</p>
 <p>SFMTdir/SFMT.h : メルセンヌ・ツイスタ法を使う。</p>
 <p>omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopenmpをつける。このオプションがない場合、_OPENMPは定義されないため、インクルードしないようにしている。</p>
-<hr />
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">
-
-
-
-<span class="pp">#if __GNUC__ == 7</span>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#if __GNUC__ == 7</span>
 <span class="pp">#define CONST const</span>
 <span class="pp">#define ALWAYS_INLINE __attribute__((always_inline))</span>
 <span class="pp">#else</span>
 <span class="pp">#define CONST</span>
 <span class="pp">#define ALWAYS_INLINE</span>
-<span class="pp">#endif</span>
-
-
-<span class="pp">#define DIRECTORY ../data/Ntr1E2_t1E8_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-1_nofrag_acc/  </span><span class="co">//ディレクトリ.</span>
-<span class="pp">#define SUBDIRECTORY rand  </span><span class="co">//子ディレクトリ. rand%02d</span>
-
-<span class="pp">#define STR_(str) #str</span>
-<span class="pp">#define STR(str) STR_(str)</span>
-
-<span class="pp">#define INV_3 0.33333333333333333333</span>
-
-<span class="pp">#ifndef EXTERN</span>
+<span class="pp">#endif</span></code></pre></div>
+<p>関数の引数としてポインタを渡しつつもそれを変更しない場合（配列とか）、型の前にconstをつけることが推奨されているが、gccがver4より古いときにエラーになるので、CONSTというマクロを変わりに書いている。この例ではgccのver7の場合のみCONSTをconstとして定義している。</p>
+<p>さらに、gccでは関数のインライン展開を強制的に行いたいときに、<strong>attribute</strong>((always_inline))を関数名の前につけるが、これも古いversionでは使えないため、ALWAYS_INLINEというマクロを変わりに書いている。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#define DIRECTORY ../data/Ntr1E2_t1E8_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-1_nofrag_acc/  </span><span class="co">//ディレクトリ.</span>
+<span class="pp">#define SUBDIRECTORY rand  </span><span class="co">//子ディレクトリ. rand%02d</span></code></pre></div>
+<p>データを書き出すファイルを置くディレクトリを指定する。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#define STR_(str) #str</span>
+<span class="pp">#define STR(str) STR_(str)</span></code></pre></div>
+<p>マクロを文字列に変換するマクロ。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#define INV_3 0.33333333333333333333</span></code></pre></div>
+<p>1/3を定義。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#ifndef EXTERN</span>
 <span class="pp">#define EXTERN extern</span>
-<span class="pp">#endif</span>
-
-
-<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#endif</span></code></pre></div>
+<p>グローバル変数をこのヘッダーで宣言する際に、externを型の前につける。そして、グローバル変数を定義するファイル（hybrid_main.c）にてこのヘッダーを読み込む前にEXTERNマクロを定義するようにする。その他のファイルではEXTERNを定義しないようにしているため、定義が重複しない。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">//////////////////////////////////////////////////</span>
 <span class="pp">#define N_tr 100  </span><span class="co">//初期のトレーサーの数.</span>
 <span class="pp">#define N_p 1  </span><span class="co">//初期の原始惑星の数.</span>
 <span class="pp">#define ECC_RATIO 10.0  </span><span class="co">//ecc=0.01の何倍か. inc=ecc/2.</span>
@@ -174,20 +164,18 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="pp">#define COALESCENCE true  </span><span class="co">//衝突後に合体.</span>
 <span class="pp">#else</span>
 <span class="co">//#define SOFTENING true  //衝突しないようソフトニング.</span>
-<span class="pp">#endif</span>
-
-
-
-EXTERN <span class="dt">int</span> global_n;  <span class="co">//グローバル変数.</span>
+<span class="pp">#endif</span></code></pre></div>
+<p>計算パラメータ。true, falseはそれぞれ1, 0を意味しており、各関数の中で#ifを使って場合分けしている。</p>
+<p>BREAK_TIMEは実行する実時間（秒）。XC50では一回の実行時間が制限されているため。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c">EXTERN <span class="dt">int</span> global_n;  <span class="co">//グローバル変数.</span>
 EXTERN <span class="dt">int</span> global_n_p;
 EXTERN <span class="dt">int</span> global_myid;
 EXTERN sfmt_t sfmt;
 EXTERN FILE *fplog;
 
-<span class="co">//////////////////////////////////////////////////</span>
-
-
-<span class="co">//////////////////////////////////////////////////</span>
+<span class="co">//////////////////////////////////////////////////</span></code></pre></div>
+<p>グローバル変数の宣言。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">//////////////////////////////////////////////////</span>
 <span class="pp">#define ENERGY_FILE true  </span><span class="co">//エネルギー計算&amp;ファイル作成.</span>
 <span class="pp">#define ORBITALELEMENTS_FILE true  </span><span class="co">//軌道要素計算&amp;ファイル作成.</span>
 <span class="pp">#define POSI_VELO_FILE true  </span><span class="co">//位置速度ファイル作成.</span>
@@ -199,10 +187,10 @@ EXTERN FILE *fplog;
 <span class="pp">#include </span><span class="im">&lt;sys/time.h&gt;</span>
 <span class="pp">#include </span><span class="im">&lt;sys/resource.h&gt;</span>
 <span class="pp">#endif</span>
-<span class="co">//////////////////////////////////////////////////</span>
-
-
-<span class="co">//////////////////////////////////////////////////</span>
+<span class="co">//////////////////////////////////////////////////</span></code></pre></div>
+<p>true, falseはそれぞれ1, 0を意味しており、各関数の中で#ifを使って場合分けしている。</p>
+<p>実行時間を図る場合、実時間についてはsystem/time.h、CPU時間とシステム時間についてはsys/resource.hが必要。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">//////////////////////////////////////////////////</span>
 <span class="pp">#define INTERACTION_ALL false  </span><span class="co">//全粒子同士の重力相互作用.</span>
 <span class="pp">#define INTERACTION_PLANET_TRACER true  </span><span class="co">//惑星とトレーサー間の相互作用.</span>
 <span class="pp">#define INTERACTION_TEST_PARTICLE false  </span><span class="co">//トレーサーをテスト粒子として扱う.</span>
@@ -210,10 +198,9 @@ EXTERN FILE *fplog;
 <span class="pp">#define EJECTION false  </span><span class="co">//初期に破片（トレーサー）を放出する.</span>
 <span class="pp">#define ORBITING_SMALL_PARTICLE true  </span><span class="co">//初期に微惑星をケプラー運動させておく.</span>
 <span class="pp">#define ELIMINATE_PARTICLE false  </span><span class="co">//太陽に飲みこまれるか系外へ出て行くかで粒子を消す.</span>
-<span class="co">//////////////////////////////////////////////////</span>
-
-
-<span class="co">//////////////////////////////////////////////////</span>
+<span class="co">//////////////////////////////////////////////////</span></code></pre></div>
+<p>true, falseはそれぞれ1, 0を意味しており、各関数の中で#ifを使って場合分けしている。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">//////////////////////////////////////////////////</span>
 <span class="co">//#define G 1.0  //重力定数.</span>
 <span class="co">//#define M_0 1.0  //主星の質量.</span>
 <span class="pp">#if SOFTENING</span>
@@ -221,18 +208,16 @@ EXTERN FILE *fplog;
 <span class="pp">#endif</span>
 <span class="pp">#define ETA 1.0E-2  </span><span class="co">//刻み幅調整.</span>
 <span class="pp">#define ITE_MAX 2  </span><span class="co">//イテレーション回数（修正子計算の回数はITE_MAX+1）.</span>
-<span class="co">//////////////////////////////////////////////////</span>
-
-
-<span class="pp">#if ELIMINATE_PARTICLE</span>
+<span class="co">//////////////////////////////////////////////////</span></code></pre></div>
+<p>エルミート法で必要なパラメータ。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#if ELIMINATE_PARTICLE</span>
 <span class="co">//////////////////////////////////////////////////</span>
 <span class="pp">#define SOLAR_RADIUS 0.00465040106951872  </span><span class="co">//[AU] 6.957E10/1.496E13.</span>
 <span class="pp">#define SOLAR_SYSTEM_LIMIT 100.0  </span><span class="co">//[AU]</span>
 <span class="co">//////////////////////////////////////////////////</span>
-<span class="pp">#endif</span>
-
-
-<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#endif</span></code></pre></div>
+<p>太陽に飲みこまれるか系外へ出て行くかで粒子を消す場合に必要なパラメータ。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">//////////////////////////////////////////////////</span>
 <span class="pp">#define PLANET_MASS 3.0E-6  </span><span class="co">//地球質量M_E.</span>
 <span class="pp">#define PLANET_AXIS 1.0  </span><span class="co">//[AU].</span>
 <span class="pp">#define PLANET_ECC (0.01*ECC_RATIO)</span>
@@ -247,15 +232,13 @@ EXTERN FILE *fplog;
 <span class="co">Longitude of perihelion (deg)      102.94719</span>
 <span class="co">Mean Longitude (deg)               100.46435</span>
 <span class="co">*/</span>
+<span class="co">//////////////////////////////////////////////////</span></code></pre></div>
+<p>惑星の初期パラメータ。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#if N_tr != 0</span>
 <span class="co">//////////////////////////////////////////////////</span>
-
-
-
-<span class="pp">#if N_tr != 0</span>
-<span class="co">//////////////////////////////////////////////////</span>
-<span class="pp">#define M_TOT (3.0E-7*N_p)  </span><span class="co">//0.1M_E * N_p  //トレーサーの総質量.</span>
-
-<span class="pp">#if EJECTION</span>
+<span class="pp">#define M_TOT (3.0E-7*N_p)  </span><span class="co">//0.1M_E * N_p  //トレーサーの総質量.</span></code></pre></div>
+<p>トレーサーの総質量。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#if EJECTION</span>
 <span class="pp">#define PLANET_OF_EJECTION 1</span>
 <span class="pp">#define EJECTION_CONE_ANGLE M_PI/180.0*30.0  </span><span class="co">//30度.</span>
 <span class="pp">#endif</span>
@@ -265,9 +248,9 @@ EXTERN FILE *fplog;
 <span class="pp">#define INC_RMS (ECC_RMS*0.5)  </span><span class="co">//トレーサーの軌道傾斜角の二乗平均平方根.  //Rayleigh分布.</span>
 <span class="pp">#define DELTA_HILL 10.0  </span><span class="co">//惑星を「相互」ヒル半径の何倍離すか（軌道長半径）.</span>
 <span class="pp">#define SEPARATE_HILL 5.0  </span><span class="co">//初期に惑星とトレーサーをヒル半径の何倍以上離すか（相対距離）.</span>
-<span class="pp">#endif</span>
-
-<span class="pp">#if FRAGMENTATION</span>
+<span class="pp">#endif</span></code></pre></div>
+<p>トレーサーの初期パラメータ。EJECTION（破片として放出）かORBITATING_SMALL_PARTICLE（軌道上を運動）を上で選ぶ。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#if FRAGMENTATION</span>
 <span class="co">/* t_fragcheck : 初項 DT_FRAGCHECK，公比 GEOMETRIC_RATIO_FRAG の等比数列 */</span>
 <span class="pp">#define DT_FRAGCHECK 2.0*M_PI*0.1  </span><span class="co">//0.1yr</span>
 <span class="pp">#define GEOMETRIC_RATIO_FRAG pow(10.0,1.0/8.0) </span><span class="co">//10**(1/8)</span>
@@ -285,10 +268,9 @@ EXTERN FILE *fplog;
 <span class="co">//#define M_MAX 5.00E-18  //最大微惑星質量. 1E16 g ~1kmサイズ.</span>
 <span class="pp">#endif  </span><span class="co">/*FRAGMENTATION*/</span>
 <span class="co">//////////////////////////////////////////////////</span>
-<span class="pp">#endif  </span><span class="co">/*N_tr != 0*/</span>
-
-
-<span class="co">//////////////////////////////////////////////////</span>
+<span class="pp">#endif  </span><span class="co">/*N_tr != 0*/</span></code></pre></div>
+<p>破壊計算のパラメータ。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">//////////////////////////////////////////////////</span>
 <span class="pp">#define T_MAX (2.0*M_PI*1.0E8)  </span><span class="co">//10^8yr 全計算時間.</span>
 <span class="pp">#define DT_LOG true  </span><span class="co">//true: t_eneをlogでとる. false: t_eneをlinearでとる.</span>
 
@@ -300,11 +282,9 @@ EXTERN FILE *fplog;
 <span class="pp">#define GEOMETRIC_RATIO pow(10.0,1.0/8.0) </span><span class="co">//10**(1/8)</span>
 <span class="pp">#define GEOMETRIC_RATIO_LONGTERM pow(10.0,1.0/128.0) </span><span class="co">//10**(1/128) 10^6yrを超える時用.</span>
 <span class="pp">#endif</span>
-<span class="co">//////////////////////////////////////////////////</span>
-
-
-
-<span class="kw">struct</span> orbital_elements{
+<span class="co">//////////////////////////////////////////////////</span></code></pre></div>
+<p>何年分計算するかを設定。重力定数を1とし、質量を太陽質量、距離を1AUで規格化すると、時間は1/2<span class="math inline"><em>π</em></span>年に規格化される。そのため、「年」を設定する場合には2<span class="math inline"><em>π</em></span>を掛ける。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="kw">struct</span> orbital_elements{
   <span class="dt">char</span> name[<span class="dv">30</span>];  <span class="co">//名前（番号.</span>
   <span class="dt">double</span> ecc;  <span class="co">//離心率.</span>
   <span class="dt">double</span> axis;  <span class="co">//軌道長半径.</span>
@@ -357,14 +337,124 @@ EXTERN FILE *fplog;
   <span class="dt">double</span> Fragmentation[<span class="dv">3</span>];
 };
 EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">//グローバル変数</span>
-<span class="pp">#endif</span>
+<span class="pp">#endif</span></code></pre></div>
+<p>各構造体の宣言。</p>
+<ol type="1">
+<li>orbital_elements 軌道要素の構造体（粒子毎にもつので配列）。</li>
+<li>fragmentation 破壊計算に必要なデータをもつ構造体（トレーサー毎にもつので配列）。</li>
+<li>parameter 破壊計算のパラメータの構造体。</li>
+<li>execution_time 実行開始からの時間をもつ構造体。</li>
+</ol>
+<h2 id="func.h-1">func.h</h2>
+<p>インクルードガードあり。</p>
+<p>関数の宣言が主だが、複数のファイルにある関数からよく呼ばれるような簡単な関数を、インライン関数として定義する。</p>
+<div class="sourceCode"><pre class="sourceCode c:func.h"><code class="sourceCode c"><span class="co">/*x_i,v_iの内積*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> <span class="dt">double</span> InnerProduct(<span class="dt">int</span> i, CONST <span class="dt">double</span> x[][<span class="dv">4</span>], CONST <span class="dt">double</span> v[][<span class="dv">4</span>]){
+  <span class="cf">return</span> x[i][<span class="dv">1</span>]*v[i][<span class="dv">1</span>] + x[i][<span class="dv">2</span>]*v[i][<span class="dv">2</span>] + x[i][<span class="dv">3</span>]*v[i][<span class="dv">3</span>];
+}
 
-</code></pre></div>
-<hr />
-<hr />
+<span class="co">/*中心星からの距離*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> <span class="dt">double</span> RadiusFromCenter(<span class="dt">int</span> i, CONST <span class="dt">double</span> x[][<span class="dv">4</span>]){
+  <span class="cf">return</span> sqrt(x[i][<span class="dv">1</span>]*x[i][<span class="dv">1</span>] + x[i][<span class="dv">2</span>]*x[i][<span class="dv">2</span>] + x[i][<span class="dv">3</span>]*x[i][<span class="dv">3</span>]);
+}
+
+<span class="co">/*速度の2乗*/</span>
+<span class="co">static inline double SquareOfVelocity(int i, CONST double v[][4]){</span>
+<span class="co">  return v[i][1]*v[i][1] + v[i][2]*v[i][2] + v[i][3]*v[i][3];</span>
+<span class="co">}</span>
+
+<span class="co">/*相対距離*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> <span class="dt">double</span> RelativeDistance(<span class="dt">int</span> i, <span class="dt">int</span> j, CONST <span class="dt">double</span> x[][<span class="dv">4</span>]){
+  <span class="cf">return</span> sqrt((x[j][<span class="dv">1</span>] - x[i][<span class="dv">1</span>])*(x[j][<span class="dv">1</span>] - x[i][<span class="dv">1</span>]) + (x[j][<span class="dv">2</span>] - x[i][<span class="dv">2</span>])*(x[j][<span class="dv">2</span>] - x[i][<span class="dv">2</span>]) + (x[j][<span class="dv">3</span>] - x[i][<span class="dv">3</span>])*(x[j][<span class="dv">3</span>] - x[i][<span class="dv">3</span>]));
+}
+
+<span class="co">/*相対速度の2乗*/</span>
+<span class="co">static inline double SquareOfRelativeVelocity(int i, int j, CONST double v[][4]){</span>
+<span class="co">  return (v[j][1] - v[i][1])*(v[j][1] - v[i][1]) + (v[j][2] - v[i][2])*(v[j][2] - v[i][2]) + (v[j][3] - v[i][3])*(v[j][3] - v[i][3]);</span>
+<span class="co">}</span>
+
+<span class="co">/*x_ij, v_ijの内積*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> <span class="dt">double</span> RelativeInnerProduct(<span class="dt">int</span> i, <span class="dt">int</span> j, CONST <span class="dt">double</span> x[][<span class="dv">4</span>], CONST <span class="dt">double</span> v[][<span class="dv">4</span>]){
+  <span class="cf">return</span> (x[j][<span class="dv">1</span>] - x[i][<span class="dv">1</span>])*(v[j][<span class="dv">1</span>] - v[i][<span class="dv">1</span>]) + (x[j][<span class="dv">2</span>] - x[i][<span class="dv">2</span>])*(v[j][<span class="dv">2</span>] - v[i][<span class="dv">2</span>]) + (x[j][<span class="dv">3</span>] - x[i][<span class="dv">3</span>])*(v[j][<span class="dv">3</span>] - v[i][<span class="dv">3</span>]);
+}
+
+<span class="co">/*Swap*/</span>
+<span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> Swap_double(<span class="dt">double</span> *a, <span class="dt">double</span> *b){
+  <span class="dt">double</span> tmp;
+  tmp = (*a);
+  (*a) = (*b);
+  (*b) = tmp;
+  <span class="cf">return</span>;
+}
+
+
+<span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> Swap_int(<span class="dt">int</span> *a, <span class="dt">int</span> *b){
+  <span class="dt">int</span> tmp;
+  tmp = (*a);
+  (*a) = (*b);
+  (*b) = tmp;
+  <span class="cf">return</span>;
+}
+
+
+<span class="dt">static</span> <span class="kw">inline</span> <span class="dt">int</span> Min_int(<span class="dt">int</span> a, <span class="dt">int</span> b){
+  <span class="cf">if</span>(a &lt; b){
+    <span class="cf">return</span> a;
+  }<span class="cf">else</span>{
+    <span class="cf">return</span> b;
+  }
+}
+
+
+<span class="dt">static</span> <span class="kw">inline</span> <span class="dt">int</span> Max_int(<span class="dt">int</span> a, <span class="dt">int</span> b){
+  <span class="cf">if</span>(a &gt; b){
+    <span class="cf">return</span> a;
+  }<span class="cf">else</span>{
+    <span class="cf">return</span> b;
+  }
+}
+
+
+<span class="dt">static</span> <span class="kw">inline</span> <span class="dt">double</span> Cal_time(<span class="kw">struct</span> timeval time1, <span class="kw">struct</span> timeval time2){
+  <span class="cf">return</span> (<span class="dt">double</span>)(time2.tv_sec - time1.tv_sec) + (<span class="dt">double</span>)(time2.tv_usec - time1.tv_usec)*<span class="fl">1.0E-6</span>;
+}</code></pre></div>
+<p>インライン関数。</p>
+<p>内積や距離の計算や、int型とdouble型の変数の入れ替え、2つの数字の大小、実行時間計算</p>
+<div class="sourceCode"><pre class="sourceCode c:func.h"><code class="sourceCode c"><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> Predictor(<span class="dt">int</span> i, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> a_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> adot_0[][<span class="dv">4</span>], <span class="dt">double</span> x_p[][<span class="dv">4</span>], <span class="dt">double</span> v_p[][<span class="dv">4</span>], <span class="dt">double</span> r_p[], <span class="dt">double</span> v2_p[], <span class="dt">double</span> r_dot_v[], CONST <span class="dt">double</span> Dt[]){
+
+  <span class="dt">int</span> k;
+  <span class="dt">double</span> dt = Dt[i];
+
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+    <span class="co">//x_p[i][k] = x_0[i][k] + v_0[i][k]*Dt[i] + a_0[i][k]*Dt[i]*Dt[i]/2.0 + adot_0[i][k]*Dt[i]*Dt[i]*Dt[i]/6.0;</span>
+    <span class="co">//v_p[i][k] = v_0[i][k] + a_0[i][k]*Dt[i] + adot_0[i][k]*Dt[i]*Dt[i]/2.0;</span>
+
+    x_p[i][k] = x_0[i][k] + dt * (v_0[i][k] + dt * <span class="fl">0.5</span> * (a_0[i][k] + adot_0[i][k] * dt * INV_3));
+    v_p[i][k] = v_0[i][k] + dt * (a_0[i][k] + adot_0[i][k] * dt * <span class="fl">0.5</span>);
+  }
+
+
+  r_p[i] = RadiusFromCenter(i,x_p);  <span class="co">//中心星からの距離.</span>
+  v2_p[i] = SquareOfVelocity(i,v_p); <span class="co">//速度の2乗.</span>
+  r_dot_v[i] = InnerProduct(i,x_p,v_p);  <span class="co">//r_i,v_iの内積.</span>
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>予測子計算（インライン関数）。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>x_0[][4] 初期位置。</li>
+<li>v_0[][4] 初期速度。</li>
+<li>a_0[][4] 加速度。</li>
+<li>adot_0[][4] 加加速度。</li>
+<li>x_p[][4] 位置の予測子。</li>
+<li>v_p[][4] 速度の予測子。</li>
+<li>r_p[] 中心星からの距離の予測子。</li>
+<li>v2_p[] 速度の予測子の大きさの2乗。</li>
+<li>r_dot_v[] 位置ベクトルと速度ベクトルの内積。</li>
+<li>Dt[] タイムステップ。（次のステップのシステム時間）ー（今のステップの粒子毎の時間）。</li>
+</ol>
 <h2 id="acc.c-1">acc.c</h2>
-<hr />
-<h3 id="相互重力加速度">相互重力加速度</h3>
 <div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*相互重力加速度*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> Acceleration_ij(<span class="dt">int</span> i, <span class="dt">int</span> j, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_j, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> abs_r[]){
   <span class="dt">double</span> rij3;
@@ -382,8 +472,15 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
   <span class="cf">return</span> G * m_j * (x_0[j][k] - x_0[i][k]) * rij3;
 <span class="pp">#endif</span>
 }</code></pre></div>
-<p>abc</p>
-<hr />
+<p>i, j粒子間の加速度計算。 <span class="math inline">$G m_j \frac{(\vec{x}_j - \vec{x}_i)}{({r_{ij}^2 + \varepsilon^2 )}^{3/2}}$</span></p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>j j 粒子。</li>
+<li>k ベクトル3成分。</li>
+<li>m_j j 粒子の質量。</li>
+<li>x_0[][4] 粒子の位置x, y, zの配列。</li>
+<li>abs_r[] i, j 粒子間の距離。</li>
+</ol>
 <div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*相互重力加加速度*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> dAcceleration_ij(<span class="dt">int</span> i, <span class="dt">int</span> j, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_j, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_dot_v_ij[], CONST <span class="dt">double</span> abs_r[]){
   <span class="dt">double</span> rij3;
@@ -405,8 +502,17 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
   <span class="cf">return</span> G * m_j * ((v_0[j][k] - v_0[i][k]) * rij3 - <span class="fl">3.0</span> * r_dot_v_ij[j] * (x_0[j][k] - x_0[i][k]) * rij5);
 <span class="pp">#endif</span>
 }</code></pre></div>
-<p>abc</p>
-<hr />
+<p>i, j粒子間の加加速度計算。 <span class="math inline">$G m_j \left[ \frac { (\vec{v}_j - \vec{v}_i) } { ({r_{ij}^2 + \varepsilon^2 )}^{3/2} } - 3 \frac { \left[ (\vec{v}_j - \vec{v}_i) \cdot (\vec{x}_j - \vec{x}_i) \right] (\vec{x}_j - \vec{x}_i) } { ({r_{ij}^2 + \varepsilon^2 )}^{5/2} } \right]$</span></p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>j j 粒子。</li>
+<li>k ベクトル3成分。</li>
+<li>m_j j 粒子の質量。</li>
+<li>x_0[][4] 粒子の位置<span class="math inline"><em>x</em>, <em>y</em>, <em>z</em></span>の配列。</li>
+<li>v_0[][4] 粒子の速度<span class="math inline"><em>v</em><sub><em>x</em></sub>, <em>v</em><sub><em>y</em></sub>, <em>v</em><sub><em>z</em></sub></span>の配列。</li>
+<li>r_dot_v_ij[] i, j 粒子の相対位置ベクトルと相対速度ベクトルの内積の配列。</li>
+<li>abs_r[] i, j 粒子間の距離。</li>
+</ol>
 <div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*加速度indirect項*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> Acceleration_indirect(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_i, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[]){
   <span class="dt">double</span> r3;
@@ -419,8 +525,14 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
   <span class="cf">return</span> - G * m_i * x_0[i][k] * r3;
 <span class="pp">#endif</span>
 }</code></pre></div>
-<p>abc</p>
-<hr />
+<p>加速度のindirect項計算。 <span class="math inline">$- G m_i \frac{\vec{x}_i}{r_i}$</span></p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>k ベクトル3成分。</li>
+<li>m_i i 粒子の質量。</li>
+<li>x_0[][4] 粒子の位置<span class="math inline"><em>x</em>, <em>y</em>, <em>z</em></span>の配列。</li>
+<li>r_0[] i 粒子の原点からの距離（原点は中心星を含めた重心）。</li>
+</ol>
 <div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*加加速度indirect項*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> dAcceleration_indirect(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> m_i, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> r_dot_v[]){
   <span class="dt">double</span> r3;
@@ -436,8 +548,16 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
   <span class="cf">return</span> - G * m_i * (v_0[i][k] * r3 - <span class="fl">3.0</span> * r_dot_v[i] * x_0[i][k] * r5);
 <span class="pp">#endif</span>
 }</code></pre></div>
-<p>abc</p>
-<hr />
+<p>加加速度のindirect項計算。 <span class="math inline">$- G m_i \left( \frac{\vec{v}_i}{r_i^3} - 3 \frac{(\vec{x}_i \cdot \vec{v}_i) \vec{x}_i}{r_i^5} \right)$</span></p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>k ベクトル3成分。</li>
+<li>m_i i 粒子の質量。</li>
+<li>x_0[][4] 粒子の位置<span class="math inline"><em>x</em>, <em>y</em>, <em>z</em></span>の配列。</li>
+<li>v_0[][4] 粒子の速度<span class="math inline"><em>v</em><sub><em>x</em></sub>, <em>v</em><sub><em>y</em></sub>, <em>v</em><sub><em>z</em></sub></span>の配列。</li>
+<li>r_0[] i 粒子の原点からの距離（原点は中心星を含めた重心）。</li>
+<li>r_dot_v_ij[] i, j 粒子の相対位置ベクトルと相対速度ベクトルの内積の配列。</li>
+</ol>
 <div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*外力加速度*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> External_Acceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[]){
   <span class="dt">double</span> r3;
@@ -450,8 +570,13 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
   <span class="cf">return</span> - G * M_0 * x_0[i][k] * r3;
 <span class="pp">#endif</span>
 }</code></pre></div>
-<p>abc</p>
-<hr />
+<p>加速度の外力項。 <span class="math inline">$- G M_{\ast} \frac{\vec{x}_i}{r_i^3}$</span></p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>k ベクトル3成分。</li>
+<li>x_0[][4] 粒子の位置<span class="math inline"><em>x</em>, <em>y</em>, <em>z</em></span>の配列。</li>
+<li>r_0[] i 粒子の原点からの距離（原点は中心星を含めた重心）。</li>
+</ol>
 <div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*外力加加速度*/</span>
 <span class="dt">static</span> <span class="kw">inline</span> ALWAYS_INLINE <span class="dt">double</span> External_dAcceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> r_dot_v[]){
   <span class="dt">double</span> r3;
@@ -467,8 +592,15 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
   <span class="cf">return</span> - G M_0 * (v_0[i][k] * r3 - <span class="fl">3.0</span> * r_dot_v[i] * x_0[i][k] * r5);
 <span class="pp">#endif</span>
 }</code></pre></div>
-<p>abc</p>
-<hr />
+<p>加加速度の外力項。 <span class="math inline">$- G M_{\ast} \left( \frac{\vec{v}_i}{r_i^3} - 3 \frac{(\vec{x}_i \cdot \vec{v}_i) \vec{x}_i}{r_i^5} \right)$</span></p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>k ベクトル3成分。</li>
+<li>x_0[][4] 粒子の位置<span class="math inline"><em>x</em>, <em>y</em>, <em>z</em></span>の配列。</li>
+<li>v_0[][4] 粒子の速度<span class="math inline"><em>v</em><sub><em>x</em></sub>, <em>v</em><sub><em>y</em></sub>, <em>v</em><sub><em>z</em></sub></span>の配列。</li>
+<li>r_0[] i 粒子の原点からの距離（原点は中心星を含めた重心）。</li>
+<li>r_dot_v[] i 粒子の位置ベクトルと速度ベクトルの内積の配列。</li>
+</ol>
 <div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*i_sys のみの修正子*/</span>
 <span class="dt">void</span> Corrector_sys(<span class="dt">int</span> n_ite, <span class="dt">int</span> i_sys, CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_p[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_p[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_p[], <span class="dt">double</span> x_c[][<span class="dv">4</span>], <span class="dt">double</span> v_c[][<span class="dv">4</span>], <span class="dt">double</span> r_c[], <span class="dt">double</span> v2_c[], <span class="dt">double</span> r_dot_v[], CONST <span class="dt">double</span> a_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> adot_0[][<span class="dv">4</span>], <span class="dt">double</span> a[][<span class="dv">4</span>], <span class="dt">double</span> adot[][<span class="dv">4</span>], <span class="dt">double</span> adot2_dt2[][<span class="dv">4</span>], <span class="dt">double</span> adot3_dt3[][<span class="dv">4</span>], CONST <span class="dt">double</span> dt_[]
 <span class="pp">#if FRAGMENTATION</span>
@@ -581,8 +713,30 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 
   <span class="cf">return</span>;
 }</code></pre></div>
-<p>abc</p>
-<hr />
+<p>修正子計算。</p>
+<p>a_tmp[]などを新たにローカル関数として定義している理由は、加速度の関数All_Accelerationと加加速度の関数All_dAcceleration内で並列化をする際に、別の粒子を抜け駆けで更新しないようにするため。</p>
+<ol type="1">
+<li>n_ite イテレーション回数。</li>
+<li>i_sys システム粒子。</li>
+<li>*ele_p 軌道要素の構造体のポインタ。</li>
+<li>x_p[][4] 位置の予測子。</li>
+<li>v_p[][4] 速度の予測子。</li>
+<li>r_p[] 中心星からの距離の予測子。</li>
+<li>x_c[][4] 位置の修正子。</li>
+<li>v_c[][4] 速度の修正子。</li>
+<li>r_c[] 中心星からの距離の修正子。</li>
+<li>v2_c[] 速度の修正子の大きさの2乗。</li>
+<li>r_dot_v[] 位置ベクトルと速度ベクトルの内積。</li>
+<li>a_0[][4] 現時点の加速度。</li>
+<li>adot_0[][4] 現時点の加加速度。</li>
+<li>a[][4] 次のステップの加速度。</li>
+<li>adot[][4] 次のステップの加加速度。</li>
+<li>adot2_dt2[][4] 次のステップの加速度の第2次導関数 × タイムステップの2乗。</li>
+<li>adot3_dt3[][4] 次のステップの加速度の第3次導関数 × タイムステップの3乗。</li>
+<li>dt_[] 粒子毎のタイムステップ。</li>
+<li>t_dyn システム時間。破壊計算で質量は減少するのでその見積もり用。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。</li>
+</ol>
 <div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*全加速度*/</span>
 <span class="dt">double</span> All_Acceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> abs_r[]
 <span class="pp">#if FRAGMENTATION</span>
@@ -624,7 +778,7 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 <span class="pp">#endif</span>
 
       <span class="cf">if</span>(i!=j){
-    a_0 += Acceleration_ij(i,j,k,m_j,x_0,abs_r);
+        a_0 += Acceleration_ij(i,j,k,m_j,x_0,abs_r);
       }
     }
 
@@ -647,7 +801,7 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 <span class="pp">#endif</span>
 
       <span class="cf">if</span>(i!=j){
-    a_0 += Acceleration_ij(i,j,k,m_j,x_0,abs_r);
+        a_0 += Acceleration_ij(i,j,k,m_j,x_0,abs_r);
       }
     }
 
@@ -656,8 +810,17 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 
   <span class="cf">return</span> a_0;
 }</code></pre></div>
-<p>abc</p>
-<hr />
+<p>i 粒子の加速度。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>k ベクトル3成分。</li>
+<li>*ele_p 軌道要素の構造体のポインタ。</li>
+<li>x_0[][4] 粒子の位置<span class="math inline"><em>x</em>, <em>y</em>, <em>z</em></span>の配列。</li>
+<li>r_0[] i 粒子の原点からの距離（原点は中心星を含めた重心）。</li>
+<li>abs_r[] i, j 粒子間の距離。</li>
+<li>t_dyn システム時間。破壊計算で質量は減少するのでその見積もり用。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。</li>
+</ol>
 <div class="sourceCode"><pre class="sourceCode c:acc.c"><code class="sourceCode c"><span class="co">/*全加加速度*/</span>
 <span class="dt">double</span> All_dAcceleration(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> r_dot_v[], CONST <span class="dt">double</span> r_dot_v_ij[], CONST <span class="dt">double</span> r_0[], CONST <span class="dt">double</span> abs_r[]
 <span class="pp">#if FRAGMENTATION</span>
@@ -699,7 +862,7 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 <span class="pp">#endif</span>
 
       <span class="cf">if</span>(i!=j){
-    adot_0 += dAcceleration_ij(i,j,k,m_j,x_0,v_0,r_dot_v_ij,abs_r);
+        adot_0 += dAcceleration_ij(i,j,k,m_j,x_0,v_0,r_dot_v_ij,abs_r);
       }
     }
 
@@ -720,7 +883,7 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 <span class="pp">#endif</span>
 
       <span class="cf">if</span>(i!=j){
-    adot_0 += dAcceleration_ij(i,j,k,m_j,x_0,v_0,r_dot_v_ij,abs_r);
+        adot_0 += dAcceleration_ij(i,j,k,m_j,x_0,v_0,r_dot_v_ij,abs_r);
       }
     }
 
@@ -729,21 +892,920 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 
   <span class="cf">return</span> adot_0;
 }</code></pre></div>
-<p>abc</p>
-<hr />
-<hr />
+<p>i 粒子の加加速度。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>k ベクトル3成分。</li>
+<li>*ele_p 軌道要素の構造体のポインタ。</li>
+<li>x_0[][4] 粒子の位置<span class="math inline"><em>x</em>, <em>y</em>, <em>z</em></span>の配列。</li>
+<li>v_0[][4] 粒子の速度<span class="math inline"><em>v</em><sub><em>x</em></sub>, <em>v</em><sub><em>y</em></sub>, <em>v</em><sub><em>z</em></sub></span>の配列。</li>
+<li>r_dot_v[] i 粒子の位置ベクトルと速度ベクトルの内積の配列。</li>
+<li>r_dot_v_ij[] i, j 粒子の相対位置ベクトルと相対速度ベクトルの内積の配列。</li>
+<li>r_0[] i 粒子の原点からの距離（原点は中心星を含めた重心）。</li>
+<li>abs_r[] i, j 粒子間の距離。</li>
+<li>t_dyn システム時間。破壊計算で質量は減少するのでその見積もり用。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。</li>
+</ol>
 <h2 id="collision.c-1">collision.c</h2>
-<p>衝突判定、衝突前後の操作</p>
+<div class="sourceCode"><pre class="sourceCode c:collision.c"><code class="sourceCode c">bool Collision_Judgement(<span class="dt">int</span> i_sys, CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_p[][<span class="dv">4</span>], <span class="dt">double</span> abs_r[], <span class="dt">int</span> *i_col, <span class="dt">int</span> *j_col){
+
+
+<span class="pp">#if EXECUTION_TIME &amp;&amp; EXECUTION_TIME_FUNC</span>
+  <span class="kw">struct</span> timeval realtime_start, realtime_end;
+  <span class="kw">struct</span> rusage usage_start, usage_end;
+  gettimeofday(&amp;realtime_start,NULL);
+  getrusage(RUSAGE_SELF,&amp;usage_start);
+<span class="pp">#endif</span>
+
+
+  <span class="dt">int</span> j;
+
+  <span class="cf">for</span>(j=<span class="dv">1</span>;j&lt;=global_n;++j){
+    <span class="cf">if</span>(i_sys!=j){
+      abs_r[j] = RelativeDistance(i_sys,j,x_p);  <span class="co">//絶対値.</span>
+      <span class="cf">if</span>(abs_r[j] &lt; ((ele_p+i_sys)-&gt;radius) + ((ele_p+j)-&gt;radius)){
+        (*i_col) = Min_int(i_sys,j);
+        (*j_col) = Max_int(i_sys,j);
+
+<span class="pp">#if EXECUTION_TIME &amp;&amp; EXECUTION_TIME_FUNC</span>
+        gettimeofday(&amp;realtime_end,NULL);
+        getrusage(RUSAGE_SELF,&amp;usage_end);
+        exetime.Collision_Judgement[<span class="dv">0</span>] += Cal_time(realtime_start,realtime_end);
+        exetime.Collision_Judgement[<span class="dv">1</span>] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
+        exetime.Collision_Judgement[<span class="dv">2</span>] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
+<span class="pp">#endif</span>
+
+        <span class="cf">return</span> (true);  <span class="co">//衝突した場合.</span>
+      }
+    }
+  }
+
+
+<span class="pp">#if EXECUTION_TIME &amp;&amp; EXECUTION_TIME_FUNC</span>
+  gettimeofday(&amp;realtime_end,NULL);
+  getrusage(RUSAGE_SELF,&amp;usage_end);
+  exetime.Collision_Judgement[<span class="dv">0</span>] += Cal_time(realtime_start,realtime_end);
+  exetime.Collision_Judgement[<span class="dv">1</span>] += Cal_time(usage_start.ru_utime,usage_end.ru_utime);
+  exetime.Collision_Judgement[<span class="dv">2</span>] += Cal_time(usage_start.ru_stime,usage_end.ru_stime);
+<span class="pp">#endif</span>
+
+  <span class="cf">return</span> (false);  <span class="co">//衝突しない場合.</span>
+}</code></pre></div>
+<p>衝突判定。</p>
+<ol type="1">
+<li>i_sys システム粒子。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>x_p[][4] 位置の予測子。</li>
+<li>abs_r[] i, j 粒子間の距離。</li>
+<li>*i_col 衝突した粒子番号ポインタ。若い方。</li>
+<li>*j_col 衝突した粒子番号ポインタ。もう一つ。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:collision.c"><code class="sourceCode c"><span class="dt">void</span> Energy_Correction(<span class="dt">int</span> i_col, <span class="dt">int</span> j_col, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], CONST <span class="kw">struct</span> orbital_elements *ele_p, <span class="dt">double</span> *dE_heat, <span class="dt">double</span> *dE_grav, <span class="dt">double</span> *dE_c, <span class="dt">double</span> *v_imp
+<span class="pp">#if FRAGMENTATION</span>
+               , <span class="dt">double</span> t_dyn
+               , CONST <span class="kw">struct</span> fragmentation *frag_p
+<span class="pp">#endif</span>
+               ){
+
+  <span class="dt">double</span> m_1, m_2;
+  <span class="dt">double</span> abs_v2 = SquareOfRelativeVelocity(i_col,j_col,v_0);  <span class="co">//相対速度2乗.</span>
+  <span class="dt">double</span> r_p12 = RelativeDistance(i_col,j_col,x_0);  <span class="co">//2粒子間の距離.</span>
+  <span class="dt">double</span> r_g12 = RadiusFromCenter(<span class="dv">0</span>,x_0);  <span class="co">//2粒子の重心と中心星との距離.</span>
+  <span class="dt">double</span> r_1 = RadiusFromCenter(i_col,x_0);
+  <span class="dt">double</span> r_2 = RadiusFromCenter(j_col,x_0);
+
+<span class="pp">#if FRAGMENTATION</span>
+  m_1 = MassDepletion(i_col,((ele_p+i_col)-&gt;mass),t_dyn,frag_p);
+  m_2 = MassDepletion(j_col,((ele_p+j_col)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+  m_1 = ((ele_p+i_col)-&gt;mass);
+  m_2 = ((ele_p+j_col)-&gt;mass);
+<span class="pp">#endif</span>
+
+  (*dE_heat) = - <span class="fl">0.5</span> * m_1 * m_2 / (m_1 + m_2) * abs_v2;  <span class="co">//完全合体することで、相対速度分の運動エネルギーが熱エネルギーとなって散逸する.</span>
+
+<span class="pp">#ifndef G</span>
+  (*dE_grav) = m_1 * m_2 / r_p12;  <span class="co">//2粒子間の距離に対応する相互重力エネルギーがなくなっている.</span>
+<span class="pp">#else</span>
+  (*dE_grav) = G * m_1 * m_2 / r_p12;  <span class="co">//2粒子間の距離に対応する相互重力エネルギーがなくなっている.</span>
+<span class="pp">#endif</span>
+
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+  (*dE_c) = - (m_1 + m_2) / r_g12 + m_1 / r_1 + m_2 / r_2;  <span class="co">//中心星ポテンシャルエネルギーが変わる.</span>
+<span class="pp">#else</span>
+  (*dE_c) = G * M_0 * (- (m_1 + m_2) / r_g12 + m_1 / r_1 + m_2 / r_2);  <span class="co">//中心星ポテンシャルエネルギーが変わる.</span>
+<span class="pp">#endif</span>
+
+  (*v_imp) = sqrt(abs_v2);
+
+  fprintf(fplog,<span class="st">&quot;dE_heat=%e</span><span class="sc">\t</span><span class="st">dE_grav=%e</span><span class="sc">\t</span><span class="st">dE_c=%e</span><span class="sc">\t</span><span class="st">v_imp=%e</span><span class="sc">\n</span><span class="st">&quot;</span>,(*dE_heat),(*dE_grav),(*dE_c),(*v_imp));
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>衝突時のエネルギー補正。</p>
+<ol type="1">
+<li>i_col 衝突した粒子。若い方。</li>
+<li>j_col 衝突した粒子。もう一つ。</li>
+<li>x_0[][4] 位置。</li>
+<li>v_0[][4] 速度。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>*dE_heat 合体時に相対速度分の運動エネルギーが熱として散逸する量を表すポインタ。</li>
+<li>*dE_grav 衝突した2粒子間の相互重力エネルギーが消える量を表すポインタ。</li>
+<li>*dE_c 中心星ポテンシャルエネルギーが変わる量を表すポインタ。</li>
+<li>*v_imp 衝突速度を表すポインタ。</li>
+<li>t_dyn システム時間。破壊計算で質量は減少するのでその見積もり用。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:collision.c"><code class="sourceCode c"><span class="dt">void</span> Coalescence(<span class="dt">int</span> i_col, <span class="dt">int</span> j_col, <span class="dt">double</span> x_0[][<span class="dv">4</span>], <span class="dt">double</span> v_0[][<span class="dv">4</span>], <span class="kw">struct</span> orbital_elements *ele_p
+<span class="pp">#if FRAGMENTATION</span>
+         , <span class="dt">double</span> t_dyn
+         , <span class="kw">struct</span> fragmentation *frag_p
+<span class="pp">#endif</span>
+         ){
+
+  <span class="dt">int</span> k;
+
+  <span class="co">//i_colを新しい合体粒子の番号にする.</span>
+<span class="pp">#if FRAGMENTATION</span>
+  ((ele_p+i_col)-&gt;mass) = MassDepletion(i_col,((ele_p+i_col)-&gt;mass),t_dyn,frag_p) + MassDepletion(j_col,((ele_p+j_col)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+  ((ele_p+i_col)-&gt;mass) = ((ele_p+i_col)-&gt;mass) + ((ele_p+j_col)-&gt;mass);
+<span class="pp">#endif</span>
+  ((ele_p+i_col)-&gt;radius) = cbrt(<span class="fl">3.0</span>/<span class="fl">4.0</span>/M_PI*((ele_p+i_col)-&gt;mass)*<span class="fl">1.989E33</span>/PLANET_DENSITY)/<span class="fl">1.496E13</span>;
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+    x_0[i_col][k] = x_0[<span class="dv">0</span>][k];
+    v_0[i_col][k] = v_0[<span class="dv">0</span>][k];
+  }
+
+  <span class="cf">if</span>(j_col&lt;=global_n_p){
+
+    <span class="co">//惑星同士の衝突合体</span>
+    <span class="co">//j_colとglobal_n_pを入れ替える.</span>
+    *(ele_p+<span class="dv">0</span>) = *(ele_p+j_col);  <span class="co">//構造体のためSwap関数は使えない. 0番目の要素はコピーに使うだけ.</span>
+    *(ele_p+j_col) = *(ele_p+global_n_p);
+    *(ele_p+global_n_p) = *(ele_p+<span class="dv">0</span>);
+<span class="pp">#if FRAGMENTATION</span>
+    *(frag_p+<span class="dv">0</span>) = *(frag_p+j_col);  <span class="co">//構造体のためSwap関数は使えない. 0番目の要素はコピーに使うだけ.</span>
+    *(frag_p+j_col) = *(frag_p+global_n_p);
+    *(frag_p+global_n_p) = *(frag_p+<span class="dv">0</span>);
+<span class="pp">#endif</span>
+    <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+      Swap_double(&amp;x_0[j_col][k],&amp;x_0[global_n_p][k]);
+      Swap_double(&amp;v_0[j_col][k],&amp;v_0[global_n_p][k]);
+    }
+
+<span class="pp">#if N_tr != 0</span>
+    <span class="co">//global_n_pとglobal_nを入れ替える.</span>
+    *(ele_p+<span class="dv">0</span>) = *(ele_p+global_n_p);  <span class="co">//構造体のためSWAP関数は使えない. 0番目の要素はコピーに使うだけ.</span>
+    *(ele_p+global_n_p) = *(ele_p+global_n);
+    *(ele_p+global_n) = *(ele_p+<span class="dv">0</span>);
+<span class="pp">#if FRAGMENTATION</span>
+    *(frag_p+<span class="dv">0</span>) = *(frag_p+global_n_p);  <span class="co">//構造体のためSWAP関数は使えない. 0番目の要素はコピーに使うだけ.</span>
+    *(frag_p+global_n_p) = *(frag_p+global_n);
+    *(frag_p+global_n) = *(frag_p+<span class="dv">0</span>);
+<span class="pp">#endif</span>
+    <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+      Swap_double(&amp;x_0[global_n_p][k],&amp;x_0[global_n][k]);
+      Swap_double(&amp;v_0[global_n_p][k],&amp;v_0[global_n][k]);
+    }
+<span class="pp">#endif</span>
+
+    <span class="co">//global_n_p,global_nを1つ減らす.</span>
+    global_n_p--;
+    global_n--;
+
+  }<span class="cf">else</span> <span class="cf">if</span>(j_col&gt;global_n_p){
+
+    <span class="co">//惑星-微惑星の衝突合体</span>
+    <span class="co">//j_colとglobal_nを入れ替える.</span>
+    *(ele_p+<span class="dv">0</span>) = *(ele_p+j_col);  <span class="co">//構造体のためSwap関数は使えない. 0番目の要素はコピーに使うだけ.</span>
+    *(ele_p+j_col) = *(ele_p+global_n);
+    *(ele_p+global_n) = *(ele_p+<span class="dv">0</span>);
+<span class="pp">#if FRAGMENTATION</span>
+    *(frag_p+<span class="dv">0</span>) = *(frag_p+j_col);  <span class="co">//構造体のためSwap関数は使えない. 0番目の要素はコピーに使うだけ.</span>
+    *(frag_p+j_col) = *(frag_p+global_n);
+    *(frag_p+global_n) = *(frag_p+<span class="dv">0</span>);
+<span class="pp">#endif</span>
+    <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+      Swap_double(&amp;x_0[j_col][k],&amp;x_0[global_n][k]);
+      Swap_double(&amp;v_0[j_col][k],&amp;v_0[global_n][k]);
+    }
+
+    <span class="co">//global_nを1つ減らす.</span>
+    global_n--;
+  }
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>衝突・合体計算。</p>
+<ol type="1">
+<li>i_col 衝突した粒子。若い方。</li>
+<li>j_col 衝突した粒子。もう一つ。</li>
+<li>x_0[][4] 位置。</li>
+<li>v_0[][4] 速度。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>t_dyn システム時間。破壊計算で質量は減少するのでその見積もり用。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。</li>
+</ol>
 <h2 id="energy.c-1">energy.c</h2>
 <p>エネルギー計算</p>
+<div class="sourceCode"><pre class="sourceCode c:energy.c"><code class="sourceCode c"><span class="dt">double</span> Calculate_Energy(CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_c[][<span class="dv">4</span>]
+<span class="pp">#if INDIRECT_TERM</span>
+            , CONST <span class="dt">double</span> v_c[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_G[]
+<span class="pp">#else</span>
+            , CONST <span class="dt">double</span> v2_c[]
+<span class="pp">#endif</span>
+            , CONST <span class="dt">double</span> r_c[]
+<span class="pp">#if FRAGMENTATION</span>
+            , <span class="dt">double</span> t_dyn
+            , CONST <span class="kw">struct</span> fragmentation *frag_p
+<span class="pp">#endif</span>
+            ){
+
+  <span class="dt">int</span> i,j;
+  <span class="dt">double</span> abs_rij;
+  <span class="dt">double</span> E[global_n+<span class="dv">1</span>];
+  <span class="dt">double</span> E_tot;
+  <span class="dt">double</span> m_i,m_j;
+
+<span class="pp">#if INDIRECT_TERM</span>
+<span class="pp">#ifndef M_0</span>
+  E_tot = <span class="fl">0.5</span> * (v_G[<span class="dv">1</span>]*v_G[<span class="dv">1</span>] + v_G[<span class="dv">2</span>]*v_G[<span class="dv">2</span>] + v_G[<span class="dv">3</span>]*v_G[<span class="dv">3</span>]);
+<span class="pp">#else</span>
+  E_tot = <span class="fl">0.5</span> * M_0 * (v_G[<span class="dv">1</span>]*v_G[<span class="dv">1</span>] + v_G[<span class="dv">2</span>]*v_G[<span class="dv">2</span>] + v_G[<span class="dv">3</span>]*v_G[<span class="dv">3</span>]);
+<span class="pp">#endif</span>
+
+<span class="pp">#else</span>
+  E_tot = <span class="fl">0.0</span>;
+<span class="pp">#endif</span>
+
+  <span class="cf">for</span>(i=<span class="dv">1</span>;i&lt;=global_n;++i){
+
+<span class="pp">#if FRAGMENTATION</span>
+    m_i = MassDepletion(i,((ele_p+i)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+    m_i = ((ele_p+i)-&gt;mass);
+<span class="pp">#endif</span>
+
+<span class="pp">#if INDIRECT_TERM</span>
+    E[i] = <span class="fl">0.5</span> * m_i * ((v_c[i][<span class="dv">1</span>]-v_G[<span class="dv">1</span>])*(v_c[i][<span class="dv">1</span>]-v_G[<span class="dv">1</span>]) + (v_c[i][<span class="dv">2</span>]-v_G[<span class="dv">2</span>])*(v_c[i][<span class="dv">2</span>]-v_G[<span class="dv">2</span>]) + (v_c[i][<span class="dv">3</span>]-v_G[<span class="dv">3</span>])*(v_c[i][<span class="dv">3</span>]-v_G[<span class="dv">3</span>]));
+<span class="pp">#else</span>
+    E[i] = <span class="fl">0.5</span> * m_i * v2_c[i];
+<span class="pp">#endif</span>
+
+<span class="pp">#if !INTERACTION_TEST_PARTICLE</span>
+
+<span class="pp">#if INTERACTION_PLANET_TRACER</span>
+    <span class="cf">if</span>(i&lt;=global_n_p){
+<span class="pp">#endif</span>
+
+      <span class="cf">for</span>(j=i+<span class="dv">1</span>;j&lt;=global_n;++j){
+
+<span class="pp">#if FRAGMENTATION</span>
+    m_j = MassDepletion(j,((ele_p+j)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+    m_j = ((ele_p+j)-&gt;mass);
+<span class="pp">#endif</span>
+
+    abs_rij = RelativeDistance(i,j,x_c); <span class="co">//絶対値.</span>
+
+<span class="pp">#ifndef G</span>
+    E[i] += - m_i * m_j / abs_rij;  <span class="co">//エネルギー計算.</span>
+<span class="pp">#else</span>
+    E[i] += - G * m_i * m_j / abs_rij;  <span class="co">//エネルギー計算.</span>
+<span class="pp">#endif</span>
+
+      }  <span class="co">//j loop</span>
+
+<span class="pp">#if INTERACTION_PLANET_TRACER</span>
+    }
+<span class="pp">#endif</span>
+
+<span class="pp">#endif  </span><span class="co">/*!INTERACTION_TEST_PARTICLE*/</span>
+
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+    E_tot += - m_i / r_c[i] + E[i];
+<span class="pp">#else</span>
+    E_tot += - G * M_0 * m_i / r_c[i] + E[i];
+<span class="pp">#endif</span>
+
+  }  <span class="co">//i loop</span>
+  <span class="cf">return</span> E_tot;
+}</code></pre></div>
+<p>全エネルギー計算。</p>
+<ol type="1">
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>x_c[][4] 位置の修正子。</li>
+<li>v_c[][4] 速度の修正子。</li>
+<li>v_G[] 重心速度。</li>
+<li>v2_c[] 速度の修正子の大きさの2乗。</li>
+<li>r_c[] 中心星からの距離。</li>
+<li>t_dyn システム時間。破壊計算で質量は減少するのでその見積もり用。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:energy.c"><code class="sourceCode c"><span class="dt">double</span> AngularMomentum(CONST <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>]
+<span class="pp">#if FRAGMENTATION</span>
+               , <span class="dt">double</span> t_dyn
+               , CONST <span class="kw">struct</span> fragmentation *frag_p
+<span class="pp">#endif</span>
+               ){
+  <span class="dt">int</span> i, k;
+  <span class="dt">double</span> L[global_n+<span class="dv">1</span>][<span class="dv">4</span>];
+  <span class="dt">double</span> L_tot_0[<span class="dv">4</span>];
+  <span class="dt">double</span> m_i;
+
+
+  <span class="cf">for</span>(i=<span class="dv">1</span>;i&lt;=global_n;++i){
+
+<span class="pp">#if FRAGMENTATION</span>
+    m_i = MassDepletion(i,((ele_p+i)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+    m_i = ((ele_p+i)-&gt;mass);
+<span class="pp">#endif</span>
+
+    L[i][<span class="dv">1</span>] = m_i * (x_0[i][<span class="dv">2</span>]*v_0[i][<span class="dv">3</span>] - x_0[i][<span class="dv">3</span>]*v_0[i][<span class="dv">2</span>]);
+    L[i][<span class="dv">2</span>] = m_i * (x_0[i][<span class="dv">3</span>]*v_0[i][<span class="dv">1</span>] - x_0[i][<span class="dv">1</span>]*v_0[i][<span class="dv">3</span>]);
+    L[i][<span class="dv">3</span>] = m_i * (x_0[i][<span class="dv">1</span>]*v_0[i][<span class="dv">2</span>] - x_0[i][<span class="dv">2</span>]*v_0[i][<span class="dv">1</span>]);
+    <span class="co">//fprintf(fplog,&quot;i=%d\t(ele_p+i)-&gt;mass=%e\n&quot;,i,(ele_p+i)-&gt;mass);</span>
+    <span class="co">//fprintf(fplog,&quot;L[%d][1] = %e\t[2] = %e\t[3] = %e\n&quot;,i,L[i][1],L[i][2],L[i][3]);</span>
+  }
+
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+    L_tot_0[k] = <span class="fl">0.0</span>;
+    <span class="cf">for</span>(i=<span class="dv">1</span>;i&lt;=global_n;++i){
+      L_tot_0[k] += L[i][k];
+    }
+  }
+
+  <span class="cf">return</span> sqrt(L_tot_0[<span class="dv">1</span>]*L_tot_0[<span class="dv">1</span>] + L_tot_0[<span class="dv">2</span>]*L_tot_0[<span class="dv">2</span>] + L_tot_0[<span class="dv">3</span>]*L_tot_0[<span class="dv">3</span>]);
+}</code></pre></div>
+<p>全角運動量計算。</p>
+<ol type="1">
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>x_0[][4] 位置。</li>
+<li>v_0[][4] 速度。</li>
+<li>t_dyn システム時間。破壊計算で質量は減少するのでその見積もり用。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。破壊計算で質量は減少するのでその見積もり用。</li>
+</ol>
 <h2 id="heapsort.c-1">heapsort.c</h2>
-<p>ヒープソート（階層化タイムステップを導入する際に必要）</p>
+<div class="sourceCode"><pre class="sourceCode c:heapsort.c"><code class="sourceCode c"><span class="co">/* ヒープソートを行う */</span>
+<span class="dt">void</span> HeapSort(CONST <span class="dt">int</span> NUM_DATA, CONST <span class="dt">double</span> t[], CONST <span class="dt">double</span> dt[], CONST <span class="dt">double</span> t_tmp, <span class="dt">int</span> index[]){
+
+  <span class="dt">int</span> i, n;
+  <span class="dt">int</span> leaf, root;
+  <span class="dt">double</span> a[NUM_DATA+<span class="dv">1</span>];
+
+  n = NUM_DATA;
+
+  <span class="cf">for</span>(i=<span class="dv">1</span>;i&lt;=n;i++){
+    index[i] = i;
+    a[i] = t[i] + dt[i] + t_tmp;
+  }
+
+  leaf = n;                           <span class="co">/* 初期値は末尾の要素 */</span>
+  root = n/<span class="dv">2</span>;                         <span class="co">/* 初期値はその親 */</span>
+
+  <span class="cf">while</span>(root &gt;= <span class="dv">1</span>){                   <span class="co">/* 半順序木を構成 */</span>
+    DownHeap(a,index,leaf,root);
+    root--;
+  }
+
+  <span class="cf">while</span>(leaf &gt;= <span class="dv">1</span>){
+    Swap_double(&amp;a[<span class="dv">1</span>],&amp;a[leaf]);      <span class="co">/* 半順序木の根と末尾の要素を交換 */</span>
+    Swap_int(&amp;index[<span class="dv">1</span>],&amp;index[leaf]);
+    leaf--;                           <span class="co">/* 末尾の要素を半順序木から外す */</span>
+    DownHeap(a,index,leaf,<span class="dv">1</span>);         <span class="co">/* 半順序木を再構成する */</span>
+  }
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>配列 a[] に代入した粒子毎の時間とタイムステップの和を、ヒープソートによって小さい順に並べ、並べ終わった時の粒子番号を配列 index[] に代入する。</p>
+<ol type="1">
+<li>NUM_DATA 要素数。</li>
+<li>t[] 粒子毎の時間。</li>
+<li>dt[] 粒子毎のタイムステップ。</li>
+<li>t_tmp エネルギー計算などを行なって、すべての粒子をそろえた時間。粒子毎の時間を出力する際には、常にこの t_tmp を足す必要がある。</li>
+<li>index[] 粒子毎の時間とタイムステップの和を小さい順に並べた粒子番号。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:heapsort.c"><code class="sourceCode c"><span class="co">/* 半順序木 ( ヒープ ) を構成する */</span>
+<span class="dt">void</span> DownHeap(<span class="dt">double</span> a[], <span class="dt">int</span> index[], <span class="dt">int</span> leaf, <span class="dt">int</span> root){
+
+  <span class="dt">int</span> i;
+
+  <span class="cf">if</span>(root==<span class="dv">1</span>){
+    i = <span class="dv">2</span>;
+  }
+  <span class="cf">else</span>{
+    i = root * <span class="dv">2</span>;
+  }
+  <span class="cf">while</span>(i &lt;= leaf){
+    <span class="cf">if</span>(i &lt; leaf &amp;&amp; a[i+<span class="dv">1</span>] &gt; a[i]){    <span class="co">/* a[i] と a[i+1] の大きい方と */</span>
+      i++;
+    }
+    <span class="cf">if</span>(a[root] &gt;= a[i]){              <span class="co">/* a[root] と比較 */</span>
+      <span class="cf">break</span>;                          <span class="co">/* 子の方が大きければ */</span>
+    }
+
+    Swap_double(&amp;a[root],&amp;a[i]);      <span class="co">/* 交換 */</span>
+    Swap_int(&amp;index[root],&amp;index[i]);
+    root = i;                         <span class="co">/* 更にその子についても調べる */</span>
+    i = root * <span class="dv">2</span>;
+  }
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>半順序木 ( ヒープ ) を構成。</p>
+<ol type="1">
+<li>a[] 小さい順に並べ替えたい1次元配列。</li>
+<li>index[] a[] の粒子番号。</li>
+<li>leaf 末尾。</li>
+<li>root 根。</li>
+</ol>
 <h2 id="massflux.c-1">massflux.c</h2>
-<p>衝突・破壊の際の定常質量フラックス（Kobayashi &amp; Tanaka, 2010）を計算</p>
+<div class="sourceCode"><pre class="sourceCode c:massflux.c"><code class="sourceCode c"><span class="dt">void</span> MassFlux(<span class="dt">int</span> i, CONST <span class="kw">struct</span> orbital_elements *ele_p, <span class="kw">struct</span> fragmentation *frag_p, CONST <span class="kw">struct</span> parameter *para_p){
+  <span class="dt">double</span> F;
+  <span class="dt">double</span> a_inv = <span class="fl">1.0</span>/((ele_p+i)-&gt;axis);
+  <span class="dt">double</span> alpha = (para_p-&gt;alpha);
+  <span class="dt">double</span> v = ((frag_p+i)-&gt;v_ave);
+  <span class="dt">double</span> sigma = ((frag_p+i)-&gt;sigma);
+  <span class="dt">double</span> s_1 = (para_p-&gt;s_1);
+  <span class="dt">double</span> s_2 = (para_p-&gt;s_2);
+  <span class="dt">double</span> s_3 = (para_p-&gt;s_3);
+  <span class="dt">double</span> Q_D = (para_p-&gt;Q_D);
+  <span class="dt">double</span> h_0 = (para_p-&gt;h_0);
+
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+  F = - (<span class="fl">2.0</span> - alpha) * (<span class="fl">2.0</span> - alpha) / cbrt(M_MAX) * sigma * sigma * sqrt(a_inv * a_inv * a_inv) * h_0;
+<span class="pp">#else</span>
+  F = - (<span class="fl">2.0</span> - alpha) * (<span class="fl">2.0</span> - alpha) / cbrt(M_MAX) * sigma * sigma * sqrt(G * M_0 * a_inv * a_inv * a_inv) * h_0;
+<span class="pp">#endif</span>
+
+  F *= pow(v * v * <span class="fl">0.5</span> / Q_D, alpha - <span class="fl">1.0</span>);
+  F *= ((- log(EPSILON_FRAG) + <span class="fl">1.0</span> / (<span class="fl">2.0</span>-B_FRAG)) * s_1 + s_2 + s_3);
+
+  ((frag_p+i)-&gt;flux) = F;
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>衝突カスケードによる質量フラックス計算。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。</li>
+<li>*para_p 破壊計算のパラメータの構造体ポインタ。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:massflux.c"><code class="sourceCode c"><span class="dt">double</span> Depletion_Time(<span class="dt">int</span> i, CONST <span class="kw">struct</span> fragmentation *frag_p){
+  <span class="cf">return</span> - XI * ((frag_p+i)-&gt;sigma) / ((frag_p+i)-&gt;flux);
+}</code></pre></div>
+<p>破壊による質量減少タイムスケールの XI 倍を、破壊計算を行う間隔の目安とする。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:massflux.c"><code class="sourceCode c"><span class="dt">double</span> MassDepletion(<span class="dt">int</span> i, <span class="dt">double</span> mass, <span class="dt">double</span> t_dyn, CONST <span class="kw">struct</span> fragmentation *frag_p){
+  <span class="dt">double</span> t_frag = ((frag_p+i)-&gt;t_frag);
+  <span class="dt">double</span> tau_dep = - ((frag_p+i)-&gt;sigma) / ((frag_p+i)-&gt;flux);
+  <span class="cf">if</span>(i &gt; global_n_p &amp;&amp; t_dyn &gt; <span class="fl">1.0E-10</span>){  <span class="co">//惑星でない かつ 初期でない.</span>
+    <span class="cf">return</span> mass / (<span class="fl">1.0</span> + (t_dyn - t_frag) / tau_dep);
+  }<span class="cf">else</span>
+    <span class="cf">return</span> mass;  <span class="co">//惑星の場合は変化させない.</span>
+}</code></pre></div>
+<p>破壊による質量減少計算。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>mass i 粒子の質量（減少前）。</li>
+<li>t_dyn システム時間。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:massflux.c"><code class="sourceCode c"><span class="pp">#if FRAGMENTATION</span>
+<span class="dt">double</span> s_1_FRAG_trapezoid(<span class="dt">int</span> n, <span class="dt">double</span> dx, <span class="dt">double</span> ini, CONST <span class="kw">struct</span> parameter *para_p){
+  <span class="cf">return</span> <span class="fl">0.5</span> * dx * (s_1_FRAG_integrand(ini + n * dx, para_p) + s_1_FRAG_integrand(ini + (n + <span class="dv">1</span>) * dx, para_p));
+}
+<span class="pp">#endif</span>
+
+
+<span class="pp">#if FRAGMENTATION</span>
+<span class="dt">double</span> s_2_FRAG_trapezoid(<span class="dt">int</span> n, <span class="dt">double</span> dx, <span class="dt">double</span> ini, CONST <span class="kw">struct</span> parameter *para_p){
+  <span class="cf">return</span> <span class="fl">0.5</span> * dx * (s_2_FRAG_integrand(ini + n * dx, para_p) + s_2_FRAG_integrand(ini + (n + <span class="dv">1</span>) * dx, para_p));
+}
+<span class="pp">#endif</span>
+
+
+<span class="pp">#if FRAGMENTATION</span>
+<span class="dt">double</span> s_3_FRAG_trapezoid(<span class="dt">int</span> n, <span class="dt">double</span> dx, <span class="dt">double</span> ini, CONST <span class="kw">struct</span> parameter *para_p){
+  <span class="cf">return</span> <span class="fl">0.5</span> * dx * (s_3_FRAG_integrand(ini + n * dx, para_p) + s_3_FRAG_integrand(ini + (n + <span class="dv">1</span>) * dx, para_p));
+}
+<span class="pp">#endif</span>
+
+
+<span class="pp">#if FRAGMENTATION</span>
+<span class="dt">double</span> s_1_FRAG_integrand(<span class="dt">double</span> x, CONST <span class="kw">struct</span> parameter *para_p){
+  <span class="cf">return</span> exp((<span class="fl">2.0</span> - (para_p-&gt;alpha)) * x) / (<span class="fl">1.0</span> + exp(x));
+}
+<span class="pp">#endif</span>
+
+
+<span class="pp">#if FRAGMENTATION</span>
+<span class="dt">double</span> s_2_FRAG_integrand(<span class="dt">double</span> x, CONST <span class="kw">struct</span> parameter *para_p){
+  <span class="cf">return</span> - exp((<span class="fl">2.0</span> - (para_p-&gt;alpha)) * x) / (<span class="fl">1.0</span> + exp(x)) * (x - <span class="fl">2.0</span> * log(<span class="dv">1</span> + exp(x)));
+}
+<span class="pp">#endif</span>
+
+
+<span class="pp">#if FRAGMENTATION</span>
+<span class="dt">double</span> s_3_FRAG_integrand(<span class="dt">double</span> x, CONST <span class="kw">struct</span> parameter *para_p){
+  <span class="cf">return</span> exp((<span class="fl">1.0</span> - (para_p-&gt;alpha)) * x) / (<span class="fl">1.0</span> + exp(x)) * log(<span class="fl">1.0</span> + exp(x));
+}
+<span class="pp">#endif</span>
+
+
+<span class="pp">#if FRAGMENTATION</span>
+<span class="dt">double</span> s_1_FRAG(<span class="kw">struct</span> parameter *para_p){
+  <span class="dt">int</span> n, n_max;
+  <span class="dt">double</span> dx, sum=<span class="fl">0.0</span>, sum_pre=<span class="fl">0.0</span>;
+  <span class="dt">double</span> ini=-<span class="fl">36.0</span>, fin=<span class="fl">36.0</span>;
+  <span class="dt">double</span> eps=<span class="fl">1.0E-7</span>;
+
+  n_max = <span class="dv">1</span>;
+  <span class="cf">do</span>{
+    dx = (fin - ini) / (<span class="dt">double</span>)n_max;
+    sum_pre = sum;
+    sum=<span class="dv">0</span>;
+    <span class="cf">for</span>(n=<span class="dv">0</span>;n&lt;n_max;n++){
+      sum += s_1_FRAG_trapezoid(n, dx, ini, para_p);
+    }
+    <span class="co">//fprintf(fplog,&quot;n_max=%d\n&quot;,n_max);</span>
+    n_max *= <span class="dv">2</span>;
+  }<span class="cf">while</span>(fabs(sum_pre-sum)&gt;eps);
+
+  <span class="cf">return</span> sum;
+}
+<span class="pp">#endif</span>
+
+
+<span class="pp">#if FRAGMENTATION</span>
+<span class="dt">double</span> s_2_FRAG(<span class="kw">struct</span> parameter *para_p){
+  <span class="dt">int</span> n, n_max;
+  <span class="dt">double</span> dx, sum=<span class="fl">0.0</span>, sum_pre=<span class="fl">0.0</span>;
+  <span class="dt">double</span> ini=-<span class="fl">36.0</span>, fin=<span class="fl">36.0</span>;
+  <span class="dt">double</span> eps=<span class="fl">1.0E-7</span>;
+
+  n_max = <span class="dv">1</span>;
+  <span class="cf">do</span>{
+    dx = (fin - ini) / (<span class="dt">double</span>)n_max;
+    sum_pre = sum;
+    sum=<span class="dv">0</span>;
+    <span class="cf">for</span>(n=<span class="dv">0</span>;n&lt;n_max;n++){
+      sum += s_2_FRAG_trapezoid(n, dx, ini, para_p);
+    }
+    <span class="co">//fprintf(fplog,&quot;n_max=%d\n&quot;,n_max);</span>
+    n_max *= <span class="dv">2</span>;
+  }<span class="cf">while</span>(fabs(sum_pre-sum)&gt;eps);
+
+  <span class="cf">return</span> sum;
+}
+<span class="pp">#endif</span>
+
+
+<span class="pp">#if FRAGMENTATION</span>
+<span class="dt">double</span> s_3_FRAG(<span class="kw">struct</span> parameter *para_p){
+  <span class="dt">int</span> n, n_max;
+  <span class="dt">double</span> dx,sum=<span class="fl">0.0</span>, sum_pre=<span class="fl">0.0</span>;
+  <span class="dt">double</span> ini=-<span class="fl">36.0</span>, fin=<span class="fl">36.0</span>;
+  <span class="dt">double</span> eps=<span class="fl">1.0E-7</span>;
+
+  n_max = <span class="dv">1</span>;
+  <span class="cf">do</span>{
+    dx = (fin - ini) / (<span class="dt">double</span>)n_max;
+    sum_pre = sum;
+    sum=<span class="dv">0</span>;
+    <span class="cf">for</span>(n=<span class="dv">0</span>;n&lt;n_max;n++){
+      sum += s_3_FRAG_trapezoid(n, dx, ini, para_p);
+    }
+    <span class="co">//fprintf(fplog,&quot;n_max=%d\n&quot;,n_max);</span>
+    n_max *= <span class="dv">2</span>;
+  }<span class="cf">while</span>(fabs(sum_pre-sum)&gt;eps);
+
+  <span class="cf">return</span> sum;
+}
+<span class="pp">#endif</span></code></pre></div>
+<p>質量フラックスを求める際に必要なパラメータ（<span class="math inline"><em>s</em><sub>1</sub>(<em>α</em>),<em>s</em><sub>2</sub>(<em>α</em>),<em>s</em><sub>3</sub>(<em>α</em>)</span>）を、計算の初期設定の段階で数値積分で求めておく。</p>
 <h2 id="neighbor.c-1">neighbor.c</h2>
-<p>近傍トレーサーの探索、面密度と平均相対速度の計算</p>
+<div class="sourceCode"><pre class="sourceCode c:neighbor.c"><code class="sourceCode c"><span class="dt">void</span> NeighborSearch(<span class="dt">int</span> i, <span class="dt">double</span> t_dyn, CONST <span class="kw">struct</span> orbital_elements *ele_p, <span class="kw">struct</span> fragmentation *frag_p, CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>]){
+
+  <span class="dt">int</span> j,l,m;
+  <span class="dt">double</span> radius[global_n+<span class="dv">1</span>];
+  <span class="dt">double</span> theta[global_n+<span class="dv">1</span>];
+  <span class="dt">double</span> S;
+  <span class="dt">double</span> M;
+  <span class="dt">double</span> v2;
+  <span class="dt">double</span> delta_theta=DELTA_THETA;
+
+
+  radius[i] = sqrt(x_0[i][<span class="dv">1</span>]*x_0[i][<span class="dv">1</span>] + x_0[i][<span class="dv">2</span>]*x_0[i][<span class="dv">2</span>]);
+  theta[i] = atan2(x_0[i][<span class="dv">2</span>],x_0[i][<span class="dv">1</span>]);  <span class="co">//[-pi:pi]</span>
+
+  <span class="cf">if</span>(i&lt;=global_n_p){
+    fprintf(fplog,<span class="st">&quot;i = %d, global_n_p = %d</span><span class="sc">\n</span><span class="st">&quot;</span>,i,global_n_p);
+  }
+
+  m = <span class="dv">1</span>;
+  <span class="cf">do</span>{
+
+    <span class="cf">for</span>(l=<span class="dv">1</span>;l&lt;=NEIGHBOR_MAX;l++){
+      ((frag_p+i)-&gt;neighborlist[l]) = <span class="dv">0</span>;
+    }
+    ((frag_p+i)-&gt;neighbornumber) = <span class="dv">0</span>;
+
+    ((frag_p+i)-&gt;delta_r_out) = (<span class="dt">double</span>)m * DELTA_R;  <span class="co">//外側.</span>
+    ((frag_p+i)-&gt;delta_r_in) = (<span class="dt">double</span>)m * DELTA_R;  <span class="co">//内側.</span>
+
+    S = <span class="fl">2.0</span> * (((frag_p+i)-&gt;delta_r_out) + ((frag_p+i)-&gt;delta_r_in)) * radius[i] * delta_theta;
+
+    <span class="co">//fprintf(fplog,&quot;i=%d\tS=%e\n&quot;,i,S);</span>
+    <span class="co">//fprintf(fplog,&quot;delta_r[%d]=%f\n&quot;,i,((frag_p+i)-&gt;delta_r_in));</span>
+
+    l = <span class="dv">1</span>;
+    <span class="cf">for</span>(j=global_n_p+<span class="dv">1</span>;j&lt;=global_n;j++){  <span class="co">//惑星抜き.</span>
+      <span class="cf">if</span>(j!=i){
+        radius[j] = sqrt(x_0[j][<span class="dv">1</span>]*x_0[j][<span class="dv">1</span>] + x_0[j][<span class="dv">2</span>]*x_0[j][<span class="dv">2</span>]);
+        theta[j] = atan2(x_0[j][<span class="dv">2</span>],x_0[j][<span class="dv">1</span>]);  <span class="co">//[-pi:pi]</span>
+    <span class="cf">if</span>((radius[j]-radius[i]&gt;=<span class="fl">0.0</span> &amp;&amp; radius[j]-radius[i]&lt;=((frag_p+i)-&gt;delta_r_out)) || (radius[i]-radius[j]&gt;=<span class="fl">0.0</span> &amp;&amp; radius[i]-radius[j]&lt;=((frag_p+i)-&gt;delta_r_in))){  <span class="co">//動径方向.</span>
+      <span class="cf">if</span>(fabs(theta[j] - theta[i])&lt;=delta_theta || <span class="fl">2.0</span>*M_PI - fabs(theta[j] - theta[i])&lt;=delta_theta){  <span class="co">//角度方向.</span>
+        ((frag_p+i)-&gt;neighborlist[l]) = j;
+        l++;
+      }
+    }
+      }
+    }
+
+    <span class="cf">if</span>(NEIGHBOR_MAX &lt; l-<span class="dv">1</span>){
+      fprintf(fplog,<span class="st">&quot;neighbornumber (%d) &gt; NEIGHBOR_MAX (%d). Ending this program.</span><span class="sc">\n</span><span class="st">&quot;</span>,l-<span class="dv">1</span>,NEIGHBOR_MAX);
+      exit(-<span class="dv">1</span>);
+    }
+
+    ((frag_p+i)-&gt;neighbornumber) = l-<span class="dv">1</span>;
+
+    m++;
+
+    <span class="co">//}while(((frag_p+i)-&gt;neighbornumber)&lt;10);  //近傍粒子が10個未満なら、10個以上になるまでdelta_rをm倍に広げる.</span>
+  }<span class="cf">while</span>(((frag_p+i)-&gt;neighbornumber)&lt;<span class="dv">10</span> &amp;&amp; m&lt;<span class="dv">10</span>);  <span class="co">//近傍粒子が10個未満 かつ delta_r &lt; 1.0 なら、1個以上になるまでdelta_rをm倍に広げる.</span>
+
+  v2 = <span class="fl">0.0</span>;
+
+  M = MassDepletion(i,((ele_p+i)-&gt;mass),t_dyn,frag_p);  <span class="co">//ターゲットiの質量も含める. 予測もする.</span>
+
+  <span class="cf">if</span>(((frag_p+i)-&gt;neighbornumber)!=<span class="dv">0</span>){
+    <span class="cf">for</span>(j=<span class="dv">1</span>;j&lt;=((frag_p+i)-&gt;neighbornumber);j++){
+      v2 += SquareRandomVelocity(i,((frag_p+i)-&gt;neighborlist[j]),ele_p);
+
+      M += MassDepletion(((frag_p+i)-&gt;neighborlist[j]),((ele_p+((frag_p+i)-&gt;neighborlist[j]))-&gt;mass),t_dyn,frag_p);  <span class="co">//領域iの総質量. 周りのトレーサーjの質量を予測してから足す.</span>
+
+      <span class="cf">if</span>(isnan(SquareRandomVelocity(i,((frag_p+i)-&gt;neighborlist[j]),ele_p))){
+        fprintf(fplog,<span class="st">&quot;i=%d,j=%d</span><span class="sc">\t</span><span class="st">vij is nan.</span><span class="sc">\n</span><span class="st">&quot;</span>,i,((frag_p+i)-&gt;neighborlist[j]));
+        fprintf(fplog,<span class="st">&quot;i=%d</span><span class="sc">\t</span><span class="st">axis=%e</span><span class="sc">\t</span><span class="st">ecc=%e</span><span class="sc">\t</span><span class="st">inc=%e</span><span class="sc">\t</span><span class="st">u=%e</span><span class="sc">\t</span><span class="st">Omega=%e</span><span class="sc">\t</span><span class="st">omega=%e</span><span class="sc">\n</span><span class="st">&quot;</span>,i,((ele_p+i)-&gt;axis),((ele_p+i)-&gt;ecc),((ele_p+i)-&gt;inc),((ele_p+i)-&gt;u),((ele_p+i)-&gt;Omega),((ele_p+i)-&gt;omega));
+        fprintf(fplog,<span class="st">&quot;j=%d</span><span class="sc">\t</span><span class="st">axis=%e</span><span class="sc">\t</span><span class="st">ecc=%e</span><span class="sc">\t</span><span class="st">inc=%e</span><span class="sc">\t</span><span class="st">u=%e</span><span class="sc">\t</span><span class="st">Omega=%e</span><span class="sc">\t</span><span class="st">omega=%e</span><span class="sc">\n</span><span class="st">&quot;</span>,((frag_p+i)-&gt;neighborlist[j]),((ele_p+((frag_p+i)-&gt;neighborlist[j]))-&gt;axis),((ele_p+((frag_p+i)-&gt;neighborlist[j]))-&gt;ecc),((ele_p+((frag_p+i)-&gt;neighborlist[j]))-&gt;inc),((ele_p+((frag_p+i)-&gt;neighborlist[j]))-&gt;u),((ele_p+((frag_p+i)-&gt;neighborlist[j]))-&gt;Omega),((ele_p+((frag_p+i)-&gt;neighborlist[j]))-&gt;omega));
+      }
+
+    }
+    <span class="cf">if</span>(isnan(v2)){
+      fprintf(fplog,<span class="st">&quot;i=%d</span><span class="sc">\t</span><span class="st">v_tot_2 is nan.</span><span class="sc">\n</span><span class="st">&quot;</span>,i);
+    }
+    ((frag_p+i)-&gt;v_ave) = sqrt(v2/(<span class="dt">double</span>)((frag_p+i)-&gt;neighbornumber));  <span class="co">//領域iの平均速度(RMS).</span>
+
+    <span class="co">//fprintf(fplog,&quot;i=%d\tmass=%e\n&quot;,i,ele[i].mass);</span>
+    <span class="co">//fprintf(fplog,&quot;i=%d\tM=%e\n&quot;,i,M);</span>
+
+    ((frag_p+i)-&gt;sigma) = M / S;  <span class="co">//領域iの表面密度.</span>
+    ((frag_p+i)-&gt;n_s) = ((frag_p+i)-&gt;neighbornumber) / S;  <span class="co">//領域iの個数密度.</span>
+  }<span class="cf">else</span>{
+    fprintf(fplog,<span class="st">&quot;t_sys = %e [yr]</span><span class="sc">\t</span><span class="st">i = %d</span><span class="sc">\t</span><span class="st">neighbor number = %d</span><span class="sc">\t</span><span class="st">v_ave, sigma, &amp; n_s does NOT change.</span><span class="sc">\n</span><span class="st">&quot;</span>,t_dyn/<span class="fl">2.0</span>/M_PI,i,((frag_p+i)-&gt;neighbornumber));
+    <span class="co">//((frag_p+i)-&gt;v_ave) = 0.0;</span>
+    <span class="co">//((frag_p+i)-&gt;sigma) = 0.0;</span>
+    <span class="co">//((frag_p+i)-&gt;n_s) = 0.0;</span>
+  }
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>トレーサーの周りに扇型領域を形成し、その領域に入った近傍のトレーサーから、相対速度の2乗平均平方根、面密度、面数密度を計算する。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>t_dyn システム粒子。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。</li>
+<li>x_0[][4] 位置。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:neighbor.c"><code class="sourceCode c"><span class="dt">double</span> SquareRandomVelocity(<span class="dt">int</span> i, <span class="dt">int</span> j, CONST <span class="kw">struct</span> orbital_elements *ele_p){
+  <span class="dt">double</span> eij2;
+  <span class="dt">double</span> iij2;
+
+  eij2 = ((ele_p+i)-&gt;ecc) * ((ele_p+i)-&gt;ecc) + ((ele_p+j)-&gt;ecc) * ((ele_p+j)-&gt;ecc) - <span class="fl">2.0</span> * ((ele_p+i)-&gt;ecc) * ((ele_p+j)-&gt;ecc) * cos(((ele_p+i)-&gt;omega) + ((ele_p+i)-&gt;Omega) - ((ele_p+j)-&gt;omega) - ((ele_p+j)-&gt;Omega));
+
+  iij2 = ((ele_p+i)-&gt;inc) * ((ele_p+i)-&gt;inc) + ((ele_p+j)-&gt;inc) * ((ele_p+j)-&gt;inc) - <span class="fl">2.0</span> * ((ele_p+i)-&gt;inc) * ((ele_p+j)-&gt;inc) * cos(((ele_p+i)-&gt;Omega) - ((ele_p+j)-&gt;Omega));
+
+
+  <span class="co">/*</span>
+<span class="co">  if(isnan((ele_p+i)-&gt;ecc)){</span>
+<span class="co">    fprintf(fplog,&quot;i=%d\tecc is nan. (in RandomVelocity)\n&quot;,i);</span>
+<span class="co">  }</span>
+<span class="co">  if(isnan((ele_p+j)-&gt;ecc)){</span>
+<span class="co">    fprintf(fplog,&quot;j=%d\tecc is nan. (in RandomVelocity)\n&quot;,j);</span>
+<span class="co">  }</span>
+<span class="co">  if(isnan((ele_p+i)-&gt;inc)){</span>
+<span class="co">    fprintf(fplog,&quot;i=%d\tinc is nan. (in RandomVelocity).\n&quot;,i);</span>
+<span class="co">  }</span>
+<span class="co">  if(isnan((ele_p+j)-&gt;inc)){</span>
+<span class="co">    fprintf(fplog,&quot;j=%d\tinc is nan. (in RandomVelocity)\n&quot;,j);</span>
+<span class="co">  }</span>
+<span class="co">  if(isnan((ele_p+i)-&gt;omega)){</span>
+<span class="co">    fprintf(fplog,&quot;i=%d\tomega is nan. (in RandomVelocity)\n&quot;,i);</span>
+<span class="co">  }</span>
+<span class="co">  if(isnan((ele_p+j)-&gt;omega)){</span>
+<span class="co">    fprintf(fplog,&quot;j=%d\tomega is nan. (in RandomVelocity)\n&quot;,j);</span>
+<span class="co">  }</span>
+<span class="co">  if(isnan((ele_p+i)-&gt;Omega)){</span>
+<span class="co">    fprintf(fplog,&quot;i=%d\tOmega is nan. (in RandomVelocity)\n&quot;,i);</span>
+<span class="co">  }</span>
+<span class="co">  if(isnan((ele_p+j)-&gt;Omega)){</span>
+<span class="co">    fprintf(fplog,&quot;j=%d\tOmega is nan. (in RandomVelocity)\n&quot;,j);</span>
+<span class="co">  }</span>
+<span class="co">  if(isnan(eij2)){</span>
+<span class="co">    fprintf(fplog,&quot;i=%d,j=%d\teij2 is nan. (in RandomVelocity)\n&quot;,i,j);</span>
+<span class="co">    return -1;</span>
+<span class="co">  }</span>
+<span class="co">  if(isnan(iij2)){</span>
+<span class="co">    fprintf(fplog,&quot;i=%d,j=%d\tiij2 is nan. (in RandomVelocity)\n&quot;,i,j);</span>
+<span class="co">    return -1;</span>
+<span class="co">  }</span>
+<span class="co">  if(isnan((ele_p+i)-&gt;axis)){</span>
+<span class="co">    fprintf(fplog,&quot;i=%d\taxis is nan. (in RandomVelocity)\taxis=%f\n&quot;,i,((ele_p+i)-&gt;axis));</span>
+<span class="co">  }</span>
+<span class="co">  */</span>
+
+  <span class="cf">if</span>(
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+     isnan(sqrt((eij2 + iij2)/((ele_p+i)-&gt;axis)))
+<span class="pp">#else</span>
+     isnan(sqrt((eij2 + iij2)*G*M_0/((ele_p+i)-&gt;axis)))
+<span class="pp">#endif</span>
+     ){
+    fprintf(fplog,<span class="st">&quot;i=%d,j=%d</span><span class="sc">\t</span><span class="st">vij is nan.(in RandomVelocity)</span><span class="sc">\n</span><span class="st">&quot;</span>,i,j);
+    fprintf(fplog,<span class="st">&quot;eij2=%e</span><span class="sc">\t</span><span class="st">iij2=%e</span><span class="sc">\t</span><span class="st">axis=%e</span><span class="sc">\n</span><span class="st">&quot;</span>,eij2,iij2,((ele_p+i)-&gt;axis));
+  }
+
+
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+  <span class="cf">return</span> (eij2 + iij2) / ((ele_p+i)-&gt;axis);
+<span class="pp">#else</span>
+  <span class="cf">return</span> (eij2 + iij2) * G * M_0 / ((ele_p+i)-&gt;axis);
+<span class="pp">#endif</span>
+}</code></pre></div>
+<p>相対速度の大きさの2乗を、相対離心率と相対軌道傾斜角から求める。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>j j 粒子。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+</ol>
 <h2 id="orbital_elements.c-1">orbital_elements.c</h2>
-<p>初期軌道要素の設定（or 初期位置の設定）、軌道要素計算</p>
+<div class="sourceCode"><pre class="sourceCode c:orbital_elements.c"><code class="sourceCode c"><span class="co">/*P計算*/</span>
+<span class="dt">double</span> Calculate_P(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="kw">struct</span> orbital_elements *ele_p){
+  <span class="cf">if</span>(k==<span class="dv">1</span>){
+    <span class="cf">return</span> cos(((ele_p+i)-&gt;omega))*cos(((ele_p+i)-&gt;Omega)) - sin(((ele_p+i)-&gt;omega))*sin(((ele_p+i)-&gt;Omega))*cos(((ele_p+i)-&gt;inc));
+  }<span class="cf">else</span> <span class="cf">if</span>(k==<span class="dv">2</span>){
+    <span class="cf">return</span> cos(((ele_p+i)-&gt;omega))*sin(((ele_p+i)-&gt;Omega)) + sin(((ele_p+i)-&gt;omega))*cos(((ele_p+i)-&gt;Omega))*cos(((ele_p+i)-&gt;inc));
+  }<span class="cf">else</span>{
+    <span class="cf">return</span> sin(((ele_p+i)-&gt;omega))*sin(((ele_p+i)-&gt;inc));
+  }
+}
+
+
+<span class="co">/*Q計算*/</span>
+<span class="dt">double</span> Calculate_Q(<span class="dt">int</span> i, <span class="dt">int</span> k, CONST <span class="kw">struct</span> orbital_elements *ele_p){
+  <span class="cf">if</span>(k==<span class="dv">1</span>){
+    <span class="cf">return</span> -sin(((ele_p+i)-&gt;omega))*cos(((ele_p+i)-&gt;Omega)) - cos(((ele_p+i)-&gt;omega))*sin(((ele_p+i)-&gt;Omega))*cos(((ele_p+i)-&gt;inc));
+  }<span class="cf">else</span> <span class="cf">if</span>(k==<span class="dv">2</span>){
+    <span class="cf">return</span> -sin(((ele_p+i)-&gt;omega))*sin(((ele_p+i)-&gt;Omega)) + cos(((ele_p+i)-&gt;omega))*cos(((ele_p+i)-&gt;Omega))*cos(((ele_p+i)-&gt;inc));
+  }<span class="cf">else</span>{
+    <span class="cf">return</span> cos(((ele_p+i)-&gt;omega))*sin(((ele_p+i)-&gt;inc));
+  }
+}</code></pre></div>
+<p>軌道要素から位置・速度への変換に使うPとQを計算。</p>
+<p><span class="math inline">$\boldsymbol { P } = \left( \begin{array} { c } { P _ { x } } \\ { P _ { y } } \\ { P _ { z } } \end{array} \right) \equiv \left( \begin{array} { c } { \cos \omega \cos \Omega - \sin \omega \sin \Omega \cos i } \\ { \cos \omega \sin \Omega + \sin \omega \cos \Omega \cos i } \\ { \sin \omega \sin i } \end{array} \right)$</span></p>
+<p><span class="math inline">$\boldsymbol { Q } = \left( \begin{array} { c } { Q _ { x } } \\ { Q _ { y } } \\ { Q _ { z } } \end{array} \right) \equiv \left( \begin{array} { c } { - \sin \omega \cos \Omega - \cos \omega \sin \Omega \cos i } \\ { - \sin \omega \sin \Omega + \cos \omega \cos \Omega \cos i } \\ { \cos \omega \sin i } \end{array} \right)$</span></p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>k ベクトル3成分。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:orbital_elements.c"><code class="sourceCode c"><span class="co">/*惑星の初期軌道要素*/</span>
+<span class="dt">void</span> InitialOrbitalElements_Planet(<span class="dt">int</span> i,<span class="kw">struct</span> orbital_elements *ele_p){
+
+  sprintf((ele_p+i)-&gt;name,<span class="st">&quot;Planet%02d&quot;</span>,i);
+  (ele_p+i)-&gt;mass = PLANET_MASS;
+  <span class="co">//(ele_p+i)-&gt;axis = PLANET_AXIS;  //軌道長半径axisはすでに求めてある.</span>
+  (ele_p+i)-&gt;ecc = PLANET_ECC;
+  (ele_p+i)-&gt;inc = PLANET_INC;
+  (ele_p+i)-&gt;u = rand_func() * <span class="fl">2.0</span> * M_PI;
+  (ele_p+i)-&gt;omega = rand_func() * <span class="fl">2.0</span> * M_PI;
+  (ele_p+i)-&gt;Omega = rand_func() * <span class="fl">2.0</span> * M_PI;
+
+<span class="pp">#ifndef M_0</span>
+  (ele_p+i)-&gt;r_h = ((ele_p+i)-&gt;axis)*cbrt(((ele_p+i)-&gt;mass)/<span class="fl">3.0</span>);
+<span class="pp">#else</span>
+  (ele_p+i)-&gt;r_h = ((ele_p+i)-&gt;axis)*cbrt(((ele_p+i)-&gt;mass)/M_0/<span class="fl">3.0</span>);
+<span class="pp">#endif</span>
+
+  (ele_p+i)-&gt;radius = cbrt(<span class="fl">3.0</span>/<span class="fl">4.0</span>/M_PI*((ele_p+i)-&gt;mass)*<span class="fl">1.989E33</span>/PLANET_DENSITY)/<span class="fl">1.496E13</span>;
+  (ele_p+i)-&gt;orinum = i;
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>惑星の初期軌道要素を設定。 hybrid.h 内でパラメータを決定する。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:orbital_elements.c"><code class="sourceCode c"><span class="pp">#if ORBITING_SMALL_PARTICLE</span>
+<span class="co">/*トレーサーの初期軌道要素*/</span>
+<span class="dt">void</span> InitialOrbitalElements_Tracer(<span class="dt">int</span> i, <span class="dt">double</span> x_0[][<span class="dv">4</span>], <span class="kw">struct</span> orbital_elements *ele_p){
+
+  <span class="co">//惑星の位置x_0[][4]はすでに求めてあることが前提.</span>
+<span class="pp">#if N_p == 3</span>
+  <span class="dt">double</span> orbital_r_min = ((ele_p+<span class="dv">1</span>)-&gt;axis) / MutualHillRadius_to_SemimajorAxis(<span class="fl">0.5</span>*DELTA_HILL);
+  <span class="dt">double</span> orbital_r_max = ((ele_p+<span class="dv">3</span>)-&gt;axis) * MutualHillRadius_to_SemimajorAxis(<span class="fl">0.5</span>*DELTA_HILL);
+<span class="pp">#elif N_p == 1</span>
+  <span class="dt">double</span> orbital_r_min = ((ele_p+<span class="dv">1</span>)-&gt;axis) / MutualHillRadius_to_SemimajorAxis(<span class="fl">0.5</span>*DELTA_HILL);
+  <span class="dt">double</span> orbital_r_max = ((ele_p+<span class="dv">1</span>)-&gt;axis) * MutualHillRadius_to_SemimajorAxis(<span class="fl">0.5</span>*DELTA_HILL);
+<span class="pp">#endif</span>
+
+  <span class="dt">int</span> j=<span class="dv">0</span>,k=<span class="dv">0</span>,flag=<span class="dv">0</span>;
+  <span class="co">//double peri=0.0,apo=0.0;</span>
+  <span class="dt">double</span> orbital_r=<span class="fl">0.0</span>;
+
+  <span class="co">//double index = 0.5;  //f(x) = C x^{-p}.</span>
+
+  sprintf((ele_p+i)-&gt;name,<span class="st">&quot;tracer%06d&quot;</span>,i-global_n_p);
+  (ele_p+i)-&gt;mass = M_TOT/(<span class="dt">double</span>)(global_n-global_n_p);  <span class="co">//質量.</span>
+
+  <span class="cf">do</span>{
+    flag = <span class="dv">0</span>;
+
+    (ele_p+i)-&gt;axis = rand_func() * (orbital_r_max - orbital_r_min) + orbital_r_min;  <span class="co">//面密度がa^{-1}に比例する分布. ==&gt; 面数密度が一様.</span>
+    <span class="co">//(ele_p+i)-&gt;axis = pow((pow(orbital_r_max,1.0-index) - pow(orbital_r_min,1.0-index)) * rand_func() + pow(orbital_r_min,1.0-index), 1.0/(1.0-index));  //べき分布.</span>
+
+<span class="pp">#if RAYLEIGH_DISTRIBUTION</span>
+    (ele_p+i)-&gt;ecc = sqrt(-log(rand_func())) * ECC_RMS;  <span class="co">//離心率.  //Rayleigh分布.</span>
+    (ele_p+i)-&gt;inc = sqrt(-log(rand_func())) * INC_RMS;  <span class="co">//軌道傾斜角.  //Rayleigh分布.</span>
+<span class="pp">#else</span>
+    (ele_p+i)-&gt;ecc = ECC_RMS;  <span class="co">//離心率.</span>
+    (ele_p+i)-&gt;inc = INC_RMS;  <span class="co">//軌道傾斜角.</span>
+<span class="pp">#endif</span>
+    (ele_p+i)-&gt;u = rand_func() * <span class="fl">2.0</span> * M_PI;
+    (ele_p+i)-&gt;omega = rand_func() * <span class="fl">2.0</span> * M_PI;
+    (ele_p+i)-&gt;Omega = rand_func() * <span class="fl">2.0</span> * M_PI;
+
+    <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+      x_0[i][k] = ((ele_p+i)-&gt;axis) * Calculate_P(i,k,ele_p) * (cos(((ele_p+i)-&gt;u)) - ((ele_p+i)-&gt;ecc)) + ((ele_p+i)-&gt;axis) * sqrt(<span class="fl">1.0</span> - ((ele_p+i)-&gt;ecc) * ((ele_p+i)-&gt;ecc)) * Calculate_Q(i,k,ele_p) * sin(((ele_p+i)-&gt;u));
+    }
+
+    <span class="co">//peri = ((ele_p+i)-&gt;axis)*(1.0 - (ele_p+i)-&gt;ecc);</span>
+    <span class="co">//apo = ((ele_p+i)-&gt;axis)*(1.0 + (ele_p+i)-&gt;ecc);</span>
+    orbital_r = RadiusFromCenter(i,x_0);
+
+    <span class="cf">if</span>(orbital_r &gt; orbital_r_min &amp;&amp; orbital_r &lt; orbital_r_max){  <span class="co">//orbital_r_minからorbital_r_maxの範囲にいる場合.</span>
+
+      <span class="cf">for</span>(j=<span class="dv">1</span>;j&lt;=global_n_p;++j){
+        <span class="cf">if</span>(i!=j){
+          <span class="cf">if</span>(RelativeDistance(i,j,x_0)&gt;SEPARATE_HILL*((ele_p+j)-&gt;r_h)){  <span class="co">//それぞれの惑星からSEPARATE_HILLヒル以上離れている場合.</span>
+            flag += <span class="dv">1</span>;
+          }
+        }
+      }
+    }
+  }<span class="cf">while</span>(flag &lt; global_n_p);  <span class="co">//orbital_r_minからorbital_r_maxの範囲にいる場合，かつglobal_n_p個の全ての惑星からSEPARATE_HILLヒル以上離れている場合のみ抜け出せるループ.</span>
+
+
+<span class="pp">#ifndef M_0</span>
+  (ele_p+i)-&gt;r_h = ((ele_p+i)-&gt;axis) * cbrt(((ele_p+i)-&gt;mass) / <span class="fl">3.0</span>);
+<span class="pp">#else</span>
+  (ele_p+i)-&gt;r_h = ((ele_p+i)-&gt;axis) * cbrt(((ele_p+i)-&gt;mass) / M_0 / <span class="fl">3.0</span>);
+<span class="pp">#endif</span>
+
+  (ele_p+i)-&gt;radius = cbrt(<span class="fl">3.0</span> / <span class="fl">4.0</span> / M_PI * ((ele_p+i)-&gt;mass) * <span class="fl">1.989E33</span> / PLANET_DENSITY) / <span class="fl">1.496E13</span>;
+  (ele_p+i)-&gt;orinum = i;
+
+  <span class="cf">return</span>;
+}
+<span class="pp">#endif  </span><span class="co">/*ORBITING_SMALL_PARTICLE*/</span></code></pre></div>
+<p>トレーサーを初期に円盤状に分布させる場合の初期軌道要素。 hybrid.h 内でパラメータを決定する。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>x_0[][4] 位置。惑星からある程度離れたところに粒子を配置するため、惑星からの距離を測定しながら軌道要素を決定する。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:orbital_elements.c"><code class="sourceCode c"></code></pre></div>
+<p><span class="math inline">$\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$</span></p>
+<p><span class="math inline">$\boldsymbol { V } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$</span></p>
 <h2 id="sfmt.c-1">SFMT.c</h2>
 <p>メルセンヌ・ツイスタ法による乱数生成</p>
 <h2 id="sfmtdir-1">SFMTdir/</h2>
@@ -838,6 +1900,14 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 <h1 id="補足ページをmarkdownで見る">10. 補足:ページをMarkdownで見る</h1>
 <p>Qiitaを見ていると「これはどんな記法で書いてあるんだろう」ときになることがあるかもしれません。 そんな時はMarkdown記法で見たいURLの最後に.mdをつければ見ることが出来ます。</p>
 <h2 id="参考">参考</h2>
-<p><a href="http://qiita.com/Qiita/items/c686397e4a0f4f11683d">Markdown記法チートシート</a></p>
+<p><a href="http://qiita.com/Qiita/items/c686397e4a0f4f11683d">Markdown記法チートシート</a> <!--stackedit_data:
+eyJoaXN0b3J5IjpbLTk0MDg2NzYxMSwtMjA3MjE2OTM4NywxOT
+Q4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3
+ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1Mj
+MsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5
+Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MD
+QzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5
+NTE5NTMwNjFdfQ==
+--></p>
 </body>
 </html>
