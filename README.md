@@ -2760,9 +2760,27 @@ main関数の実行終了時刻。
 タイムステップ計算
 
 ```c:timestep.c
+/*初期 タイムステップ計算*/
+double Timestep_i_0(int i, CONST double a_0[][4], CONST double adot_0[][4]){
+  int k;
+  double abs_a = 0.0;
+  double abs_adot = 0.0;
 
+  for(k=1;k<=3;++k){
+    abs_a += a_0[i][k] * a_0[i][k];
+    abs_adot += adot_0[i][k] * adot_0[i][k];
+  }  //k loop
+
+  abs_a = sqrt(abs_a);
+  abs_adot = sqrt(abs_adot);
+
+  //fprintf(fplog,"abs_a[%d]=%f\tabs_adot[%d]=%f\n",i,abs_a[i],i,abs_adot[i]);
+  return ETA * abs_a / abs_adot;
+}
 ```
 
+加速度の2階、3階微分を求めることができない、初期用のタイムステップ。
+衝突合体の後も使う
 ```c:timestep.c
 
 ```
@@ -2865,11 +2883,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwNzEzODQxODYsMzMyODQ3ODM4LC0xND
-E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
-NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
-AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
-OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
-I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
-MTIzOTQwNDgzXX0=
+eyJoaXN0b3J5IjpbMTY2MTU1Mzk1OCwzMzI4NDc4MzgsLTE0MT
+c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
+MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
+wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
+NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
+Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
+MjM5NDA0ODNdfQ==
 -->
