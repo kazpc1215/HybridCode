@@ -2351,10 +2351,12 @@ i 粒子。
 6. v2_c[]
 速度の大きさの2乗の修正子。
 7. r_dot_v[]
-
+位置ベクトルと速度ベクトルの内積（の修正子）。
 8. t_dyn
-
+システム時間。
 9. *frag_p
+破壊計算に必要なデータをもつ構造体ポインタ。 
+
 
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
 
@@ -2474,7 +2476,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIxMzg4ODYzMzUsLTY4NDA0ODY2MywxMD
+eyJoaXN0b3J5IjpbLTE0MTc3NjkwNTMsLTY4NDA0ODY2MywxMD
 Q5MzU1MjU1LC05NDA4Njc2MTEsLTIwNzIxNjkzODcsMTk0ODM4
 OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1MzU4MSwxODQ4Nzg0MT
 M0LDEwNzQzNDc2MTcsMTA5NzA4ODUzLC0xMjY0NTkzNTIzLDEx
