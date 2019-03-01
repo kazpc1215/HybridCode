@@ -2668,11 +2668,25 @@ $a_{i+1}=\Gamma\left(b, m_{i}, m_{i+1}\right) a_{i}$
 
 $\Gamma\left(b, m_{i}, m_{i+1}\right) \equiv \frac{\frac{1}{b}+\frac{1}{2}\left(\frac{m_{i}+m_{i+1}}{3 M_{\odot}}\right)^{1 / 3}}{\frac{1}{b}-\frac{1}{2}\left(\frac{m_{i}+m_{i+1}}{3 M_{\odot}}\right)^{1 / 3}}$
 
-1
+のような数列のようにかける。
+
+1. ratio
+相互ヒル半径の何倍か。
 
 ```c:sub.c
-
+double Escape_Velocity(double mass_p, double r){
+#ifndef G
+  return sqrt(2.0 * mass_p / r);
+#else
+  return sqrt(2.0 * G * mass_p / r);
+#endif
+}
 ```
+
+脱出速度。
+
+1. mass_p
+てn
 
 ```c:sub.c
 
@@ -2783,7 +2797,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY0MDM1MTg2OSwzMzI4NDc4MzgsLTE0MT
+eyJoaXN0b3J5IjpbLTgxMzczMjI5OSwzMzI4NDc4MzgsLTE0MT
 c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
 MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
 wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
