@@ -2374,6 +2374,15 @@ $R \cdot \dot{R} = X \dot{X} + Y \dot{Y} + Z \dot{Z}$
 $P_{i}=\frac{X_{i}}{R} \cos E-\sqrt{\frac{a}{\mu}} \dot{X}_{i} \sin E$
 
 $Q_{i}=\frac{1}{\sqrt{1-e^{2}}}\left(\frac{X_{i}}{R} \sin E+\sqrt{\frac{a}{\mu}} \dot{X}_{i}(\cos E-e)\right)$
+
+軌道長半径は
+$a=\left(\frac{2}{R}-\frac{V^{2}}{\mu}\right)^{-1}$
+
+離心率は
+$e=\sqrt{\left(1-\frac{R}{a}\right)^{2}+\frac{(\boldsymbol{R} \cdot \dot{\boldsymbol{R}})^{2}}{\mu a}}$
+
+離心近点理書く
+
 ## SFMT.c
 メルセンヌ・ツイスタ法による乱数生成
 
@@ -2487,7 +2496,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwOTcwNjIyODksMzMyODQ3ODM4LC0xND
+eyJoaXN0b3J5IjpbLTE3OTA0NDI3NzcsMzMyODQ3ODM4LC0xND
 E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
 NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
 AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
