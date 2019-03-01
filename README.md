@@ -2363,6 +2363,10 @@ $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{arr
 
 $\boldsymbol { V } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$
 
+$R^2 = X^2 + Y^2 + Z^2$
+
+$V^2 = \dot{X}^2 + \dot{Y}^2 + \dot{Z}^2$
+
 $$
 
 ## SFMT.c
@@ -2478,11 +2482,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3MTYxMjAzMDMsLTE0MTc3NjkwNTMsLT
-Y4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2MTEsLTIwNzIx
-NjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1Mz
-U4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4ODUzLC0x
-MjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNz
-M5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMs
-LTE1Njc5NzA0MzVdfQ==
+eyJoaXN0b3J5IjpbMzMyODQ3ODM4LC0xNDE3NzY5MDUzLC02OD
+QwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC0yMDcyMTY5
+Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1OD
+EsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2
+NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOT
+AzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0x
+NTY3OTcwNDM1XX0=
 -->
