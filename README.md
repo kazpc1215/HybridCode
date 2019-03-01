@@ -2169,132 +2169,674 @@ i 粒子。
 軌道要素の構造体ポインタ。
 
 ```c:orbital_elements.c
+/*軌道要素計算*/
+void Calculate_OrbitalElements(int i, CONST double x_c[][4], CONST double v_c[][4], struct orbital_elements *ele_p, CONST double r_c[], CONST double v2_c[], CONST double r_dot_v[]
+#if FRAGMENTATION
+			       , double t_dyn
+			       , CONST struct fragmentation *frag_p
+#endif
+			       ){
 
+
+  double m_i;
+
+#if FRAGMENTATION
+  m_i = MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p);
+#else
+  m_i = ((ele_p+i)->mass);
+#endif
+
+
+#if INDIRECT_TERM
+
+#if !defined(G) && !defined(M_0)
+  double mu = 1.0 + m_i;
+#else
+  double mu = G * (M_0 + m_i);
+#endif
+
+#else
+
+#if !defined(G) && !defined(M_0)
+  double mu = 1.0;
+#else
+  double mu = G * M_0;
+#endif
+
+#endif
+
+  int k;
+  double esin_u;
+  double ecos_u;
+  double sin_inc;
+  double cos_inc;
+  double sin_omega;
+  double cos_omega;
+  double sin_Omega;
+  double cos_Omega;
+  double radian;
+  static double P[N_p+N_tr+1][4]={}, Q[N_p+N_tr+1][4]={};
+
+
+  ((ele_p+i)->axis) = 1.0 / (2.0 / r_c[i] - v2_c[i] / mu);
+
+
+  if(isnan((ele_p+i)->axis)){
+    fprintf(fplog,"i=%d\taxis is nan.\n",i);
+  }
+
+
+  if(((ele_p+i)->axis)<0.0){
+    fprintf(fplog,"i=%d\taxis=%e < 0 hyperbola orbit.\n",i,((ele_p+i)->axis));
+    /*
+    ((ele_p+i)->ecc) = NAN;
+    ((ele_p+i)->u) = NAN;
+    ((ele_p+i)->inc) = NAN;
+    ((ele_p+i)->omega) = NAN;
+    ((ele_p+i)->Omega) = NAN;
+    ((ele_p+i)->r_h) = NAN;
+    */
+  }
+
+
+  ((ele_p+i)->ecc) = sqrt((1.0 - r_c[i] / ((ele_p+i)->axis)) * (1.0 - r_c[i] / ((ele_p+i)->axis)) + r_dot_v[i] * r_dot_v[i] / mu / ((ele_p+i)->axis));
+
+
+  if(isnan((ele_p+i)->ecc)){
+    fprintf(fplog,"i=%d\tecc is nan.\n",i);
+  }
+
+
+  if(((ele_p+i)->ecc)==0.0){
+    ((ele_p+i)->u) = 0.0;
+  }else{
+    esin_u = r_dot_v[i] / sqrt(mu * ((ele_p+i)->axis));
+    ecos_u = 1.0 - r_c[i] / ((ele_p+i)->axis);
+    radian = atan2(esin_u,ecos_u);
+    if(radian<0.0){
+      ((ele_p+i)->u) = radian + 2.0 * M_PI;
+    }else{
+      ((ele_p+i)->u) = radian;
+    }
+  }
+
+
+  for(k=1;k<=3;++k){
+
+    P[i][k] = x_c[i][k] * cos(((ele_p+i)->u)) / r_c[i] - sqrt(((ele_p+i)->axis) / mu) * v_c[i][k] * sin(((ele_p+i)->u));
+    Q[i][k] = (x_c[i][k] * sin(((ele_p+i)->u)) / r_c[i] + sqrt(((ele_p+i)->axis) / mu) * v_c[i][k] * (cos(((ele_p+i)->u)) - ((ele_p+i)->ecc))) / sqrt(1.0 - ((ele_p+i)->ecc));
+  }
+
+
+  if(isnan(P[i][1])||isnan(P[i][2])||isnan(P[i][3])){
+    fprintf(fplog,"i=%d\tP is nan.\t[1]=%f\t[2]=%f\t[3]=%f\n",i,P[i][1],P[i][2],P[i][3]);
+  }
+  if(isnan(Q[i][1])||isnan(Q[i][2])||isnan(Q[i][3])){
+    fprintf(fplog,"i=%d\tQ is nan.\t[1]=%f\t[2]=%f\t[3]=%f\n",i,Q[i][1],Q[i][2],Q[i][3]);
+  }
+
+
+  sin_inc = sqrt(P[i][3] * P[i][3] + Q[i][3] * Q[i][3]);
+  cos_inc = P[i][1] * Q[i][2] - P[i][2] * Q[i][1];
+  radian = atan2(sin_inc,cos_inc);
+
+
+  if(radian<0.0){
+    ((ele_p+i)->inc) = radian + 2.0 * M_PI;
+  }else{
+    ((ele_p+i)->inc) = radian;
+  }
+
+
+  sin_omega = P[i][3] / sin_inc;
+  cos_omega = Q[i][3] / sin_inc;
+  radian = atan2(sin_omega,cos_omega);
+  if(radian<0.0){
+    ((ele_p+i)->omega) = radian + 2.0*M_PI;
+  }else{
+    ((ele_p+i)->omega) = radian;
+  }
+
+
+  sin_Omega = (P[i][2] * Q[i][3] - Q[i][2] * P[i][3]) / sin_inc;
+  cos_Omega = (P[i][1] * Q[i][3] - Q[i][1] * P[i][3]) / sin_inc;
+  radian = atan2(sin_Omega,cos_Omega);
+  if(radian<0.0){
+    ((ele_p+i)->Omega) = radian + 2.0 * M_PI;
+  }else{
+    ((ele_p+i)->Omega) = radian;
+  }
+
+
+  if(sin_inc==0.0){
+    ((ele_p+i)->omega) = 0.0;
+    ((ele_p+i)->Omega) = 0.0;
+  }
+
+
+#ifndef M_0
+  ((ele_p+i)->r_h) = ((ele_p+i)->axis) * cbrt(m_i / 3.0);
+#else
+  ((ele_p+i)->r_h) = ((ele_p+i)->axis) * cbrt(m_i / M_0 / 3.0);
+#endif
+
+
+  if(isnan((ele_p+i)->inc)){
+    fprintf(fplog,"i=%d\tinc is nan.\n",i);
+  }
+  if(isnan((ele_p+i)->omega)){
+    fprintf(fplog,"i=%d\tomega is nan.\n",i);
+  }
+  if(isnan((ele_p+i)->Omega)){
+    fprintf(fplog,"i=%d\tOmega is nan.\n",i);
+  }
+
+
+  return;
+}
 ```
+
+位置と速度から接触軌道要素の計算。
+
+1. i
+i 粒子。
+2. x_c[][4]
+位置の修正子。
+3. v_c[][4]
+速度の修正子。
+4. *ele_p
+軌道要素の構造体ポインタ。
+5. r_c[]
+中心星からの距離の修正子。
+6. v2_c[]
+速度の大きさの2乗の修正子。
+7. r_dot_v[]
+位置ベクトルと速度ベクトルの内積（の修正子）。
+8. t_dyn
+システム時間。
+9. *frag_p
+破壊計算に必要なデータをもつ構造体ポインタ。 
+
+$\mu = G (m_1 + m_2) \quad (m_1 \gg m_2 なら\mu \simeq G m_1)$
+
+$R^2 = X^2 + Y^2 + Z^2$
+
+$\dot{R}^2 = \dot{X}^2 + \dot{Y}^2 + \dot{Z}^2$
+
+$R \cdot \dot{R} = X \dot{X} + Y \dot{Y} + Z \dot{Z}$
+
+また、$P_i, Q_i (i = x, y, z)$を位置と速度で表すと、
+
+$P_{i}=\frac{X_{i}}{R} \cos E-\sqrt{\frac{a}{\mu}} \dot{X}_{i} \sin E$
+
+$Q_{i}=\frac{1}{\sqrt{1-e^{2}}}\left(\frac{X_{i}}{R} \sin E+\sqrt{\frac{a}{\mu}} \dot{X}_{i}(\cos E-e)\right)$
+
+軌道長半径は
+$a=\left(\frac{2}{R}-\frac{V^{2}}{\mu}\right)^{-1}$
+
+離心率は
+$e=\sqrt{\left(1-\frac{R}{a}\right)^{2}+\frac{(\boldsymbol{R} \cdot \dot{\boldsymbol{R}})^{2}}{\mu a}}$
+
+離心近点離角は
+$\cos E=\frac{1}{e}\left(1-\frac{R}{a}\right) \quad \text { and } \quad \sin E=\frac{\boldsymbol{R} \cdot \dot{\boldsymbol{R}}}{e \sqrt{\mu a}}$
+
+軌道傾斜角は
+$\sin I=\sqrt{P_{z}^{2}+Q_{z}^{2}} \quad \text { and } \quad \cos I=P_{x} Q_{y}-P_{y} Q_{x}$
+
+近点引数は
+$\sin \omega=\frac{P_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}} \quad \text { and } \quad \cos \omega=\frac{Q_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}}$
+
+昇交点経度は
+$\sin \Omega=\frac{P_{y} Q_{z}-Q_{y} P_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}} \quad \text { and } \quad \cos \Omega=\frac{P_{x} Q_{z}-Q_{x} P_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}}$
+
+
+```c:orbitlal_elements.c
+void Calculate_RMS(CONST struct orbital_elements *ele_p, double *ecc_p_rms, double *ecc_tr_rms, double *inc_p_rms, double *inc_tr_rms){
+
+  int i;
+  double ecc_2, ecc_2_mean, inc_2, inc_2_mean;
+
+  ecc_2 = 0.0;
+  inc_2 = 0.0;
+  for(i=1;i<=global_n_p;++i){
+    ecc_2 += ((ele_p+i)->ecc) * ((ele_p+i)->ecc);
+    inc_2 += ((ele_p+i)->inc) * ((ele_p+i)->inc);
+  }
+  ecc_2_mean = ecc_2 / ((double)global_n_p);
+  inc_2_mean = inc_2 / ((double)global_n_p);
+  *ecc_p_rms = sqrt(ecc_2_mean);
+  *inc_p_rms = sqrt(inc_2_mean);
+
+
+  ecc_2 = 0.0;
+  inc_2 = 0.0;
+  for(i=global_n_p+1;i<=global_n;++i){
+    ecc_2 += ((ele_p+i)->ecc) * ((ele_p+i)->ecc);
+    inc_2 += ((ele_p+i)->inc) * ((ele_p+i)->inc);
+  }
+  ecc_2_mean = ecc_2 / ((double)(global_n-global_n_p));
+  inc_2_mean = inc_2 / ((double)(global_n-global_n_p));
+  *ecc_tr_rms = sqrt(ecc_2_mean);
+  *inc_tr_rms = sqrt(inc_2_mean);
+
+  return;
+}
+```
+
+離心率と軌道傾斜角の2乗平均平方根を計算。
+
+1. *ele_p
+軌道要素の構造体ポインタ。
+2. *ecc_p_rms
+惑星の離心率の2乗平均平方根のポインタ。
+3. *ecc_tr_rms
+トレーサーの離心率の2乗平均平方根のポインタ。
+4. *inc_p_rms
+惑星の軌道傾斜角の2乗平均平方根のポインタ。
+5. *inc_tr_rms
+トレーサーの軌道傾斜角の2乗平均平方根のポインタ。
+
+```c:orbitlal_elements.c
+/*初期位置、速度計算*/
+void InitialCondition(int i, double x_0[][4], double v_0[][4], double v2_0[], double r_dot_v[], double r_0[], CONST struct orbital_elements *ele_p){
+
+#if INDIRECT_TERM
+
+#if !defined(G) && !defined(M_0)
+  double mu = 1.0 + ((ele_p+i)->mass);
+#else
+  double mu = G * (M_0 + ((ele_p+i)->mass));
+#endif
+
+#else
+
+#if !defined(G) && !defined(M_0)
+  double mu = 1.0;
+#else
+  double mu = G * M_0;
+#endif
+
+#endif
+
+  int k;
+  static double P[4]={},Q[4]={};
+
+
+  for(k=1;k<=3;k++){
+    P[k] = Calculate_P(i,k,ele_p);
+    Q[k] = Calculate_Q(i,k,ele_p);
+
+    x_0[i][k] = ((ele_p+i)->axis) * P[k] * (cos(((ele_p+i)->u)) - ((ele_p+i)->ecc)) + ((ele_p+i)->axis) * sqrt(1.0 - ((ele_p+i)->ecc) * ((ele_p+i)->ecc)) * Q[k] * sin(((ele_p+i)->u));
+  }
+  //fprintf(fplog,"x=%f\ty=%f\tz=%f\n",x_0[i][1],x_0[i][2],x_0[i][3]);
+
+  r_0[i] = RadiusFromCenter(i,x_0);  //中心星からの距離.
+
+
+  for(k=1;k<=3;++k){
+    v_0[i][k] = sqrt(mu / ((ele_p+i)->axis)) / r_0[i] * (- ((ele_p+i)->axis) * P[k] * sin(((ele_p+i)->u)) + ((ele_p+i)->axis) * sqrt(1.0 - ((ele_p+i)->ecc) * ((ele_p+i)->ecc)) * Q[k] * cos(((ele_p+i)->u)));
+  }
+
+  r_dot_v[i] = InnerProduct(i,x_0,v_0);  //r_i,v_iの内積.
+  v2_0[i] = SquareOfVelocity(i,v_0);  //速度の2乗.
+  //fprintf(fplog,"vx=%f\tvy=%f\tvz=%f\n",v_0[i][1],v_0[i][2],v_0[i][3]);
+
+  return;
+}
+```
+
+初期軌道要素から初期位置と初期速度を決める。
+
+1. i
+粒子番号。
+2. x_0[][4]
+初期位置。
+3. v_0[][4]
+初期速度。
+4. v2_0[]
+初期速度の大きさの2乗。
+5. r_dot_v[]
+初期位置ベクトルと初期速度ベクトルの内積。
+6. r_0[]
+初期の中心星からの距離。
+7. *ele_p
+軌道要素の構造体ポインタ。
 
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
 
-
-$\boldsymbol { V } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$
+$\boldsymbol { \dot{R} } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \sqrt{ \frac{\mu}{a}} \frac {1} { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$
 
 ## SFMT.c
 メルセンヌ・ツイスタ法による乱数生成
 
+```c: SFMT.c
+/**
+ * @file  SFMT.c
+ * @brief SIMD oriented Fast Mersenne Twister(SFMT)
+ *
+ * @author Mutsuo Saito (Hiroshima University)
+ * @author Makoto Matsumoto (Hiroshima University)
+ *
+ * Copyright (C) 2006, 2007 Mutsuo Saito, Makoto Matsumoto and Hiroshima
+ * University.
+ * Copyright (C) 2012 Mutsuo Saito, Makoto Matsumoto, Hiroshima
+ * University and The University of Tokyo.
+ * Copyright (C) 2013 Mutsuo Saito, Makoto Matsumoto and Hiroshima
+ * University.
+ * All rights reserved.
+ *
+ * The 3-clause BSD License is applied to this software, see
+ * LICENSE.txt
+ */
+```
 
-## SFMTdir/
-メルセンヌ・ツイスタ法用のヘッダーが入ったディレクトリ
+拾い物。
 
 ## sub.c
 一行でかけるような細々した関数
+
+```c:sub.c
+double rand_func(){
+  return sfmt_genrand_real2(&sfmt);  //generates a random number on [0,1)-real-interval.
+}
+```
+
+0以上1未満の実数をランダムで返す関数。
+
+```c:sub.c
+void Rotation_3D_xaxis(int i, double x_eject[][4], double theta){
+  double tmp_y = x_eject[i][2];
+  double tmp_z = x_eject[i][3];
+  x_eject[i][2] = cos(theta) * tmp_y - sin(theta) * tmp_z;
+  x_eject[i][3] = sin(theta) * tmp_y + cos(theta) * tmp_z;
+  return;
+}
+
+
+void Rotation_3D_yaxis(int i, double x_eject[][4], double theta){
+  double tmp_x = x_eject[i][1];
+  double tmp_z = x_eject[i][3];
+  x_eject[i][1] = cos(theta) * tmp_x + sin(theta) * tmp_z;
+  x_eject[i][3] = - sin(theta) * tmp_x + cos(theta) * tmp_z;
+  return;
+}
+
+
+void Rotation_3D_zaxis(int i,double x_eject[][4],double theta){
+  double tmp_x = x_eject[i][1];
+  double tmp_y = x_eject[i][2];
+  x_eject[i][1] = cos(theta) * tmp_x - sin(theta) * tmp_y;
+  x_eject[i][2] = sin(theta) * tmp_x + cos(theta) * tmp_y;
+  return;
+}
+```
+
+軸周りの回転。
+
+```c:sub.c
+void CenterOfGravity(CONST double x_0[][4], CONST double v_0[][4], double x_G[], double v_G[], CONST struct orbital_elements *ele_p
+#if FRAGMENTATION
+			 , double t_dyn
+			 , CONST struct fragmentation *frag_p
+#endif
+		     ){
+  int i, k;
+  double M;
+
+#ifndef M_0
+  M = 1.0;
+#else
+  M = M_0;
+#endif
+  for(i=1;i<=
+#if INTERACTION_ALL
+	global_n
+#else
+	global_n_p
+#endif
+	;++i){
+
+#if FRAGMENTATION
+    M += MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p);
+#else
+    M += ((ele_p+i)->mass);
+#endif
+  }
+
+  for(k=1;k<=3;++k){
+    x_G[k] = 0.0;
+    v_G[k] = 0.0;
+    for(i=1;i<=
+#if INTERACTION_ALL
+	global_n
+#else
+	global_n_p
+#endif
+	  ;++i){
+
+#if FRAGMENTATION
+      x_G[k] += MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p) * x_0[i][k];
+      v_G[k] += MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p) * v_0[i][k];
+#else
+      x_G[k] += ((ele_p+i)->mass) * x_0[i][k];
+      v_G[k] += ((ele_p+i)->mass) * v_0[i][k];
+#endif
+    }
+    x_G[k] = x_G[k] / M;
+    v_G[k] = v_G[k] / M;
+  }
+
+  return;
+}
+```
+
+重心計算。
+
+1. x_0[][4]
+位置。
+2. v_0[][4]
+速度。
+3. x_G[]
+重心位置。
+4. v_G[]
+重心速度。
+5. *ele_p
+軌道要素の構造体ポインタ。
+6. t_dyn
+システム時間。
+7. *frag_p
+破壊計算に必要なデータをもつ構造体ポインタ。
+
+
+```c:sub.c
+double MutualHillRadius_to_SemimajorAxis(double ratio){
+  return (1.0 / ratio + 0.5 * cbrt(2.0 * PLANET_MASS / 3.0)) / (1.0 / ratio - 0.5 * cbrt(2.0 * PLANET_MASS / 3.0));
+}
+```
+
+相互ヒル半径を用いて軌道間隔を設定するときに使う関数。
+
+$R_{\mathrm{H}, \mathrm{M}}^{i, i+1}=\frac{a_{i}+a_{i+1}}{2}\left(\frac{m_{i}+m_{i+1}}{3 \mathrm{M}_{\odot}}\right)^{1 / 3}$
+
+と
+
+$a_{i+1}-a_{i}=b R_{\mathrm{H}, \mathrm{M}}^{i, i+1}$
+
+を連立させて解くと、
+
+$a_{i+1}=\Gamma\left(b, m_{i}, m_{i+1}\right) a_{i}$
+
+$\Gamma\left(b, m_{i}, m_{i+1}\right) \equiv \frac{\frac{1}{b}+\frac{1}{2}\left(\frac{m_{i}+m_{i+1}}{3 M_{\odot}}\right)^{1 / 3}}{\frac{1}{b}-\frac{1}{2}\left(\frac{m_{i}+m_{i+1}}{3 M_{\odot}}\right)^{1 / 3}}$
+
+のような数列のようにかける。
+
+1. ratio
+相互ヒル半径の何倍か。
+
+```c:sub.c
+double Escape_Velocity(double mass_p, double r){
+#ifndef G
+  return sqrt(2.0 * mass_p / r);
+#else
+  return sqrt(2.0 * G * mass_p / r);
+#endif
+}
+```
+
+脱出速度。
+
+1. mass_p
+天体の質量。
+2. r
+天体の半径。
+
+```c:sub.c
+#if EXECUTION_TIME
+void Sort_Exetime(struct timeval realtime_start_main, struct timeval realtime_end_main){
+
+  int i,j;
+  double exetime_main = Cal_time(realtime_start_main,realtime_end_main);
+  int exetime_num[7]={0,1,2,3,4,5,6};
+
+  double exetime_array[7]={
+    exetime.Energy[0],
+    exetime.Orbital_Elements[0],
+    exetime.Predictor[0],
+    exetime.Corrector[0],
+    exetime.Iteration[0],
+    exetime.Collision_Judgement[0],
+    exetime.Fragmentation[0]
+  };
+
+
+#if EXECUTION_TIME_FUNC
+  double exetime_others = 0.0;
+
+  char exetime_name[7][30]={
+    "Energy\t\t\t",
+    "Orbital_Elements\t",
+    "Predictor\t\t",
+    "Corrector\t\t",
+    "Iteration\t\t",
+    "Collision_Judgement\t",
+    "Fragmentation\t\t"
+  };
+#endif
+
+  for(i=0;i<7;++i){
+    for(j=i+1;j<7;++j){
+      if(exetime_array[i] < exetime_array[j]){
+	Swap_int(&exetime_num[i],&exetime_num[j]);
+	Swap_double(&exetime_array[i],&exetime_array[j]);
+      }
+    }
+  }
+
+  fprintf(fplog,"Execution Time\t(total\t= %e [s])\n",exetime_main);
+
+#if EXECUTION_TIME_FUNC
+  for(i=0;i<7;++i){
+    fprintf(fplog,"%s= %e [s]\t%5.2f [%%]\n",exetime_name[exetime_num[i]],exetime_array[i],exetime_array[i]/exetime_main*100.0);
+    exetime_others += exetime_array[i];
+  }
+  exetime_others = exetime_main - exetime_others;
+  fprintf(fplog,"Others\t\t\t= %e [s]\t%5.2f [%%]\n",exetime_others,exetime_others/exetime_main*100.0);
+#endif
+
+  return;
+}
+#endif
+```
+
+関数ごとに計測した実行時間を、長い順に並べる関数。
+
+1. realtime_start_main
+main関数の実行開始時刻。
+2. realtime_end_main
+main関数の実行終了時刻。
 
 
 ## timestep.c
 タイムステップ計算
 
+```c:timestep.c
+/*初期 タイムステップ計算*/
+double Timestep_i_0(int i, CONST double a_0[][4], CONST double adot_0[][4]){
+  int k;
+  double abs_a = 0.0;
+  double abs_adot = 0.0;
 
-## qsub_depend.sh
-天文台のXC50にて、ジョブを投げるシェルスクリプト
+  for(k=1;k<=3;++k){
+    abs_a += a_0[i][k] * a_0[i][k];
+    abs_adot += adot_0[i][k] * adot_0[i][k];
+  }  //k loop
 
+  abs_a = sqrt(abs_a);
+  abs_adot = sqrt(abs_adot);
 
+  //fprintf(fplog,"abs_a[%d]=%f\tabs_adot[%d]=%f\n",i,abs_a[i],i,abs_adot[i]);
+  return ETA * abs_a / abs_adot;
+}
+```
 
+加速度の2階、3階微分を求めることができない、初期用のタイムステップ。
+衝突合体の後も使う。
 
-# 5.文字の修飾(イタリック、太字)
-
-* イタリック
-「_」または「*」で文字をくくります。
-
->
-\_イタリック\_
-_イタリック_
->
-\*イタリック\*
-*イタリック*
-
-* 太字
-「__」または「**」で文字をくくります。
-
->
-\_\_太字\_\_
-__太字__
->
-\*\*太字\*\*
-**太字**
-
-# 6.リスト
-リストの上下に空白を入れないと正しく表示されないので注意。
-また、記号と文の間に半角スペースを入れること。
-
-* 順序なしリスト
-
-文頭に「*」「+」「-」のいずれかを入れる。
->
-\* 順序なしリスト
->
-* 順序なしリスト
+1. i
+粒子番号。
+2. a_0[][4]
+加速度。
+3. adot_0[][4]
+加加速度。
 
 
-* 順序つきリスト
+```c:timestep.c
+/*i_sys のみのタイムステップ計算*/
+double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CONST double adot2_dt2[][4], CONST double adot3_dt3[][4], CONST double dt_[]){
 
-文頭に「数字.」を入れる。
-見た目はほぼ変わりません。
+  int k;
+  double dt_inv = 1.0 / dt_[i_sys];
 
->
-1. リスト1
-2. リスト2
+  double abs_a = 0.0;
+  double abs_adot = 0.0;
+  double abs_adot2 = 0.0;
+  double abs_adot3 = 0.0;
+  for(k=1;k<=3;++k){
+    abs_a += a[i_sys][k] * a[i_sys][k];
+    abs_adot += adot[i_sys][k] * adot[i_sys][k];
+    abs_adot2 += (adot2_dt2[i_sys][k] + adot3_dt3[i_sys][k])*(adot2_dt2[i_sys][k] + adot3_dt3[i_sys][k]) * dt_inv * dt_inv * dt_inv * dt_inv;
+    abs_adot3 += adot3_dt3[i_sys][k] * adot3_dt3[i_sys][k] * dt_inv * dt_inv * dt_inv * dt_inv * dt_inv * dt_inv;
+  }  //k loop
+  abs_a = sqrt(abs_a);
+  abs_adot = sqrt(abs_adot);
+  abs_adot2 = sqrt(abs_adot2);
+  abs_adot3 = sqrt(abs_adot3);
 
-# 7. 水平線
+  return ETA * sqrt((abs_a * abs_adot2 + abs_adot * abs_adot) / (abs_adot * abs_adot3 + abs_adot2 * abs_adot2));
+}
+```
 
-「*」か「-」を3つ以上一行に書く。
-以下は全て水平線となる。
->
-\*\*\*
-\* \* \*
-\-\-\-
-\- \- \-
->
-全部以下の水平線
-***
+各粒子のタイムステップ計算。
 
-# 8. テーブル
+1. i_sys
+粒子番号。
+2. a[][4]
+加速度。
+3. adot[][4]
+加加速度。
+4. adot2_dt2[][4]
+加速度の2階微分 × タイムステップの2乗。
+5. adot3_dt3[][4]
+加速度の3階微分 × タイムステップの3乗。
+6. dt_[]
+各粒子のタイムステップ。
 
-以下のようにテーブルを組みます。
-基本は「|」でくくっていくことです。
-2行目がポイントで、2行目のコロンの位置によってセル内の文字の配置が変わります。
-
->
-\|左揃え|中央揃え|右揃え|
-|:---|:---:|--:|
-|align-left|align-center|align-right|
-|セルの左揃えです|セルの中央揃えです|セルの右揃えです|
->
->
-|左揃え|中央揃え|右揃え|
-|:---|:---:|--:|
-|align-left|align-center|align-right|
-|セルの左揃えです|セルの中央揃えです|セルの右揃えです|
-
-# 9. マークダウンのエスケープ
-「\」をMarkdownの前につけることでMarkdownを無効化出来ます。
-この記事ではこれを多用しました。
->
-\\#見出しh1
-とすると
-\#見出しh1
-となります。
-
-# 10. 補足:ページをMarkdownで見る
-Qiitaを見ていると「これはどんな記法で書いてあるんだろう」ときになることがあるかもしれません。
-そんな時はMarkdown記法で見たいURLの最後に.mdをつければ見ることが出来ます。
-
-##参考
-
-[Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05ND
-A4Njc2MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUy
-OTQzMCwtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MT
-csMTA5NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTEx
-NjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3Mz
-U2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2
-MDk3MDkwNjFdfQ==
+eyJoaXN0b3J5IjpbMTU3Mzc5NTA5OCwxNDA4NjUzNjE2LDMzMj
+g0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUy
+NTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC
+0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3
+NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMz
+AwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0x
+NTI5NjczNTZdfQ==
 -->
