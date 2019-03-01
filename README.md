@@ -2544,14 +2544,97 @@ double rand_func(){
 0以上1未満の実数をランダムで返す関数。
 
 ```c:sub.c
+void Rotation_3D_xaxis(int i, double x_eject[][4], double theta){
+  double tmp_y = x_eject[i][2];
+  double tmp_z = x_eject[i][3];
+  x_eject[i][2] = cos(theta) * tmp_y - sin(theta) * tmp_z;
+  x_eject[i][3] = sin(theta) * tmp_y + cos(theta) * tmp_z;
+  return;
+}
 
+
+void Rotation_3D_yaxis(int i, double x_eject[][4], double theta){
+  double tmp_x = x_eject[i][1];
+  double tmp_z = x_eject[i][3];
+  x_eject[i][1] = cos(theta) * tmp_x + sin(theta) * tmp_z;
+  x_eject[i][3] = - sin(theta) * tmp_x + cos(theta) * tmp_z;
+  return;
+}
+
+
+void Rotation_3D_zaxis(int i,double x_eject[][4],double theta){
+  double tmp_x = x_eject[i][1];
+  double tmp_y = x_eject[i][2];
+  x_eject[i][1] = cos(theta) * tmp_x - sin(theta) * tmp_y;
+  x_eject[i][2] = sin(theta) * tmp_x + cos(theta) * tmp_y;
+  return;
+}
 ```
 
+軸周りの回転。
 
 ```c:sub.c
+void CenterOfGravity(CONST double x_0[][4], CONST double v_0[][4], double x_G[], double v_G[], CONST struct orbital_elements *ele_p
+#if FRAGMENTATION
+			 , double t_dyn
+			 , CONST struct fragmentation *frag_p
+#endif
+		     ){
+  int i, k;
+  double M;
 
-```
+#ifndef M_0
+  M = 1.0;
+#else
+  M = M_0;
+#endif
+  for(i=1;i<=
+#if INTERACTION_ALL
+	global_n
+#else
+	global_n_p
+#endif
+	;++i){
 
+#if FRAGMENTATION
+    M += MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p);
+#else
+    M += ((ele_p+i)->mass);
+#endif
+  }
+
+  for(k=1;k<=3;++k){
+    x_G[k] = 0.0;
+    v_G[k] = 0.0;
+    for(i=1;i<=
+#if INTERACTION_ALL
+	global_n
+#else
+	global_n_p
+#endif
+	  ;++i){
+
+#if FRAGMENTATION
+      x_G[k] += MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p) * x_0[i][k];
+      v_G[k] += MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p) * v_0[i][k];
+#else
+      x_G[k] += ((ele_p+i)->mass) * x_0[i][k];
+      v_G[k] += ((ele_p+i)->mass) * v_0[i][k];
+#endif
+    }
+    x_G[k] = x_G[k] / M;
+    v_G[k] = v_G[k] / M;
+  }
+
+  return;
+}```
+
+重心計算。
+
+1. x_0[][4], CONST double v_0[][4], double x_G[], double v_G[], CONST struct orbital_elements *ele_p
+#if FRAGMENTATION
+			 , double t_dyn
+			 , CONST struct fragmentation *frag_p
 
 ```c:sub.c
 
@@ -2658,11 +2741,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzA2MDU2NDU4LDMzMjg0NzgzOCwtMTQxNz
-c2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYx
-MSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC
-0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3
-MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyND
-c1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEy
-Mzk0MDQ4M119
+eyJoaXN0b3J5IjpbMTY3MzM4ODk0NywzMzI4NDc4MzgsLTE0MT
+c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
+MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
+wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
+NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
+Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
+MjM5NDA0ODNdfQ==
 -->
