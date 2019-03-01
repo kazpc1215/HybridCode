@@ -2649,6 +2649,23 @@ void CenterOfGravity(CONST double x_0[][4], CONST double v_0[][4], double x_G[],
 
 
 ```c:sub.c
+double MutualHillRadius_to_SemimajorAxis(double ratio){
+  return (1.0 / ratio + 0.5 * cbrt(2.0 * PLANET_MASS / 3.0)) / (1.0 / ratio - 0.5 * cbrt(2.0 * PLANET_MASS / 3.0));
+}
+```
+
+相互ヒル半径の何倍
+
+
+```c:sub.c
+
+```
+
+```c:sub.c
+
+```
+
+```c:sub.c
 
 ```
 ## timestep.c
@@ -2753,11 +2770,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzMwMDg2NjE5LDMzMjg0NzgzOCwtMTQxNz
-c2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYx
-MSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC
-0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3
-MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyND
-c1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEy
-Mzk0MDQ4M119
+eyJoaXN0b3J5IjpbLTIwODA5NDQyNDgsMzMyODQ3ODM4LC0xND
+E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
+NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
+AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
+OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
+I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
+MTIzOTQwNDgzXX0=
 -->
