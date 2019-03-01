@@ -2535,7 +2535,27 @@ $\boldsymbol { \dot{R} } = \left( \begin{array} { c } { \dot { X } } \\ { \dot {
 ## sub.c
 一行でかけるような細々した関数
 
+```c:sub.c
+double rand_func(){
+  return sfmt_genrand_real2(&sfmt);  //generates a random number on [0,1)-real-interval.
+}
+```
 
+0以上1未満の実数をランダムで返す関数。
+
+```c:sub.c
+
+```
+
+
+```c:sub.c
+
+```
+
+
+```c:sub.c
+
+```
 ## timestep.c
 タイムステップ計算
 
@@ -2638,11 +2658,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjU5NzA2ODIsMzMyODQ3ODM4LC0xNDE3Nz
-Y5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3NjEx
-LC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLT
-IxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcw
-ODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0Nz
-UsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIz
-OTQwNDgzXX0=
+eyJoaXN0b3J5IjpbMzA2MDU2NDU4LDMzMjg0NzgzOCwtMTQxNz
+c2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYx
+MSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC
+0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3
+MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyND
+c1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEy
+Mzk0MDQ4M119
 -->
