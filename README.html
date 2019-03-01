@@ -50,7 +50,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </head>
 <body>
 <h1 id="hybridcode">HybridCode</h1>
-<p>衝突・破壊をとりいれたN体計算</p>
+<p>衝突・破壊をとりいれたN体計算 Saturnを使う場合は&quot;ISOYAforSaturn&quot;</p>
 <p>作成者：磯谷和秀</p>
 <h1 id="ディレクトリ構成">1. ディレクトリ構成</h1>
 <h2 id="source">source/</h2>
@@ -1803,111 +1803,543 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 <li>x_0[][4] 位置。惑星からある程度離れたところに粒子を配置するため、惑星からの距離を測定しながら軌道要素を決定する。</li>
 <li>*ele_p 軌道要素の構造体ポインタ。</li>
 </ol>
-<div class="sourceCode"><pre class="sourceCode c:orbital_elements.c"><code class="sourceCode c"></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode c:orbital_elements.c"><code class="sourceCode c"><span class="co">/*軌道要素計算*/</span>
+<span class="dt">void</span> Calculate_OrbitalElements(<span class="dt">int</span> i, CONST <span class="dt">double</span> x_c[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_c[][<span class="dv">4</span>], <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> r_c[], CONST <span class="dt">double</span> v2_c[], CONST <span class="dt">double</span> r_dot_v[]
+<span class="pp">#if FRAGMENTATION</span>
+                   , <span class="dt">double</span> t_dyn
+                   , CONST <span class="kw">struct</span> fragmentation *frag_p
+<span class="pp">#endif</span>
+                   ){
+
+
+  <span class="dt">double</span> m_i;
+
+<span class="pp">#if FRAGMENTATION</span>
+  m_i = MassDepletion(i,((ele_p+i)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+  m_i = ((ele_p+i)-&gt;mass);
+<span class="pp">#endif</span>
+
+
+<span class="pp">#if INDIRECT_TERM</span>
+
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+  <span class="dt">double</span> mu = <span class="fl">1.0</span> + m_i;
+<span class="pp">#else</span>
+  <span class="dt">double</span> mu = G * (M_0 + m_i);
+<span class="pp">#endif</span>
+
+<span class="pp">#else</span>
+
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+  <span class="dt">double</span> mu = <span class="fl">1.0</span>;
+<span class="pp">#else</span>
+  <span class="dt">double</span> mu = G * M_0;
+<span class="pp">#endif</span>
+
+<span class="pp">#endif</span>
+
+  <span class="dt">int</span> k;
+  <span class="dt">double</span> esin_u;
+  <span class="dt">double</span> ecos_u;
+  <span class="dt">double</span> sin_inc;
+  <span class="dt">double</span> cos_inc;
+  <span class="dt">double</span> sin_omega;
+  <span class="dt">double</span> cos_omega;
+  <span class="dt">double</span> sin_Omega;
+  <span class="dt">double</span> cos_Omega;
+  <span class="dt">double</span> radian;
+  <span class="dt">static</span> <span class="dt">double</span> P[N_p+N_tr+<span class="dv">1</span>][<span class="dv">4</span>]={}, Q[N_p+N_tr+<span class="dv">1</span>][<span class="dv">4</span>]={};
+
+
+  ((ele_p+i)-&gt;axis) = <span class="fl">1.0</span> / (<span class="fl">2.0</span> / r_c[i] - v2_c[i] / mu);
+
+
+  <span class="cf">if</span>(isnan((ele_p+i)-&gt;axis)){
+    fprintf(fplog,<span class="st">&quot;i=%d</span><span class="sc">\t</span><span class="st">axis is nan.</span><span class="sc">\n</span><span class="st">&quot;</span>,i);
+  }
+
+
+  <span class="cf">if</span>(((ele_p+i)-&gt;axis)&lt;<span class="fl">0.0</span>){
+    fprintf(fplog,<span class="st">&quot;i=%d</span><span class="sc">\t</span><span class="st">axis=%e &lt; 0 hyperbola orbit.</span><span class="sc">\n</span><span class="st">&quot;</span>,i,((ele_p+i)-&gt;axis));
+    <span class="co">/*</span>
+<span class="co">    ((ele_p+i)-&gt;ecc) = NAN;</span>
+<span class="co">    ((ele_p+i)-&gt;u) = NAN;</span>
+<span class="co">    ((ele_p+i)-&gt;inc) = NAN;</span>
+<span class="co">    ((ele_p+i)-&gt;omega) = NAN;</span>
+<span class="co">    ((ele_p+i)-&gt;Omega) = NAN;</span>
+<span class="co">    ((ele_p+i)-&gt;r_h) = NAN;</span>
+<span class="co">    */</span>
+  }
+
+
+  ((ele_p+i)-&gt;ecc) = sqrt((<span class="fl">1.0</span> - r_c[i] / ((ele_p+i)-&gt;axis)) * (<span class="fl">1.0</span> - r_c[i] / ((ele_p+i)-&gt;axis)) + r_dot_v[i] * r_dot_v[i] / mu / ((ele_p+i)-&gt;axis));
+
+
+  <span class="cf">if</span>(isnan((ele_p+i)-&gt;ecc)){
+    fprintf(fplog,<span class="st">&quot;i=%d</span><span class="sc">\t</span><span class="st">ecc is nan.</span><span class="sc">\n</span><span class="st">&quot;</span>,i);
+  }
+
+
+  <span class="cf">if</span>(((ele_p+i)-&gt;ecc)==<span class="fl">0.0</span>){
+    ((ele_p+i)-&gt;u) = <span class="fl">0.0</span>;
+  }<span class="cf">else</span>{
+    esin_u = r_dot_v[i] / sqrt(mu * ((ele_p+i)-&gt;axis));
+    ecos_u = <span class="fl">1.0</span> - r_c[i] / ((ele_p+i)-&gt;axis);
+    radian = atan2(esin_u,ecos_u);
+    <span class="cf">if</span>(radian&lt;<span class="fl">0.0</span>){
+      ((ele_p+i)-&gt;u) = radian + <span class="fl">2.0</span> * M_PI;
+    }<span class="cf">else</span>{
+      ((ele_p+i)-&gt;u) = radian;
+    }
+  }
+
+
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+
+    P[i][k] = x_c[i][k] * cos(((ele_p+i)-&gt;u)) / r_c[i] - sqrt(((ele_p+i)-&gt;axis) / mu) * v_c[i][k] * sin(((ele_p+i)-&gt;u));
+    Q[i][k] = (x_c[i][k] * sin(((ele_p+i)-&gt;u)) / r_c[i] + sqrt(((ele_p+i)-&gt;axis) / mu) * v_c[i][k] * (cos(((ele_p+i)-&gt;u)) - ((ele_p+i)-&gt;ecc))) / sqrt(<span class="fl">1.0</span> - ((ele_p+i)-&gt;ecc));
+  }
+
+
+  <span class="cf">if</span>(isnan(P[i][<span class="dv">1</span>])||isnan(P[i][<span class="dv">2</span>])||isnan(P[i][<span class="dv">3</span>])){
+    fprintf(fplog,<span class="st">&quot;i=%d</span><span class="sc">\t</span><span class="st">P is nan.</span><span class="sc">\t</span><span class="st">[1]=%f</span><span class="sc">\t</span><span class="st">[2]=%f</span><span class="sc">\t</span><span class="st">[3]=%f</span><span class="sc">\n</span><span class="st">&quot;</span>,i,P[i][<span class="dv">1</span>],P[i][<span class="dv">2</span>],P[i][<span class="dv">3</span>]);
+  }
+  <span class="cf">if</span>(isnan(Q[i][<span class="dv">1</span>])||isnan(Q[i][<span class="dv">2</span>])||isnan(Q[i][<span class="dv">3</span>])){
+    fprintf(fplog,<span class="st">&quot;i=%d</span><span class="sc">\t</span><span class="st">Q is nan.</span><span class="sc">\t</span><span class="st">[1]=%f</span><span class="sc">\t</span><span class="st">[2]=%f</span><span class="sc">\t</span><span class="st">[3]=%f</span><span class="sc">\n</span><span class="st">&quot;</span>,i,Q[i][<span class="dv">1</span>],Q[i][<span class="dv">2</span>],Q[i][<span class="dv">3</span>]);
+  }
+
+
+  sin_inc = sqrt(P[i][<span class="dv">3</span>] * P[i][<span class="dv">3</span>] + Q[i][<span class="dv">3</span>] * Q[i][<span class="dv">3</span>]);
+  cos_inc = P[i][<span class="dv">1</span>] * Q[i][<span class="dv">2</span>] - P[i][<span class="dv">2</span>] * Q[i][<span class="dv">1</span>];
+  radian = atan2(sin_inc,cos_inc);
+
+
+  <span class="cf">if</span>(radian&lt;<span class="fl">0.0</span>){
+    ((ele_p+i)-&gt;inc) = radian + <span class="fl">2.0</span> * M_PI;
+  }<span class="cf">else</span>{
+    ((ele_p+i)-&gt;inc) = radian;
+  }
+
+
+  sin_omega = P[i][<span class="dv">3</span>] / sin_inc;
+  cos_omega = Q[i][<span class="dv">3</span>] / sin_inc;
+  radian = atan2(sin_omega,cos_omega);
+  <span class="cf">if</span>(radian&lt;<span class="fl">0.0</span>){
+    ((ele_p+i)-&gt;omega) = radian + <span class="fl">2.0</span>*M_PI;
+  }<span class="cf">else</span>{
+    ((ele_p+i)-&gt;omega) = radian;
+  }
+
+
+  sin_Omega = (P[i][<span class="dv">2</span>] * Q[i][<span class="dv">3</span>] - Q[i][<span class="dv">2</span>] * P[i][<span class="dv">3</span>]) / sin_inc;
+  cos_Omega = (P[i][<span class="dv">1</span>] * Q[i][<span class="dv">3</span>] - Q[i][<span class="dv">1</span>] * P[i][<span class="dv">3</span>]) / sin_inc;
+  radian = atan2(sin_Omega,cos_Omega);
+  <span class="cf">if</span>(radian&lt;<span class="fl">0.0</span>){
+    ((ele_p+i)-&gt;Omega) = radian + <span class="fl">2.0</span> * M_PI;
+  }<span class="cf">else</span>{
+    ((ele_p+i)-&gt;Omega) = radian;
+  }
+
+
+  <span class="cf">if</span>(sin_inc==<span class="fl">0.0</span>){
+    ((ele_p+i)-&gt;omega) = <span class="fl">0.0</span>;
+    ((ele_p+i)-&gt;Omega) = <span class="fl">0.0</span>;
+  }
+
+
+<span class="pp">#ifndef M_0</span>
+  ((ele_p+i)-&gt;r_h) = ((ele_p+i)-&gt;axis) * cbrt(m_i / <span class="fl">3.0</span>);
+<span class="pp">#else</span>
+  ((ele_p+i)-&gt;r_h) = ((ele_p+i)-&gt;axis) * cbrt(m_i / M_0 / <span class="fl">3.0</span>);
+<span class="pp">#endif</span>
+
+
+  <span class="cf">if</span>(isnan((ele_p+i)-&gt;inc)){
+    fprintf(fplog,<span class="st">&quot;i=%d</span><span class="sc">\t</span><span class="st">inc is nan.</span><span class="sc">\n</span><span class="st">&quot;</span>,i);
+  }
+  <span class="cf">if</span>(isnan((ele_p+i)-&gt;omega)){
+    fprintf(fplog,<span class="st">&quot;i=%d</span><span class="sc">\t</span><span class="st">omega is nan.</span><span class="sc">\n</span><span class="st">&quot;</span>,i);
+  }
+  <span class="cf">if</span>(isnan((ele_p+i)-&gt;Omega)){
+    fprintf(fplog,<span class="st">&quot;i=%d</span><span class="sc">\t</span><span class="st">Omega is nan.</span><span class="sc">\n</span><span class="st">&quot;</span>,i);
+  }
+
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>位置と速度から接触軌道要素の計算。</p>
+<ol type="1">
+<li>i i 粒子。</li>
+<li>x_c[][4] 位置の修正子。</li>
+<li>v_c[][4] 速度の修正子。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>r_c[] 中心星からの距離の修正子。</li>
+<li>v2_c[] 速度の大きさの2乗の修正子。</li>
+<li>r_dot_v[] 位置ベクトルと速度ベクトルの内積（の修正子）。</li>
+<li>t_dyn システム時間。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。</li>
+</ol>
+<p><span class="math inline"><em>μ</em> = <em>G</em>(<em>m</em><sub>1</sub> + <em>m</em><sub>2</sub>) (<em>m</em><sub>1</sub> ≫ <em>m</em><sub>2</sub><em>な</em><em>ら</em><em>μ</em> ≃ <em>G</em><em>m</em><sub>1</sub>)</span></p>
+<p><span class="math inline"><em>R</em><sup>2</sup> = <em>X</em><sup>2</sup> + <em>Y</em><sup>2</sup> + <em>Z</em><sup>2</sup></span></p>
+<p><span class="math inline">$\dot{R}^2 = \dot{X}^2 + \dot{Y}^2 + \dot{Z}^2$</span></p>
+<p><span class="math inline">$R \cdot \dot{R} = X \dot{X} + Y \dot{Y} + Z \dot{Z}$</span></p>
+<p>また、<span class="math inline"><em>P</em><sub><em>i</em></sub>, <em>Q</em><sub><em>i</em></sub>(<em>i</em> = <em>x</em>, <em>y</em>, <em>z</em>)</span>を位置と速度で表すと、</p>
+<p><span class="math inline">$P_{i}=\frac{X_{i}}{R} \cos E-\sqrt{\frac{a}{\mu}} \dot{X}_{i} \sin E$</span></p>
+<p><span class="math inline">$Q_{i}=\frac{1}{\sqrt{1-e^{2}}}\left(\frac{X_{i}}{R} \sin E+\sqrt{\frac{a}{\mu}} \dot{X}_{i}(\cos E-e)\right)$</span></p>
+<p>軌道長半径は <span class="math inline">$a=\left(\frac{2}{R}-\frac{V^{2}}{\mu}\right)^{-1}$</span></p>
+<p>離心率は <span class="math inline">$e=\sqrt{\left(1-\frac{R}{a}\right)^{2}+\frac{(\boldsymbol{R} \cdot \dot{\boldsymbol{R}})^{2}}{\mu a}}$</span></p>
+<p>離心近点離角は <span class="math inline">$\cos E=\frac{1}{e}\left(1-\frac{R}{a}\right) \quad \text { and } \quad \sin E=\frac{\boldsymbol{R} \cdot \dot{\boldsymbol{R}}}{e \sqrt{\mu a}}$</span></p>
+<p>軌道傾斜角は <span class="math inline">$\sin I=\sqrt{P_{z}^{2}+Q_{z}^{2}} \quad \text { and } \quad \cos I=P_{x} Q_{y}-P_{y} Q_{x}$</span></p>
+<p>近点引数は <span class="math inline">$\sin \omega=\frac{P_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}} \quad \text { and } \quad \cos \omega=\frac{Q_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}}$</span></p>
+<p>昇交点経度は <span class="math inline">$\sin \Omega=\frac{P_{y} Q_{z}-Q_{y} P_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}} \quad \text { and } \quad \cos \Omega=\frac{P_{x} Q_{z}-Q_{x} P_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}}$</span></p>
+<div class="sourceCode"><pre class="sourceCode c:orbitlal_elements.c"><code class="sourceCode c"><span class="dt">void</span> Calculate_RMS(CONST <span class="kw">struct</span> orbital_elements *ele_p, <span class="dt">double</span> *ecc_p_rms, <span class="dt">double</span> *ecc_tr_rms, <span class="dt">double</span> *inc_p_rms, <span class="dt">double</span> *inc_tr_rms){
+
+  <span class="dt">int</span> i;
+  <span class="dt">double</span> ecc_2, ecc_2_mean, inc_2, inc_2_mean;
+
+  ecc_2 = <span class="fl">0.0</span>;
+  inc_2 = <span class="fl">0.0</span>;
+  <span class="cf">for</span>(i=<span class="dv">1</span>;i&lt;=global_n_p;++i){
+    ecc_2 += ((ele_p+i)-&gt;ecc) * ((ele_p+i)-&gt;ecc);
+    inc_2 += ((ele_p+i)-&gt;inc) * ((ele_p+i)-&gt;inc);
+  }
+  ecc_2_mean = ecc_2 / ((<span class="dt">double</span>)global_n_p);
+  inc_2_mean = inc_2 / ((<span class="dt">double</span>)global_n_p);
+  *ecc_p_rms = sqrt(ecc_2_mean);
+  *inc_p_rms = sqrt(inc_2_mean);
+
+
+  ecc_2 = <span class="fl">0.0</span>;
+  inc_2 = <span class="fl">0.0</span>;
+  <span class="cf">for</span>(i=global_n_p+<span class="dv">1</span>;i&lt;=global_n;++i){
+    ecc_2 += ((ele_p+i)-&gt;ecc) * ((ele_p+i)-&gt;ecc);
+    inc_2 += ((ele_p+i)-&gt;inc) * ((ele_p+i)-&gt;inc);
+  }
+  ecc_2_mean = ecc_2 / ((<span class="dt">double</span>)(global_n-global_n_p));
+  inc_2_mean = inc_2 / ((<span class="dt">double</span>)(global_n-global_n_p));
+  *ecc_tr_rms = sqrt(ecc_2_mean);
+  *inc_tr_rms = sqrt(inc_2_mean);
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>離心率と軌道傾斜角の2乗平均平方根を計算。</p>
+<ol type="1">
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>*ecc_p_rms 惑星の離心率の2乗平均平方根のポインタ。</li>
+<li>*ecc_tr_rms トレーサーの離心率の2乗平均平方根のポインタ。</li>
+<li>*inc_p_rms 惑星の軌道傾斜角の2乗平均平方根のポインタ。</li>
+<li>*inc_tr_rms トレーサーの軌道傾斜角の2乗平均平方根のポインタ。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:orbitlal_elements.c"><code class="sourceCode c"><span class="co">/*初期位置、速度計算*/</span>
+<span class="dt">void</span> InitialCondition(<span class="dt">int</span> i, <span class="dt">double</span> x_0[][<span class="dv">4</span>], <span class="dt">double</span> v_0[][<span class="dv">4</span>], <span class="dt">double</span> v2_0[], <span class="dt">double</span> r_dot_v[], <span class="dt">double</span> r_0[], CONST <span class="kw">struct</span> orbital_elements *ele_p){
+
+<span class="pp">#if INDIRECT_TERM</span>
+
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+  <span class="dt">double</span> mu = <span class="fl">1.0</span> + ((ele_p+i)-&gt;mass);
+<span class="pp">#else</span>
+  <span class="dt">double</span> mu = G * (M_0 + ((ele_p+i)-&gt;mass));
+<span class="pp">#endif</span>
+
+<span class="pp">#else</span>
+
+<span class="pp">#if !defined(G) &amp;&amp; !defined(M_0)</span>
+  <span class="dt">double</span> mu = <span class="fl">1.0</span>;
+<span class="pp">#else</span>
+  <span class="dt">double</span> mu = G * M_0;
+<span class="pp">#endif</span>
+
+<span class="pp">#endif</span>
+
+  <span class="dt">int</span> k;
+  <span class="dt">static</span> <span class="dt">double</span> P[<span class="dv">4</span>]={},Q[<span class="dv">4</span>]={};
+
+
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;k++){
+    P[k] = Calculate_P(i,k,ele_p);
+    Q[k] = Calculate_Q(i,k,ele_p);
+
+    x_0[i][k] = ((ele_p+i)-&gt;axis) * P[k] * (cos(((ele_p+i)-&gt;u)) - ((ele_p+i)-&gt;ecc)) + ((ele_p+i)-&gt;axis) * sqrt(<span class="fl">1.0</span> - ((ele_p+i)-&gt;ecc) * ((ele_p+i)-&gt;ecc)) * Q[k] * sin(((ele_p+i)-&gt;u));
+  }
+  <span class="co">//fprintf(fplog,&quot;x=%f\ty=%f\tz=%f\n&quot;,x_0[i][1],x_0[i][2],x_0[i][3]);</span>
+
+  r_0[i] = RadiusFromCenter(i,x_0);  <span class="co">//中心星からの距離.</span>
+
+
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+    v_0[i][k] = sqrt(mu / ((ele_p+i)-&gt;axis)) / r_0[i] * (- ((ele_p+i)-&gt;axis) * P[k] * sin(((ele_p+i)-&gt;u)) + ((ele_p+i)-&gt;axis) * sqrt(<span class="fl">1.0</span> - ((ele_p+i)-&gt;ecc) * ((ele_p+i)-&gt;ecc)) * Q[k] * cos(((ele_p+i)-&gt;u)));
+  }
+
+  r_dot_v[i] = InnerProduct(i,x_0,v_0);  <span class="co">//r_i,v_iの内積.</span>
+  v2_0[i] = SquareOfVelocity(i,v_0);  <span class="co">//速度の2乗.</span>
+  <span class="co">//fprintf(fplog,&quot;vx=%f\tvy=%f\tvz=%f\n&quot;,v_0[i][1],v_0[i][2],v_0[i][3]);</span>
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>初期軌道要素から初期位置と初期速度を決める。</p>
+<ol type="1">
+<li>i 粒子番号。</li>
+<li>x_0[][4] 初期位置。</li>
+<li>v_0[][4] 初期速度。</li>
+<li>v2_0[] 初期速度の大きさの2乗。</li>
+<li>r_dot_v[] 初期位置ベクトルと初期速度ベクトルの内積。</li>
+<li>r_0[] 初期の中心星からの距離。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+</ol>
 <p><span class="math inline">$\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$</span></p>
-<p><span class="math inline">$\boldsymbol { V } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$</span></p>
+<p><span class="math inline">$\boldsymbol { \dot{R} } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \sqrt{ \frac{\mu}{a}} \frac {1} { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$</span></p>
 <h2 id="sfmt.c-1">SFMT.c</h2>
 <p>メルセンヌ・ツイスタ法による乱数生成</p>
-<h2 id="sfmtdir-1">SFMTdir/</h2>
-<p>メルセンヌ・ツイスタ法用のヘッダーが入ったディレクトリ</p>
+<p><code>c: SFMT.c /**  * @file  SFMT.c  * @brief SIMD oriented Fast Mersenne Twister(SFMT)  *  * @author Mutsuo Saito (Hiroshima University)  * @author Makoto Matsumoto (Hiroshima University)  *  * Copyright (C) 2006, 2007 Mutsuo Saito, Makoto Matsumoto and Hiroshima  * University.  * Copyright (C) 2012 Mutsuo Saito, Makoto Matsumoto, Hiroshima  * University and The University of Tokyo.  * Copyright (C) 2013 Mutsuo Saito, Makoto Matsumoto and Hiroshima  * University.  * All rights reserved.  *  * The 3-clause BSD License is applied to this software, see  * LICENSE.txt  */</code></p>
+<p>拾い物。</p>
 <h2 id="sub.c-1">sub.c</h2>
 <p>一行でかけるような細々した関数</p>
+<div class="sourceCode"><pre class="sourceCode c:sub.c"><code class="sourceCode c"><span class="dt">double</span> rand_func(){
+  <span class="cf">return</span> sfmt_genrand_real2(&amp;sfmt);  <span class="co">//generates a random number on [0,1)-real-interval.</span>
+}</code></pre></div>
+<p>0以上1未満の実数をランダムで返す関数。</p>
+<div class="sourceCode"><pre class="sourceCode c:sub.c"><code class="sourceCode c"><span class="dt">void</span> Rotation_3D_xaxis(<span class="dt">int</span> i, <span class="dt">double</span> x_eject[][<span class="dv">4</span>], <span class="dt">double</span> theta){
+  <span class="dt">double</span> tmp_y = x_eject[i][<span class="dv">2</span>];
+  <span class="dt">double</span> tmp_z = x_eject[i][<span class="dv">3</span>];
+  x_eject[i][<span class="dv">2</span>] = cos(theta) * tmp_y - sin(theta) * tmp_z;
+  x_eject[i][<span class="dv">3</span>] = sin(theta) * tmp_y + cos(theta) * tmp_z;
+  <span class="cf">return</span>;
+}
+
+
+<span class="dt">void</span> Rotation_3D_yaxis(<span class="dt">int</span> i, <span class="dt">double</span> x_eject[][<span class="dv">4</span>], <span class="dt">double</span> theta){
+  <span class="dt">double</span> tmp_x = x_eject[i][<span class="dv">1</span>];
+  <span class="dt">double</span> tmp_z = x_eject[i][<span class="dv">3</span>];
+  x_eject[i][<span class="dv">1</span>] = cos(theta) * tmp_x + sin(theta) * tmp_z;
+  x_eject[i][<span class="dv">3</span>] = - sin(theta) * tmp_x + cos(theta) * tmp_z;
+  <span class="cf">return</span>;
+}
+
+
+<span class="dt">void</span> Rotation_3D_zaxis(<span class="dt">int</span> i,<span class="dt">double</span> x_eject[][<span class="dv">4</span>],<span class="dt">double</span> theta){
+  <span class="dt">double</span> tmp_x = x_eject[i][<span class="dv">1</span>];
+  <span class="dt">double</span> tmp_y = x_eject[i][<span class="dv">2</span>];
+  x_eject[i][<span class="dv">1</span>] = cos(theta) * tmp_x - sin(theta) * tmp_y;
+  x_eject[i][<span class="dv">2</span>] = sin(theta) * tmp_x + cos(theta) * tmp_y;
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>軸周りの回転。</p>
+<div class="sourceCode"><pre class="sourceCode c:sub.c"><code class="sourceCode c"><span class="dt">void</span> CenterOfGravity(CONST <span class="dt">double</span> x_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_0[][<span class="dv">4</span>], <span class="dt">double</span> x_G[], <span class="dt">double</span> v_G[], CONST <span class="kw">struct</span> orbital_elements *ele_p
+<span class="pp">#if FRAGMENTATION</span>
+             , <span class="dt">double</span> t_dyn
+             , CONST <span class="kw">struct</span> fragmentation *frag_p
+<span class="pp">#endif</span>
+             ){
+  <span class="dt">int</span> i, k;
+  <span class="dt">double</span> M;
+
+<span class="pp">#ifndef M_0</span>
+  M = <span class="fl">1.0</span>;
+<span class="pp">#else</span>
+  M = M_0;
+<span class="pp">#endif</span>
+  <span class="cf">for</span>(i=<span class="dv">1</span>;i&lt;=
+<span class="pp">#if INTERACTION_ALL</span>
+    global_n
+<span class="pp">#else</span>
+    global_n_p
+<span class="pp">#endif</span>
+    ;++i){
+
+<span class="pp">#if FRAGMENTATION</span>
+    M += MassDepletion(i,((ele_p+i)-&gt;mass),t_dyn,frag_p);
+<span class="pp">#else</span>
+    M += ((ele_p+i)-&gt;mass);
+<span class="pp">#endif</span>
+  }
+
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+    x_G[k] = <span class="fl">0.0</span>;
+    v_G[k] = <span class="fl">0.0</span>;
+    <span class="cf">for</span>(i=<span class="dv">1</span>;i&lt;=
+<span class="pp">#if INTERACTION_ALL</span>
+    global_n
+<span class="pp">#else</span>
+    global_n_p
+<span class="pp">#endif</span>
+      ;++i){
+
+<span class="pp">#if FRAGMENTATION</span>
+      x_G[k] += MassDepletion(i,((ele_p+i)-&gt;mass),t_dyn,frag_p) * x_0[i][k];
+      v_G[k] += MassDepletion(i,((ele_p+i)-&gt;mass),t_dyn,frag_p) * v_0[i][k];
+<span class="pp">#else</span>
+      x_G[k] += ((ele_p+i)-&gt;mass) * x_0[i][k];
+      v_G[k] += ((ele_p+i)-&gt;mass) * v_0[i][k];
+<span class="pp">#endif</span>
+    }
+    x_G[k] = x_G[k] / M;
+    v_G[k] = v_G[k] / M;
+  }
+
+  <span class="cf">return</span>;
+}</code></pre></div>
+<p>重心計算。</p>
+<ol type="1">
+<li>x_0[][4] 位置。</li>
+<li>v_0[][4] 速度。</li>
+<li>x_G[] 重心位置。</li>
+<li>v_G[] 重心速度。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>t_dyn システム時間。</li>
+<li>*frag_p 破壊計算に必要なデータをもつ構造体ポインタ。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:sub.c"><code class="sourceCode c"><span class="dt">double</span> MutualHillRadius_to_SemimajorAxis(<span class="dt">double</span> ratio){
+  <span class="cf">return</span> (<span class="fl">1.0</span> / ratio + <span class="fl">0.5</span> * cbrt(<span class="fl">2.0</span> * PLANET_MASS / <span class="fl">3.0</span>)) / (<span class="fl">1.0</span> / ratio - <span class="fl">0.5</span> * cbrt(<span class="fl">2.0</span> * PLANET_MASS / <span class="fl">3.0</span>));
+}</code></pre></div>
+<p>相互ヒル半径を用いて軌道間隔を設定するときに使う関数。</p>
+<p><span class="math inline">$R_{\mathrm{H}, \mathrm{M}}^{i, i+1}=\frac{a_{i}+a_{i+1}}{2}\left(\frac{m_{i}+m_{i+1}}{3 \mathrm{M}_{\odot}}\right)^{1 / 3}$</span></p>
+<p>と</p>
+<p><span class="math inline"><em>a</em><sub><em>i</em> + 1</sub> − <em>a</em><sub><em>i</em></sub> = <em>b</em><em>R</em><sub><em>H</em>, <em>M</em></sub><sup><em>i</em>, <em>i</em> + 1</sup></span></p>
+<p>を連立させて解くと、</p>
+<p><span class="math inline"><em>a</em><sub><em>i</em> + 1</sub> = <em>Γ</em>(<em>b</em>,<em>m</em><sub><em>i</em></sub>,<em>m</em><sub><em>i</em> + 1</sub>)<em>a</em><sub><em>i</em></sub></span></p>
+<p><span class="math inline">$\Gamma\left(b, m_{i}, m_{i+1}\right) \equiv \frac{\frac{1}{b}+\frac{1}{2}\left(\frac{m_{i}+m_{i+1}}{3 M_{\odot}}\right)^{1 / 3}}{\frac{1}{b}-\frac{1}{2}\left(\frac{m_{i}+m_{i+1}}{3 M_{\odot}}\right)^{1 / 3}}$</span></p>
+<p>のような数列のようにかける。</p>
+<ol type="1">
+<li>ratio 相互ヒル半径の何倍か。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:sub.c"><code class="sourceCode c"><span class="dt">double</span> Escape_Velocity(<span class="dt">double</span> mass_p, <span class="dt">double</span> r){
+<span class="pp">#ifndef G</span>
+  <span class="cf">return</span> sqrt(<span class="fl">2.0</span> * mass_p / r);
+<span class="pp">#else</span>
+  <span class="cf">return</span> sqrt(<span class="fl">2.0</span> * G * mass_p / r);
+<span class="pp">#endif</span>
+}</code></pre></div>
+<p>脱出速度。</p>
+<ol type="1">
+<li>mass_p 天体の質量。</li>
+<li>r 天体の半径。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:sub.c"><code class="sourceCode c"><span class="pp">#if EXECUTION_TIME</span>
+<span class="dt">void</span> Sort_Exetime(<span class="kw">struct</span> timeval realtime_start_main, <span class="kw">struct</span> timeval realtime_end_main){
+
+  <span class="dt">int</span> i,j;
+  <span class="dt">double</span> exetime_main = Cal_time(realtime_start_main,realtime_end_main);
+  <span class="dt">int</span> exetime_num[<span class="dv">7</span>]={<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>};
+
+  <span class="dt">double</span> exetime_array[<span class="dv">7</span>]={
+    exetime.Energy[<span class="dv">0</span>],
+    exetime.Orbital_Elements[<span class="dv">0</span>],
+    exetime.Predictor[<span class="dv">0</span>],
+    exetime.Corrector[<span class="dv">0</span>],
+    exetime.Iteration[<span class="dv">0</span>],
+    exetime.Collision_Judgement[<span class="dv">0</span>],
+    exetime.Fragmentation[<span class="dv">0</span>]
+  };
+
+
+<span class="pp">#if EXECUTION_TIME_FUNC</span>
+  <span class="dt">double</span> exetime_others = <span class="fl">0.0</span>;
+
+  <span class="dt">char</span> exetime_name[<span class="dv">7</span>][<span class="dv">30</span>]={
+    <span class="st">&quot;Energy</span><span class="sc">\t\t\t</span><span class="st">&quot;</span>,
+    <span class="st">&quot;Orbital_Elements</span><span class="sc">\t</span><span class="st">&quot;</span>,
+    <span class="st">&quot;Predictor</span><span class="sc">\t\t</span><span class="st">&quot;</span>,
+    <span class="st">&quot;Corrector</span><span class="sc">\t\t</span><span class="st">&quot;</span>,
+    <span class="st">&quot;Iteration</span><span class="sc">\t\t</span><span class="st">&quot;</span>,
+    <span class="st">&quot;Collision_Judgement</span><span class="sc">\t</span><span class="st">&quot;</span>,
+    <span class="st">&quot;Fragmentation</span><span class="sc">\t\t</span><span class="st">&quot;</span>
+  };
+<span class="pp">#endif</span>
+
+  <span class="cf">for</span>(i=<span class="dv">0</span>;i&lt;<span class="dv">7</span>;++i){
+    <span class="cf">for</span>(j=i+<span class="dv">1</span>;j&lt;<span class="dv">7</span>;++j){
+      <span class="cf">if</span>(exetime_array[i] &lt; exetime_array[j]){
+    Swap_int(&amp;exetime_num[i],&amp;exetime_num[j]);
+    Swap_double(&amp;exetime_array[i],&amp;exetime_array[j]);
+      }
+    }
+  }
+
+  fprintf(fplog,<span class="st">&quot;Execution Time</span><span class="sc">\t</span><span class="st">(total</span><span class="sc">\t</span><span class="st">= %e [s])</span><span class="sc">\n</span><span class="st">&quot;</span>,exetime_main);
+
+<span class="pp">#if EXECUTION_TIME_FUNC</span>
+  <span class="cf">for</span>(i=<span class="dv">0</span>;i&lt;<span class="dv">7</span>;++i){
+    fprintf(fplog,<span class="st">&quot;%s= %e [s]</span><span class="sc">\t</span><span class="st">%5.2f [%%]</span><span class="sc">\n</span><span class="st">&quot;</span>,exetime_name[exetime_num[i]],exetime_array[i],exetime_array[i]/exetime_main*<span class="fl">100.0</span>);
+    exetime_others += exetime_array[i];
+  }
+  exetime_others = exetime_main - exetime_others;
+  fprintf(fplog,<span class="st">&quot;Others</span><span class="sc">\t\t\t</span><span class="st">= %e [s]</span><span class="sc">\t</span><span class="st">%5.2f [%%]</span><span class="sc">\n</span><span class="st">&quot;</span>,exetime_others,exetime_others/exetime_main*<span class="fl">100.0</span>);
+<span class="pp">#endif</span>
+
+  <span class="cf">return</span>;
+}
+<span class="pp">#endif</span></code></pre></div>
+<p>関数ごとに計測した実行時間を、長い順に並べる関数。</p>
+<ol type="1">
+<li>realtime_start_main main関数の実行開始時刻。</li>
+<li>realtime_end_main main関数の実行終了時刻。</li>
+</ol>
 <h2 id="timestep.c-1">timestep.c</h2>
 <p>タイムステップ計算</p>
-<h2 id="qsub_depend.sh-1">qsub_depend.sh</h2>
-<p>天文台のXC50にて、ジョブを投げるシェルスクリプト</p>
-<h1 id="文字の修飾イタリック太字">5.文字の修飾(イタリック、太字)</h1>
-<ul>
-<li>イタリック 「_」または「*」で文字をくくります。</li>
-</ul>
-<blockquote>
-<p>_イタリック_ <em>イタリック</em></p>
-<p>*イタリック* <em>イタリック</em></p>
-</blockquote>
-<ul>
-<li>太字 「__」または「**」で文字をくくります。</li>
-</ul>
-<blockquote>
-<p>__太字__ <strong>太字</strong></p>
-<p>**太字** <strong>太字</strong></p>
-</blockquote>
-<h1 id="リスト">6.リスト</h1>
-<p>リストの上下に空白を入れないと正しく表示されないので注意。 また、記号と文の間に半角スペースを入れること。</p>
-<ul>
-<li>順序なしリスト</li>
-</ul>
-<p>文頭に「<em>」「+」「-」のいずれかを入れる。 &gt; * 順序なしリスト &gt; </em> 順序なしリスト</p>
-<ul>
-<li>順序つきリスト</li>
-</ul>
-<p>文頭に「数字.」を入れる。 見た目はほぼ変わりません。</p>
-<blockquote>
+<div class="sourceCode"><pre class="sourceCode c:timestep.c"><code class="sourceCode c"><span class="co">/*初期 タイムステップ計算*/</span>
+<span class="dt">double</span> Timestep_i_0(<span class="dt">int</span> i, CONST <span class="dt">double</span> a_0[][<span class="dv">4</span>], CONST <span class="dt">double</span> adot_0[][<span class="dv">4</span>]){
+  <span class="dt">int</span> k;
+  <span class="dt">double</span> abs_a = <span class="fl">0.0</span>;
+  <span class="dt">double</span> abs_adot = <span class="fl">0.0</span>;
+
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+    abs_a += a_0[i][k] * a_0[i][k];
+    abs_adot += adot_0[i][k] * adot_0[i][k];
+  }  <span class="co">//k loop</span>
+
+  abs_a = sqrt(abs_a);
+  abs_adot = sqrt(abs_adot);
+
+  <span class="co">//fprintf(fplog,&quot;abs_a[%d]=%f\tabs_adot[%d]=%f\n&quot;,i,abs_a[i],i,abs_adot[i]);</span>
+  <span class="cf">return</span> ETA * abs_a / abs_adot;
+}</code></pre></div>
+<p>加速度の2階、3階微分を求めることができない、初期用のタイムステップ。 衝突合体の後も使う。</p>
 <ol type="1">
-<li>リスト1</li>
-<li>リスト2</li>
+<li>i 粒子番号。</li>
+<li>a_0[][4] 加速度。</li>
+<li>adot_0[][4] 加加速度。</li>
 </ol>
-</blockquote>
-<h1 id="水平線">7. 水平線</h1>
-<p>「<em>」か「-」を3つ以上一行に書く。 以下は全て水平線となる。 &gt; *** * * * --- - - - &gt; 全部以下の水平線 </em>**</p>
-<h1 id="テーブル">8. テーブル</h1>
-<p>以下のようにテーブルを組みます。 基本は「|」でくくっていくことです。 2行目がポイントで、2行目のコロンの位置によってセル内の文字の配置が変わります。</p>
-<blockquote>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">|左揃え</th>
-<th style="text-align: center;">中央揃え</th>
-<th style="text-align: right;">右揃え</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">align-left</td>
-<td style="text-align: center;">align-center</td>
-<td style="text-align: right;">align-right</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">セルの左揃えです</td>
-<td style="text-align: center;">セルの中央揃えです</td>
-<td style="text-align: right;">セルの右揃えです</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">左揃え</th>
-<th style="text-align: center;">中央揃え</th>
-<th style="text-align: right;">右揃え</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">align-left</td>
-<td style="text-align: center;">align-center</td>
-<td style="text-align: right;">align-right</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">セルの左揃えです</td>
-<td style="text-align: center;">セルの中央揃えです</td>
-<td style="text-align: right;">セルの右揃えです</td>
-</tr>
-</tbody>
-</table>
-</blockquote>
-<h1 id="マークダウンのエスケープ">9. マークダウンのエスケープ</h1>
-<p>「」をMarkdownの前につけることでMarkdownを無効化出来ます。 この記事ではこれを多用しました。 &gt; \#見出しh1 とすると #見出しh1 となります。</p>
-<h1 id="補足ページをmarkdownで見る">10. 補足:ページをMarkdownで見る</h1>
-<p>Qiitaを見ていると「これはどんな記法で書いてあるんだろう」ときになることがあるかもしれません。 そんな時はMarkdown記法で見たいURLの最後に.mdをつければ見ることが出来ます。</p>
-<h2 id="参考">参考</h2>
-<p><a href="http://qiita.com/Qiita/items/c686397e4a0f4f11683d">Markdown記法チートシート</a> <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTk0MDg2NzYxMSwtMjA3MjE2OTM4NywxOT
-Q4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3
-ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1Mj
-MsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5
-Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4MywtMTU2Nzk3MD
-QzNSw5MTk5NTYzNjUsMTYwOTcwOTA2MSwtMTQyMjQ1NTQ5OCw5
-NTE5NTMwNjFdfQ==
---></p>
+<div class="sourceCode"><pre class="sourceCode c:timestep.c"><code class="sourceCode c"><span class="co">/*i_sys のみのタイムステップ計算*/</span>
+<span class="dt">double</span> Timestep_i_sys(<span class="dt">int</span> i_sys, CONST <span class="dt">double</span> a[][<span class="dv">4</span>], CONST <span class="dt">double</span> adot[][<span class="dv">4</span>], CONST <span class="dt">double</span> adot2_dt2[][<span class="dv">4</span>], CONST <span class="dt">double</span> adot3_dt3[][<span class="dv">4</span>], CONST <span class="dt">double</span> dt_[]){
+
+  <span class="dt">int</span> k;
+  <span class="dt">double</span> dt_inv = <span class="fl">1.0</span> / dt_[i_sys];
+
+  <span class="dt">double</span> abs_a = <span class="fl">0.0</span>;
+  <span class="dt">double</span> abs_adot = <span class="fl">0.0</span>;
+  <span class="dt">double</span> abs_adot2 = <span class="fl">0.0</span>;
+  <span class="dt">double</span> abs_adot3 = <span class="fl">0.0</span>;
+  <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+    abs_a += a[i_sys][k] * a[i_sys][k];
+    abs_adot += adot[i_sys][k] * adot[i_sys][k];
+    abs_adot2 += (adot2_dt2[i_sys][k] + adot3_dt3[i_sys][k])*(adot2_dt2[i_sys][k] + adot3_dt3[i_sys][k]) * dt_inv * dt_inv * dt_inv * dt_inv;
+    abs_adot3 += adot3_dt3[i_sys][k] * adot3_dt3[i_sys][k] * dt_inv * dt_inv * dt_inv * dt_inv * dt_inv * dt_inv;
+  }  <span class="co">//k loop</span>
+  abs_a = sqrt(abs_a);
+  abs_adot = sqrt(abs_adot);
+  abs_adot2 = sqrt(abs_adot2);
+  abs_adot3 = sqrt(abs_adot3);
+
+  <span class="cf">return</span> ETA * sqrt((abs_a * abs_adot2 + abs_adot * abs_adot) / (abs_adot * abs_adot3 + abs_adot2 * abs_adot2));
+}</code></pre></div>
+<p>各粒子のタイムステップ計算。</p>
+<ol type="1">
+<li>i_sys 粒子番号。</li>
+<li>a[][4] 加速度。</li>
+<li>adot[][4] 加加速度。</li>
+<li>adot2_dt2[][4] 加速度の2階微分 × タイムステップの2乗。</li>
+<li>adot3_dt3[][4] 加速度の3階微分 × タイムステップの3乗。</li>
+<li>dt_[] 各粒子のタイムステップ。</li>
+</ol>
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbMTU3Mzc5NTA5OCwxNDA4NjUzNjE2LDMzMj
+g0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUy
+NTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC
+0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3
+NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMz
+AwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0x
+NTI5NjczNTZdfQ==
+-->
 </body>
 </html>
