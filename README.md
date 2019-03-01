@@ -2510,9 +2510,31 @@ $\boldsymbol { \dot{R} } = \left( \begin{array} { c } { \dot { X } } \\ { \dot {
 メルセンヌ・ツイスタ法による乱数生成
 
 
+
 ## SFMTdir/
 メルセンヌ・ツイスタ法用のヘッダーが入ったディレクトリ
 
+```c: SFMT
+/**
+ * @file  SFMT.c
+ * @brief SIMD oriented Fast Mersenne Twister(SFMT)
+ *
+ * @author Mutsuo Saito (Hiroshima University)
+ * @author Makoto Matsumoto (Hiroshima University)
+ *
+ * Copyright (C) 2006, 2007 Mutsuo Saito, Makoto Matsumoto and Hiroshima
+ * University.
+ * Copyright (C) 2012 Mutsuo Saito, Makoto Matsumoto, Hiroshima
+ * University and The University of Tokyo.
+ * Copyright (C) 2013 Mutsuo Saito, Makoto Matsumoto and Hiroshima
+ * University.
+ * All rights reserved.
+ *
+ * The 3-clause BSD License is applied to this software, see
+ * LICENSE.txt
+ */
+
+```
 ## sub.c
 一行でかけるような細々した関数
 
@@ -2619,7 +2641,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE1NjA5NDY0ODEsMzMyODQ3ODM4LC0xND
+eyJoaXN0b3J5IjpbLTE5NTA1MzkxNzMsMzMyODQ3ODM4LC0xND
 E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
 NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
 AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
