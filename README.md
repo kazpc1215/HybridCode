@@ -2825,8 +2825,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 3. adot[][4]
 加加速度。
 4. adot2_dt2[][4]
-加速度の2階微分 × た
-, CONST double adot3_dt3[][4], CONST double dt_[]
+加速度の2階微分 × タイムステップの2乗。
+5. adot3_dt3[][4]
+加速度の3階微分 × タイムステップの3乗。
+6. dt_[]
+各粒子のタイムステップ。
 
 ## qsub_depend.sh
 天文台のXC50にて、ジョブを投げるシェルスクリプト
@@ -2926,7 +2929,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTg1MjM0NDg1NiwzMzI4NDc4MzgsLTE0MT
+eyJoaXN0b3J5IjpbMTQwODY1MzYxNiwzMzI4NDc4MzgsLTE0MT
 c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
 MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
 wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
