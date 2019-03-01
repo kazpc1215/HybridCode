@@ -2780,10 +2780,43 @@ double Timestep_i_0(int i, CONST double a_0[][4], CONST double adot_0[][4]){
 ```
 
 加速度の2階、3階微分を求めることができない、初期用のタイムステップ。
-衝突合体の後も使う
-```c:timestep.c
+衝突合体の後も使う。
 
+1. i
+粒子番号。
+2. a_0[][4]
+加速度。
+3. adot_0[][4]
+加加速度。
+
+
+```c:timestep.c
+/*i_sys のみのタイムステップ計算*/
+double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CONST double adot2_dt2[][4], CONST double adot3_dt3[][4], CONST double dt_[]){
+
+  int k;
+  double dt_inv = 1.0 / dt_[i_sys];
+
+  double abs_a = 0.0;
+  double abs_adot = 0.0;
+  double abs_adot2 = 0.0;
+  double abs_adot3 = 0.0;
+  for(k=1;k<=3;++k){
+    abs_a += a[i_sys][k] * a[i_sys][k];
+    abs_adot += adot[i_sys][k] * adot[i_sys][k];
+    abs_adot2 += (adot2_dt2[i_sys][k] + adot3_dt3[i_sys][k])*(adot2_dt2[i_sys][k] + adot3_dt3[i_sys][k]) * dt_inv * dt_inv * dt_inv * dt_inv;
+    abs_adot3 += adot3_dt3[i_sys][k] * adot3_dt3[i_sys][k] * dt_inv * dt_inv * dt_inv * dt_inv * dt_inv * dt_inv;
+  }  //k loop
+  abs_a = sqrt(abs_a);
+  abs_adot = sqrt(abs_adot);
+  abs_adot2 = sqrt(abs_adot2);
+  abs_adot3 = sqrt(abs_adot3);
+
+  return ETA * sqrt((abs_a * abs_adot2 + abs_adot * abs_adot) / (abs_adot * abs_adot3 + abs_adot2 * abs_adot2));
+}
 ```
+
+
 
 ## qsub_depend.sh
 天文台のXC50にて、ジョブを投げるシェルスクリプト
@@ -2883,11 +2916,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY2MTU1Mzk1OCwzMzI4NDc4MzgsLTE0MT
-c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
-MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
-wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
-NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
-Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
-MjM5NDA0ODNdfQ==
+eyJoaXN0b3J5IjpbLTEwMDcxMTM4NTgsMzMyODQ3ODM4LC0xND
+E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
+NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
+AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
+OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
+I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
+MTIzOTQwNDgzXX0=
 -->
