@@ -2656,6 +2656,13 @@ double MutualHillRadius_to_SemimajorAxis(double ratio){
 
 相互ヒル半径の何倍
 
+$R_{\mathrm{H}, \mathrm{M}}^{i, i+1}=\frac{a_{i}+a_{i+1}}{2}\left(\frac{m_{i}+m_{i+1}}{3 \mathrm{M}_{\odot}}\right)^{1 / 3}$
+と
+$a_{i+1}-a_{i}=b R_{\mathrm{H}, \mathrm{M}}^{i, i+1}$
+を連立させて解くと、
+
+$\Gamma\left(b, m_{i}, m_{i+1}\right) \equiv \frac{\frac{1}{b}+\frac{1}{2}\left(\frac{m_{i}+m_{i+1}}{3 M_{\odot}}\right)^{1 / 3}}{\frac{1}{b}-\frac{1}{2}\left(\frac{m_{i}+m_{i+1}}{3 M_{\odot}}\right)^{1 / 3}}$
+
 
 ```c:sub.c
 
@@ -2770,7 +2777,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwODA5NDQyNDgsMzMyODQ3ODM4LC0xND
+eyJoaXN0b3J5IjpbLTE3OTczNjQ0NjIsMzMyODQ3ODM4LC0xND
 E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
 NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
 AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
