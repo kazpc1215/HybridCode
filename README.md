@@ -2433,10 +2433,60 @@ void Calculate_RMS(CONST struct orbital_elements *ele_p, double *ecc_p_rms, doub
 軌道要素の構造体ポインタ。
 2. *ecc_p_rms
 惑星の離心率の2乗平均平方根。
-3. *ecc_tr_rms, double *inc_p_rms, double *inc_tr_rms
+3. *ecc_tr_rms
+トレーサーの離心率の2乗平均平方根。
+4. *inc_p_rms
+惑星の軌道傾斜角の2乗平均平方根。
+5. *inc_tr_rms
+トレーサーの軌道傾斜角の2乗平均平方根。
 
 ```c:orbitlal_elements.c
+/*初期位置、速度計算*/
+void InitialCondition(int i, double x_0[][4], double v_0[][4], double v2_0[], double r_dot_v[], double r_0[], CONST struct orbital_elements *ele_p){
 
+#if INDIRECT_TERM
+
+#if !defined(G) && !defined(M_0)
+  double mu = 1.0 + ((ele_p+i)->mass);
+#else
+  double mu = G * (M_0 + ((ele_p+i)->mass));
+#endif
+
+#else
+
+#if !defined(G) && !defined(M_0)
+  double mu = 1.0;
+#else
+  double mu = G * M_0;
+#endif
+
+#endif
+
+  int k;
+  static double P[4]={},Q[4]={};
+
+
+  for(k=1;k<=3;k++){
+    P[k] = Calculate_P(i,k,ele_p);
+    Q[k] = Calculate_Q(i,k,ele_p);
+
+    x_0[i][k] = ((ele_p+i)->axis) * P[k] * (cos(((ele_p+i)->u)) - ((ele_p+i)->ecc)) + ((ele_p+i)->axis) * sqrt(1.0 - ((ele_p+i)->ecc) * ((ele_p+i)->ecc)) * Q[k] * sin(((ele_p+i)->u));
+  }
+  //fprintf(fplog,"x=%f\ty=%f\tz=%f\n",x_0[i][1],x_0[i][2],x_0[i][3]);
+
+  r_0[i] = RadiusFromCenter(i,x_0);  //中心星からの距離.
+
+
+  for(k=1;k<=3;++k){
+    v_0[i][k] = sqrt(mu / ((ele_p+i)->axis)) / r_0[i] * (- ((ele_p+i)->axis) * P[k] * sin(((ele_p+i)->u)) + ((ele_p+i)->axis) * sqrt(1.0 - ((ele_p+i)->ecc) * ((ele_p+i)->ecc)) * Q[k] * cos(((ele_p+i)->u)));
+  }
+
+  r_dot_v[i] = InnerProduct(i,x_0,v_0);  //r_i,v_iの内積.
+  v2_0[i] = SquareOfVelocity(i,v_0);  //速度の2乗.
+  //fprintf(fplog,"vx=%f\tvy=%f\tvz=%f\n",v_0[i][1],v_0[i][2],v_0[i][3]);
+
+  return;
+}
 ```
 
 
@@ -2553,11 +2603,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5MjYzODM4MzEsMzMyODQ3ODM4LC0xND
-E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
-NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
-AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
-OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
-I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
-MTIzOTQwNDgzXX0=
+eyJoaXN0b3J5IjpbLTU0MjQyNzg1NCwzMzI4NDc4MzgsLTE0MT
+c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
+MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
+wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
+NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
+Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
+MjM5NDA0ODNdfQ==
 -->
