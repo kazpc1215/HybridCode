@@ -2686,15 +2686,71 @@ double Escape_Velocity(double mass_p, double r){
 脱出速度。
 
 1. mass_p
-てn
+天体の質量。
+2. r
+天体の半径。
 
 ```c:sub.c
+#if EXECUTION_TIME
+void Sort_Exetime(struct timeval realtime_start_main, struct timeval realtime_end_main){
 
+  int i,j;
+  double exetime_main = Cal_time(realtime_start_main,realtime_end_main);
+  int exetime_num[7]={0,1,2,3,4,5,6};
+
+  double exetime_array[7]={
+    exetime.Energy[0],
+    exetime.Orbital_Elements[0],
+    exetime.Predictor[0],
+    exetime.Corrector[0],
+    exetime.Iteration[0],
+    exetime.Collision_Judgement[0],
+    exetime.Fragmentation[0]
+  };
+
+
+#if EXECUTION_TIME_FUNC
+  double exetime_others = 0.0;
+
+  char exetime_name[7][30]={
+    "Energy\t\t\t",
+    "Orbital_Elements\t",
+    "Predictor\t\t",
+    "Corrector\t\t",
+    "Iteration\t\t",
+    "Collision_Judgement\t",
+    "Fragmentation\t\t"
+  };
+#endif
+
+  for(i=0;i<7;++i){
+    for(j=i+1;j<7;++j){
+      if(exetime_array[i] < exetime_array[j]){
+	Swap_int(&exetime_num[i],&exetime_num[j]);
+	Swap_double(&exetime_array[i],&exetime_array[j]);
+      }
+    }
+  }
+
+  fprintf(fplog,"Execution Time\t(total\t= %e [s])\n",exetime_main);
+
+#if EXECUTION_TIME_FUNC
+  for(i=0;i<7;++i){
+    fprintf(fplog,"%s= %e [s]\t%5.2f [%%]\n",exetime_name[exetime_num[i]],exetime_array[i],exetime_array[i]/exetime_main*100.0);
+    exetime_others += exetime_array[i];
+  }
+  exetime_others = exetime_main - exetime_others;
+  fprintf(fplog,"Others\t\t\t= %e [s]\t%5.2f [%%]\n",exetime_others,exetime_others/exetime_main*100.0);
+#endif
+
+  return;
+}
+#endif
 ```
 
-```c:sub.c
+関数ごとに計測した実行時間を、長い順に並べる
 
-```
+
 ## timestep.c
 タイムステップ計算
 
@@ -2797,7 +2853,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTgxMzczMjI5OSwzMzI4NDc4MzgsLTE0MT
+eyJoaXN0b3J5IjpbMTE0NjY3MzU4NCwzMzI4NDc4MzgsLTE0MT
 c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
 MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
 wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
