@@ -2831,109 +2831,12 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 6. dt_[]
 各粒子のタイムステップ。
 
-## qsub_depend.sh
-天文台のXC50にて、ジョブを投げるシェルスクリプト
-
-
-
-
-# 5.文字の修飾(イタリック、太字)
-
-* イタリック
-「_」または「*」で文字をくくります。
-
->
-\_イタリック\_
-_イタリック_
->
-\*イタリック\*
-*イタリック*
-
-* 太字
-「__」または「**」で文字をくくります。
-
->
-\_\_太字\_\_
-__太字__
->
-\*\*太字\*\*
-**太字**
-
-# 6.リスト
-リストの上下に空白を入れないと正しく表示されないので注意。
-また、記号と文の間に半角スペースを入れること。
-
-* 順序なしリスト
-
-文頭に「*」「+」「-」のいずれかを入れる。
->
-\* 順序なしリスト
->
-* 順序なしリスト
-
-
-* 順序つきリスト
-
-文頭に「数字.」を入れる。
-見た目はほぼ変わりません。
-
->
-1. リスト1
-2. リスト2
-
-# 7. 水平線
-
-「*」か「-」を3つ以上一行に書く。
-以下は全て水平線となる。
->
-\*\*\*
-\* \* \*
-\-\-\-
-\- \- \-
->
-全部以下の水平線
-***
-
-# 8. テーブル
-
-以下のようにテーブルを組みます。
-基本は「|」でくくっていくことです。
-2行目がポイントで、2行目のコロンの位置によってセル内の文字の配置が変わります。
-
->
-\|左揃え|中央揃え|右揃え|
-|:---|:---:|--:|
-|align-left|align-center|align-right|
-|セルの左揃えです|セルの中央揃えです|セルの右揃えです|
->
->
-|左揃え|中央揃え|右揃え|
-|:---|:---:|--:|
-|align-left|align-center|align-right|
-|セルの左揃えです|セルの中央揃えです|セルの右揃えです|
-
-# 9. マークダウンのエスケープ
-「\」をMarkdownの前につけることでMarkdownを無効化出来ます。
-この記事ではこれを多用しました。
->
-\\#見出しh1
-とすると
-\#見出しh1
-となります。
-
-# 10. 補足:ページをMarkdownで見る
-Qiitaを見ていると「これはどんな記法で書いてあるんだろう」ときになることがあるかもしれません。
-そんな時はMarkdown記法で見たいURLの最後に.mdをつければ見ることが出来ます。
-
-##参考
-
-[Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQwODY1MzYxNiwzMzI4NDc4MzgsLTE0MT
-c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
-MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
-wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
-NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
-Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
-MjM5NDA0ODNdfQ==
+eyJoaXN0b3J5IjpbMTU3Mzc5NTA5OCwxNDA4NjUzNjE2LDMzMj
+g0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUy
+NTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC
+0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3
+NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMz
+AwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0x
+NTI5NjczNTZdfQ==
 -->
