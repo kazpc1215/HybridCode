@@ -2357,7 +2357,7 @@ i 粒子。
 9. *frag_p
 破壊計算に必要なデータをもつ構造体ポインタ。 
 
-$\mu = G (m_1 + m_2)$
+$\mu = G (m_1 + m_2) \quad (m_1 \gg m_2, m_1を)$
 
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
 
@@ -2477,7 +2477,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzNjk3MTI2MzYsLTE0MTc3NjkwNTMsLT
+eyJoaXN0b3J5IjpbLTIxMzU3NDIzMTQsLTE0MTc3NjkwNTMsLT
 Y4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2MTEsLTIwNzIx
 NjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1Mz
 U4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4ODUzLC0x
