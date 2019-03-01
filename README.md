@@ -2361,8 +2361,9 @@ $\mu = G (m_1 + m_2) \quad (m_1 \gg m_2 なら\mu \simeq G m_1)$
 
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
 
-
 $\boldsymbol { V } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$
+
+$$
 
 ## SFMT.c
 メルセンヌ・ツイスタ法による乱数生成
@@ -2477,11 +2478,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY1Nzc4OTYzMywtMTQxNzc2OTA1MywtNj
-g0MDQ4NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMSwtMjA3MjE2
-OTM4NywxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNT
-gxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEy
-NjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3Mz
-kwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEyMzk0MDQ4Mywt
-MTU2Nzk3MDQzNV19
+eyJoaXN0b3J5IjpbLTE3MTYxMjAzMDMsLTE0MTc3NjkwNTMsLT
+Y4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2MTEsLTIwNzIx
+NjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1Mz
+U4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4ODUzLC0x
+MjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNz
+M5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMs
+LTE1Njc5NzA0MzVdfQ==
 -->
