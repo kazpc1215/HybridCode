@@ -2428,13 +2428,13 @@ void Calculate_RMS(CONST struct orbital_elements *ele_p, double *ecc_p_rms, doub
 1. *ele_p
 軌道要素の構造体ポインタ。
 2. *ecc_p_rms
-惑星の離心率の2乗平均平方根。
+惑星の離心率の2乗平均平方根のポインタ。
 3. *ecc_tr_rms
-トレーサーの離心率の2乗平均平方根。
+トレーサーの離心率の2乗平均平方根のポインタ。
 4. *inc_p_rms
-惑星の軌道傾斜角の2乗平均平方根。
+惑星の軌道傾斜角の2乗平均平方根のポインタ。
 5. *inc_tr_rms
-トレーサーの軌道傾斜角の2乗平均平方根。
+トレーサーの軌道傾斜角の2乗平均平方根のポインタ。
 
 ```c:orbitlal_elements.c
 /*初期位置、速度計算*/
@@ -2496,8 +2496,12 @@ void InitialCondition(int i, double x_0[][4], double v_0[][4], double v2_0[], do
 4. v2_0[]
 初期速度の大きさの2乗。
 5. r_dot_v[]
-初期位置ベクトルと初期速度ベクt
-, double r_0[], CONST struct orbital_elements *ele_p
+初期位置ベクトルと初期速度ベクトルの内積。
+6. r_0[]
+初期の中心星からの距離。
+7. *ele_p
+軌道要素の構造体ポインタ。
+
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
 
 $\boldsymbol { \dot{R} } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$
@@ -2615,11 +2619,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzMxMDkzNDYxLDMzMjg0NzgzOCwtMTQxNz
-c2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYx
-MSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC
-0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3
-MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyND
-c1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEy
-Mzk0MDQ4M119
+eyJoaXN0b3J5IjpbLTE2NjkzNDk3MDAsMzMyODQ3ODM4LC0xND
+E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
+NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
+AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
+OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
+I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
+MTIzOTQwNDgzXX0=
 -->
