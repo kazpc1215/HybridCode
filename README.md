@@ -2489,7 +2489,15 @@ void InitialCondition(int i, double x_0[][4], double v_0[][4], double v2_0[], do
 
 1. i
 粒子番号。
-2. , double x_0[][4], double v_0[][4], double v2_0[], double r_dot_v[], double r_0[], CONST struct orbital_elements *ele_p
+2. x_0[][4]
+初期位置。
+3. v_0[][4]
+初期速度。
+4. v2_0[]
+初期速度の大きさの2乗。
+5. r_dot_v[]
+初期位置ベクトルと初期速度ベクt
+, double r_0[], CONST struct orbital_elements *ele_p
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
 
 $\boldsymbol { \dot{R} } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$
@@ -2607,7 +2615,7 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODk3MTM2ODAzLDMzMjg0NzgzOCwtMTQxNz
+eyJoaXN0b3J5IjpbMzMxMDkzNDYxLDMzMjg0NzgzOCwtMTQxNz
 c2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYx
 MSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC
 0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3
