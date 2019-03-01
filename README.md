@@ -2654,15 +2654,21 @@ double MutualHillRadius_to_SemimajorAxis(double ratio){
 }
 ```
 
-相互ヒル半径の何倍
+相互ヒル半径を用いて軌道間隔を設定するときに使う関数。
 
 $R_{\mathrm{H}, \mathrm{M}}^{i, i+1}=\frac{a_{i}+a_{i+1}}{2}\left(\frac{m_{i}+m_{i+1}}{3 \mathrm{M}_{\odot}}\right)^{1 / 3}$
+
 と
+
 $a_{i+1}-a_{i}=b R_{\mathrm{H}, \mathrm{M}}^{i, i+1}$
+
 を連立させて解くと、
+
+$a_{i+1}=\Gamma\left(b, m_{i}, m_{i+1}\right) a_{i}$
 
 $\Gamma\left(b, m_{i}, m_{i+1}\right) \equiv \frac{\frac{1}{b}+\frac{1}{2}\left(\frac{m_{i}+m_{i+1}}{3 M_{\odot}}\right)^{1 / 3}}{\frac{1}{b}-\frac{1}{2}\left(\frac{m_{i}+m_{i+1}}{3 M_{\odot}}\right)^{1 / 3}}$
 
+1
 
 ```c:sub.c
 
@@ -2777,11 +2783,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3OTczNjQ0NjIsMzMyODQ3ODM4LC0xND
-E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
-NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
-AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
-OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
-I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
-MTIzOTQwNDgzXX0=
+eyJoaXN0b3J5IjpbLTY0MDM1MTg2OSwzMzI4NDc4MzgsLTE0MT
+c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
+MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
+wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
+NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
+Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
+MjM5NDA0ODNdfQ==
 -->
