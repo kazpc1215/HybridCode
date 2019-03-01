@@ -2394,7 +2394,44 @@ $\sin \omega=\frac{P_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}} \quad \text { and } \quad 
 $\sin \Omega=\frac{P_{y} Q_{z}-Q_{y} P_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}} \quad \text { and } \quad \cos \Omega=\frac{P_{x} Q_{z}-Q_{x} P_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}}$
 
 
+```c:orbitlal_elements.c
+void Calculate_RMS(CONST struct orbital_elements *ele_p, double *ecc_p_rms, double *ecc_tr_rms, double *inc_p_rms, double *inc_tr_rms){
 
+  int i;
+  double ecc_2, ecc_2_mean, inc_2, inc_2_mean;
+
+  ecc_2 = 0.0;
+  inc_2 = 0.0;
+  for(i=1;i<=global_n_p;++i){
+    ecc_2 += ((ele_p+i)->ecc) * ((ele_p+i)->ecc);
+    inc_2 += ((ele_p+i)->inc) * ((ele_p+i)->inc);
+  }
+  ecc_2_mean = ecc_2 / ((double)global_n_p);
+  inc_2_mean = inc_2 / ((double)global_n_p);
+  *ecc_p_rms = sqrt(ecc_2_mean);
+  *inc_p_rms = sqrt(inc_2_mean);
+
+
+  ecc_2 = 0.0;
+  inc_2 = 0.0;
+  for(i=global_n_p+1;i<=global_n;++i){
+    ecc_2 += ((ele_p+i)->ecc) * ((ele_p+i)->ecc);
+    inc_2 += ((ele_p+i)->inc) * ((ele_p+i)->inc);
+  }
+  ecc_2_mean = ecc_2 / ((double)(global_n-global_n_p));
+  inc_2_mean = inc_2 / ((double)(global_n-global_n_p));
+  *ecc_tr_rms = sqrt(ecc_2_mean);
+  *inc_tr_rms = sqrt(inc_2_mean);
+
+  return;
+}
+```
+
+トレーサー粒子の離心率と軌道傾斜角の2乗平均へ
+
+```c:orbitlal_elements.c
+
+```
 
 
 ## SFMT.c
@@ -2510,11 +2547,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyODE0MTY2NjIsMzMyODQ3ODM4LC0xND
-E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
-NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
-AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
-OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
-I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
-MTIzOTQwNDgzXX0=
+eyJoaXN0b3J5IjpbMTQyNTYxOTI2MiwzMzI4NDc4MzgsLTE0MT
+c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
+MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
+wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
+NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
+Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
+MjM5NDA0ODNdfQ==
 -->
