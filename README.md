@@ -2427,7 +2427,13 @@ void Calculate_RMS(CONST struct orbital_elements *ele_p, double *ecc_p_rms, doub
 }
 ```
 
-トレーサー粒子の離心率と軌道傾斜角の2乗平均へ
+離心率と軌道傾斜角の2乗平均平方根を計算。
+
+1. *ele_p
+軌道要素の構造体ポインタ。
+2. *ecc_p_rms
+惑星の離心率の2乗平均平方根。
+3. *ecc_tr_rms, double *inc_p_rms, double *inc_tr_rms
 
 ```c:orbitlal_elements.c
 
@@ -2547,11 +2553,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQyNTYxOTI2MiwzMzI4NDc4MzgsLTE0MT
-c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
-MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
-wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
-NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
-Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
-MjM5NDA0ODNdfQ==
+eyJoaXN0b3J5IjpbLTE5MjYzODM4MzEsMzMyODQ3ODM4LC0xND
+E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
+NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
+AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
+OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
+I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
+MTIzOTQwNDgzXX0=
 -->
