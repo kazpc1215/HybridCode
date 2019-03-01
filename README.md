@@ -2381,7 +2381,16 @@ $a=\left(\frac{2}{R}-\frac{V^{2}}{\mu}\right)^{-1}$
 離心率は
 $e=\sqrt{\left(1-\frac{R}{a}\right)^{2}+\frac{(\boldsymbol{R} \cdot \dot{\boldsymbol{R}})^{2}}{\mu a}}$
 
-離心近点理書く
+離心近点離角は
+$\cos E=\frac{1}{e}\left(1-\frac{R}{a}\right) \quad \text { and } \quad \sin E=\frac{\boldsymbol{R} \cdot \dot{\boldsymbol{R}}}{e \sqrt{\mu a}}$
+
+軌道傾斜角は
+$\sin I=\sqrt{P_{z}^{2}+Q_{z}^{2}} \quad \text { and } \quad \cos I=P_{x} Q_{y}-P_{y} Q_{x}$
+
+近点引数は
+$\sin \omega=\frac{P_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}} \quad \text { and } \quad \cos \omega=\frac{Q_{z}}{\sqrt{P_{z}^{2}+Q_{z}^{2}}}$
+
+
 
 ## SFMT.c
 メルセンヌ・ツイスタ法による乱数生成
@@ -2496,11 +2505,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3OTA0NDI3NzcsMzMyODQ3ODM4LC0xND
-E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
-NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
-AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
-OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
-I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
-MTIzOTQwNDgzXX0=
+eyJoaXN0b3J5IjpbMjc0MzY5NzU0LDMzMjg0NzgzOCwtMTQxNz
+c2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYx
+MSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC
+0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3
+MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyND
+c1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEy
+Mzk0MDQ4M119
 -->
