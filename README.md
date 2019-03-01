@@ -2361,13 +2361,13 @@ $\mu = G (m_1 + m_2) \quad (m_1 \gg m_2 なら\mu \simeq G m_1)$
 
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
 
-$\boldsymbol { V } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$
+$\boldsymbol { \dot{R} } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$
 
 $R^2 = X^2 + Y^2 + Z^2$
 
-$V^2 = \dot{X}^2 + \dot{Y}^2 + \dot{Z}^2$
+$\dot{R}^2 = \dot{X}^2 + \dot{Y}^2 + \dot{Z}^2$
 
-$$
+$R \cdot \dot{R} = X \dot{X} + Y \dot{}$
 
 ## SFMT.c
 メルセンヌ・ツイスタ法による乱数生成
@@ -2482,11 +2482,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzMyODQ3ODM4LC0xNDE3NzY5MDUzLC02OD
-QwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC0yMDcyMTY5
-Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1OD
-EsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2
-NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOT
-AzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIzOTQwNDgzLC0x
-NTY3OTcwNDM1XX0=
+eyJoaXN0b3J5IjpbMTAzNTM0MTgxMiwzMzI4NDc4MzgsLTE0MT
+c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
+MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
+wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
+NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
+Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
+MjM5NDA0ODNdfQ==
 -->
