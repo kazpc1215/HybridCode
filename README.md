@@ -2627,11 +2627,22 @@ void CenterOfGravity(CONST double x_0[][4], CONST double v_0[][4], double x_G[],
   }
 
   return;
-}```
+}
+```
 
 重心計算。
 
-1. x_0[][4], CONST double v_0[][4], double x_G[], double v_G[], CONST struct orbital_elements *ele_p
+1. x_0[][4]
+位置。
+2. v_0[][4]
+速度。
+3. x_G[]
+重心位置。
+4. v_G[]
+重心速度。
+5. *ele_p
+
+
 #if FRAGMENTATION
 			 , double t_dyn
 			 , CONST struct fragmentation *frag_p
@@ -2741,11 +2752,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY3MzM4ODk0NywzMzI4NDc4MzgsLTE0MT
-c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
-MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
-wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
-NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
-Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
-MjM5NDA0ODNdfQ==
+eyJoaXN0b3J5IjpbLTE4OTc3MjM0ODIsMzMyODQ3ODM4LC0xND
+E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
+NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
+AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
+OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
+I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
+MTIzOTQwNDgzXX0=
 -->
