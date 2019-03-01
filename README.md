@@ -2509,12 +2509,7 @@ $\boldsymbol { \dot{R} } = \left( \begin{array} { c } { \dot { X } } \\ { \dot {
 ## SFMT.c
 メルセンヌ・ツイスタ法による乱数生成
 
-
-
-## SFMTdir/
-メルセンヌ・ツイスタ法用のヘッダーが入ったディレクトリ
-
-```c: SFMT
+```c: SFMT.c
 /**
  * @file  SFMT.c
  * @brief SIMD oriented Fast Mersenne Twister(SFMT)
@@ -2533,8 +2528,10 @@ $\boldsymbol { \dot{R} } = \left( \begin{array} { c } { \dot { X } } \\ { \dot {
  * The 3-clause BSD License is applied to this software, see
  * LICENSE.txt
  */
-
 ```
+
+拾い物。
+
 ## sub.c
 一行でかけるような細々した関数
 
@@ -2641,11 +2638,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5NTA1MzkxNzMsMzMyODQ3ODM4LC0xND
-E3NzY5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3
-NjExLC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0Mz
-AsLTIxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEw
-OTcwODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NT
-I0NzUsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1Niwy
-MTIzOTQwNDgzXX0=
+eyJoaXN0b3J5IjpbNjU5NzA2ODIsMzMyODQ3ODM4LC0xNDE3Nz
+Y5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3NjEx
+LC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLT
+IxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcw
+ODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0Nz
+UsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIz
+OTQwNDgzXX0=
 -->
