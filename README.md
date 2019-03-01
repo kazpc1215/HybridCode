@@ -2748,8 +2748,9 @@ void Sort_Exetime(struct timeval realtime_start_main, struct timeval realtime_en
 #endif
 ```
 
-関数ごとに計測した実行時間を、長い順に並べる
+関数ごとに計測した実行時間を、長い順に並べる関数。
 
+1. realtime_start_main, struct timeval realtime_end_main
 
 ## timestep.c
 タイムステップ計算
@@ -2853,11 +2854,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTE0NjY3MzU4NCwzMzI4NDc4MzgsLTE0MT
-c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
-MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
-wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
-NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
-Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
-MjM5NDA0ODNdfQ==
+eyJoaXN0b3J5IjpbOTMzNjc3MTA5LDMzMjg0NzgzOCwtMTQxNz
+c2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYx
+MSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC
+0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3
+MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyND
+c1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEy
+Mzk0MDQ4M119
 -->
