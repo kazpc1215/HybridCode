@@ -2169,8 +2169,181 @@ i 粒子。
 軌道要素の構造体ポインタ。
 
 ```c:orbital_elements.c
+/*軌道要素計算*/
+void Calculate_OrbitalElements(int i, CONST double x_c[][4], CONST double v_c[][4], struct orbital_elements *ele_p, CONST double r_c[], CONST double v2_c[], CONST double r_dot_v[]
+#if FRAGMENTATION
+			       , double t_dyn
+			       , CONST struct fragmentation *frag_p
+#endif
+			       ){
 
+
+  double m_i;
+
+#if FRAGMENTATION
+  m_i = MassDepletion(i,((ele_p+i)->mass),t_dyn,frag_p);
+#else
+  m_i = ((ele_p+i)->mass);
+#endif
+
+
+#if INDIRECT_TERM
+
+#if !defined(G) && !defined(M_0)
+  double mu = 1.0 + m_i;
+#else
+  double mu = G * (M_0 + m_i);
+#endif
+
+#else
+
+#if !defined(G) && !defined(M_0)
+  double mu = 1.0;
+#else
+  double mu = G * M_0;
+#endif
+
+#endif
+
+  int k;
+  double esin_u;
+  double ecos_u;
+  double sin_inc;
+  double cos_inc;
+  double sin_omega;
+  double cos_omega;
+  double sin_Omega;
+  double cos_Omega;
+  double radian;
+  static double P[N_p+N_tr+1][4]={}, Q[N_p+N_tr+1][4]={};
+
+
+  ((ele_p+i)->axis) = 1.0 / (2.0 / r_c[i] - v2_c[i] / mu);
+
+
+  if(isnan((ele_p+i)->axis)){
+    fprintf(fplog,"i=%d\taxis is nan.\n",i);
+  }
+
+
+  if(((ele_p+i)->axis)<0.0){
+    fprintf(fplog,"i=%d\taxis=%e < 0 hyperbola orbit.\n",i,((ele_p+i)->axis));
+    /*
+    ((ele_p+i)->ecc) = NAN;
+    ((ele_p+i)->u) = NAN;
+    ((ele_p+i)->inc) = NAN;
+    ((ele_p+i)->omega) = NAN;
+    ((ele_p+i)->Omega) = NAN;
+    ((ele_p+i)->r_h) = NAN;
+    */
+  }
+
+
+  ((ele_p+i)->ecc) = sqrt((1.0 - r_c[i] / ((ele_p+i)->axis)) * (1.0 - r_c[i] / ((ele_p+i)->axis)) + r_dot_v[i] * r_dot_v[i] / mu / ((ele_p+i)->axis));
+
+
+  if(isnan((ele_p+i)->ecc)){
+    fprintf(fplog,"i=%d\tecc is nan.\n",i);
+  }
+
+
+  if(((ele_p+i)->ecc)==0.0){
+    ((ele_p+i)->u) = 0.0;
+  }else{
+    esin_u = r_dot_v[i] / sqrt(mu * ((ele_p+i)->axis));
+    ecos_u = 1.0 - r_c[i] / ((ele_p+i)->axis);
+    radian = atan2(esin_u,ecos_u);
+    if(radian<0.0){
+      ((ele_p+i)->u) = radian + 2.0 * M_PI;
+    }else{
+      ((ele_p+i)->u) = radian;
+    }
+  }
+
+
+  for(k=1;k<=3;++k){
+
+    P[i][k] = x_c[i][k] * cos(((ele_p+i)->u)) / r_c[i] - sqrt(((ele_p+i)->axis) / mu) * v_c[i][k] * sin(((ele_p+i)->u));
+    Q[i][k] = (x_c[i][k] * sin(((ele_p+i)->u)) / r_c[i] + sqrt(((ele_p+i)->axis) / mu) * v_c[i][k] * (cos(((ele_p+i)->u)) - ((ele_p+i)->ecc))) / sqrt(1.0 - ((ele_p+i)->ecc));
+  }
+
+
+  if(isnan(P[i][1])||isnan(P[i][2])||isnan(P[i][3])){
+    fprintf(fplog,"i=%d\tP is nan.\t[1]=%f\t[2]=%f\t[3]=%f\n",i,P[i][1],P[i][2],P[i][3]);
+  }
+  if(isnan(Q[i][1])||isnan(Q[i][2])||isnan(Q[i][3])){
+    fprintf(fplog,"i=%d\tQ is nan.\t[1]=%f\t[2]=%f\t[3]=%f\n",i,Q[i][1],Q[i][2],Q[i][3]);
+  }
+
+
+  sin_inc = sqrt(P[i][3] * P[i][3] + Q[i][3] * Q[i][3]);
+  cos_inc = P[i][1] * Q[i][2] - P[i][2] * Q[i][1];
+  radian = atan2(sin_inc,cos_inc);
+
+
+  if(radian<0.0){
+    ((ele_p+i)->inc) = radian + 2.0 * M_PI;
+  }else{
+    ((ele_p+i)->inc) = radian;
+  }
+
+
+  sin_omega = P[i][3] / sin_inc;
+  cos_omega = Q[i][3] / sin_inc;
+  radian = atan2(sin_omega,cos_omega);
+  if(radian<0.0){
+    ((ele_p+i)->omega) = radian + 2.0*M_PI;
+  }else{
+    ((ele_p+i)->omega) = radian;
+  }
+
+
+  sin_Omega = (P[i][2] * Q[i][3] - Q[i][2] * P[i][3]) / sin_inc;
+  cos_Omega = (P[i][1] * Q[i][3] - Q[i][1] * P[i][3]) / sin_inc;
+  radian = atan2(sin_Omega,cos_Omega);
+  if(radian<0.0){
+    ((ele_p+i)->Omega) = radian + 2.0 * M_PI;
+  }else{
+    ((ele_p+i)->Omega) = radian;
+  }
+
+
+  if(sin_inc==0.0){
+    ((ele_p+i)->omega) = 0.0;
+    ((ele_p+i)->Omega) = 0.0;
+  }
+
+
+#ifndef M_0
+  ((ele_p+i)->r_h) = ((ele_p+i)->axis) * cbrt(m_i / 3.0);
+#else
+  ((ele_p+i)->r_h) = ((ele_p+i)->axis) * cbrt(m_i / M_0 / 3.0);
+#endif
+
+
+  if(isnan((ele_p+i)->inc)){
+    fprintf(fplog,"i=%d\tinc is nan.\n",i);
+  }
+  if(isnan((ele_p+i)->omega)){
+    fprintf(fplog,"i=%d\tomega is nan.\n",i);
+  }
+  if(isnan((ele_p+i)->Omega)){
+    fprintf(fplog,"i=%d\tOmega is nan.\n",i);
+  }
+
+
+  return;
+}
 ```
+
+軌道要素の
+
+1. i
+i 粒子。
+2. x_0[][4]
+位置。惑星からある程度離れたところに粒子を配置するため、惑星からの距離を測定しながら軌道要素を決定する。
+3. *ele_p
+軌道要素の構造体ポインタ。
 
 $\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
 
@@ -2290,11 +2463,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05ND
-A4Njc2MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUy
-OTQzMCwtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MT
-csMTA5NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTEx
-NjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3Mz
-U2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUsOTE5OTU2MzY1LDE2
-MDk3MDkwNjFdfQ==
+eyJoaXN0b3J5IjpbLTE1MzA1NjQ3ODYsLTY4NDA0ODY2MywxMD
+Q5MzU1MjU1LC05NDA4Njc2MTEsLTIwNzIxNjkzODcsMTk0ODM4
+OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1MzU4MSwxODQ4Nzg0MT
+M0LDEwNzQzNDc2MTcsMTA5NzA4ODUzLC0xMjY0NTkzNTIzLDEx
+NzAyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUxOTM4Nz
+AwMSwtMTUyOTY3MzU2LDIxMjM5NDA0ODMsLTE1Njc5NzA0MzUs
+OTE5OTU2MzY1XX0=
 -->
