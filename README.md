@@ -2367,7 +2367,12 @@ $R^2 = X^2 + Y^2 + Z^2$
 
 $\dot{R}^2 = \dot{X}^2 + \dot{Y}^2 + \dot{Z}^2$
 
-$R \cdot \dot{R} = X \dot{X} + Y \dot{}$
+$R \cdot \dot{R} = X \dot{X} + Y \dot{Y} + Z \dot{Z}$
+
+また、$P_i, Q_i$を位置と速度で表すと、
+
+\begin{equation}
+P_{i}=\frac{X_{i}}{R} \cos E-\sqrt{\frac{a}{\mu}} \dot{X}_{i} 
 
 ## SFMT.c
 メルセンヌ・ツイスタ法による乱数生成
@@ -2482,11 +2487,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTAzNTM0MTgxMiwzMzI4NDc4MzgsLTE0MT
-c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
-MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
-wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
-NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
-Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
-MjM5NDA0ODNdfQ==
+eyJoaXN0b3J5IjpbNDc2ODA3ODYsMzMyODQ3ODM4LC0xNDE3Nz
+Y5MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3NjEx
+LC0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLT
+IxMDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcw
+ODg1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0Nz
+UsMTM0MjczOTAzMSw1MTkzODcwMDEsLTE1Mjk2NzM1NiwyMTIz
+OTQwNDgzXX0=
 -->
