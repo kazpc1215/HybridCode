@@ -2486,6 +2486,10 @@ void InitialCondition(int i, double x_0[][4], double v_0[][4], double v2_0[], do
 ```
 
 
+$\boldsymbol { R } = \left( \begin{array} { c } { X } \\ { Y } \\ { Z } \end{array} \right) = \left( \begin{array} { c } { a P _ { x } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \sin E } \\ { a P _ { y } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \sin E } \\ { a P _ { z } ( \cos E - e ) + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \sin E } \end{array} \right)$
+
+$\boldsymbol { \dot{R} } = \left( \begin{array} { c } { \dot { X } } \\ { \dot { Y } } \\ { \dot { Z } } \end{array} \right) = \frac { a n } { R } \left( \begin{array} { c } { - a P _ { x } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { x } \cos E } \\ { - a P _ { y } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { y } \cos E } \\ { - a P _ { z } \sin E + a \sqrt { 1 - e ^ { 2 } } Q _ { z } \cos E } \end{array} \right)$
+
 ## SFMT.c
 メルセンヌ・ツイスタ法による乱数生成
 
@@ -2599,11 +2603,11 @@ Qiitaを見ていると「これはどんな記法で書いてあるんだろう
 
 [Markdown記法チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTgzOTUyMDM0OSwzMzI4NDc4MzgsLTE0MT
-c3NjkwNTMsLTY4NDA0ODY2MywxMDQ5MzU1MjU1LC05NDA4Njc2
-MTEsLTIwNzIxNjkzODcsMTk0ODM4OTE0NywtMTYyNTUyOTQzMC
-wtMjEwNDM1MzU4MSwxODQ4Nzg0MTM0LDEwNzQzNDc2MTcsMTA5
-NzA4ODUzLC0xMjY0NTkzNTIzLDExNzAyMjMwMDgsLTExNjY1Mj
-Q3NSwxMzQyNzM5MDMxLDUxOTM4NzAwMSwtMTUyOTY3MzU2LDIx
-MjM5NDA0ODNdfQ==
+eyJoaXN0b3J5IjpbNTU4MTAyMTMyLDMzMjg0NzgzOCwtMTQxNz
+c2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYx
+MSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC
+0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3
+MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyND
+c1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0xNTI5NjczNTYsMjEy
+Mzk0MDQ4M119
 -->
