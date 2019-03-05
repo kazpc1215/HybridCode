@@ -2070,7 +2070,7 @@ i 粒子。
 void InitialOrbitalElements_Planet(int i,struct orbital_elements *ele_p){
 
   sprintf((ele_p+i)->name,"Planet%02d",i);
-  (ele_p+i)->mass = PLANET_MASS;
+  //(ele_p+i)->mass = PLANET_MASS;  //質量massはすでに求めてある.
   //(ele_p+i)->axis = PLANET_AXIS;  //軌道長半径axisはすでに求めてある.
   (ele_p+i)->ecc = PLANET_ECC;
   (ele_p+i)->inc = PLANET_INC;
@@ -2848,7 +2848,7 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjM2NTg1NDc1LDE1NzM3OTUwOTgsMTQwOD
+eyJoaXN0b3J5IjpbNjkzODE5NzEwLDE1NzM3OTUwOTgsMTQwOD
 Y1MzYxNiwzMzI4NDc4MzgsLTE0MTc3NjkwNTMsLTY4NDA0ODY2
 MywxMDQ5MzU1MjU1LC05NDA4Njc2MTEsLTIwNzIxNjkzODcsMT
 k0ODM4OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1MzU4MSwxODQ4
