@@ -255,7 +255,6 @@ true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを�
 ```c
 //////////////////////////////////////////////////
 #define INTERACTION_ALL false  //全粒子同士の重力相互作用.
-#define INTERACTION_ALL false  //全粒子同士の重力相互作用.
 #define INTERACTION_PLANET_TRACER true  //惑星とトレーサー間の相互作用.
 #define INTERACTION_TEST_PARTICLE false  //トレーサーをテスト粒子として扱う.
 #define INDIRECT_TERM true  //中心星が動く効果を補正.
@@ -316,7 +315,7 @@ Mean Longitude (deg)               100.46435
 ```c
 #if N_tr != 0
 //////////////////////////////////////////////////
-#define M_TOT (3.0E-7*N_p)  //0.1M_E * N_p  //トレーサーの総質量.
+//#define M_TOT (3.0E-7*N_p)  //0.1M_E * N_p  //トレーサーの総質量.
 ```
 
 トレーサーの総質量。
@@ -345,14 +344,19 @@ Mean Longitude (deg)               100.46435
 #define DELTA_R 0.01  //Hill 近傍粒子探索用.
 #define DELTA_THETA 0.125*M_PI  //近傍粒子探索用.
 //#define DELTA_THETA 1.0*M_PI  //近傍粒子探索用.
-#define NEIGHBOR_MAX 200  //近傍粒子リスト配列の最大値.
+#define NEIGHBOR_MAX (N_tr)  //近傍粒子リスト配列の最大値.
 #define RHO 3.0  // [g/cc]  微惑星の物質密度.
 #define EPSILON_FRAG 0.2
 #define B_FRAG (5.0/3.0)
 #define Q_0_FRAG 9.5E8 // [erg/g]  Q_D = Q_0*(rho/3[g/cc])^0.55*(m/10^21[g])^p
 #define P_FRAG 0.453
 #define XI 0.01 //面密度減少タイムスケールを自身のXI倍間隔で更新する.
-#define M_MAX 5.00E-15  //最大微惑星質量. 1E19 g ~10kmサイズ.
+
+//#define M_MAX 3.50E-10  //最大微惑星質量. N25_Colliiosn_001 用.
+#define M_MAX 7.20E-10  //最大微惑星質量. N25_Colliiosn_020 用. 
+//#define M_MAX 1.20E-9  //最大微惑星質量. N18_Colliiosn_001 用.  
+//#define M_MAX 1.50E-9  //最大微惑星質量. N18_Colliiosn_014 用.
+//#define M_MAX 5.00E-15  //最大微惑星質量. 1E19 g ~10kmサイズ.
 //#define M_MAX 5.00E-18  //最大微惑星質量. 1E16 g ~1kmサイズ.
 #endif  /*FRAGMENTATION*/
 //////////////////////////////////////////////////
@@ -2844,11 +2848,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTk0MDkzNjYyOCwxNTczNzk1MDk4LDE0MD
-g2NTM2MTYsMzMyODQ3ODM4LC0xNDE3NzY5MDUzLC02ODQwNDg2
-NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC0yMDcyMTY5Mzg3LD
-E5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMTg0
-ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2NDU5Mz
-UyMywxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1
-MTkzODcwMDFdfQ==
+eyJoaXN0b3J5IjpbLTE5MDM2MzY4MjksMTU3Mzc5NTA5OCwxND
+A4NjUzNjE2LDMzMjg0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4
+NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4Ny
+wxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4
+NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OT
+M1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEs
+NTE5Mzg3MDAxXX0=
 -->
