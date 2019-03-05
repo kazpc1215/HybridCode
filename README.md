@@ -2309,6 +2309,7 @@ void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[],
 #endif  /*EJECTION*/
 ```
 
+巨大衝突直前の2粒子の位置と相対速度をもとに、破片が円盤状に飛び出たと仮定して
 
 
 1.  x_0[][4]
@@ -2998,7 +2999,7 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTQ3MDg4MzY4OSwxNTczNzk1MDk4LDE0MD
+eyJoaXN0b3J5IjpbLTMxOTQxMTQxNywxNTczNzk1MDk4LDE0MD
 g2NTM2MTYsMzMyODQ3ODM4LC0xNDE3NzY5MDUzLC02ODQwNDg2
 NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC0yMDcyMTY5Mzg3LD
 E5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMTg0
