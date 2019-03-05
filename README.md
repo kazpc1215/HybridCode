@@ -164,8 +164,8 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 データを書き出すファイルを置くディレクトリを指定する。
 
 ```c
-#define COLLISION_TEMPFILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_temp_020.dat
-#define COLLISION_FILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_020.dat
+#define COLLISION_TEMPFILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_temp_020.dat  //巨大衝突直後の惑星（原始惑星）の配置.
+#define COLLISION_FILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_020.dat  //巨大衝突直前の2粒子の配置.
 
 #define INITIALIZATION false  //COLLISION_TEMPFILE_NAMEを惑星の初期条件とするため.
 ```
@@ -2998,11 +2998,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyNzAxNDM3ODIsMTU3Mzc5NTA5OCwxND
-A4NjUzNjE2LDMzMjg0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4
-NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4Ny
-wxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4
-NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OT
-M1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEs
-NTE5Mzg3MDAxXX0=
+eyJoaXN0b3J5IjpbMTQxOTI3MDk2MCwtMTI3MDE0Mzc4MiwxNT
+czNzk1MDk4LDE0MDg2NTM2MTYsMzMyODQ3ODM4LC0xNDE3NzY5
+MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC
+0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIx
+MDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcwOD
+g1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0NzUs
+MTM0MjczOTAzMV19
 -->
