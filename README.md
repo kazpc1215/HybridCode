@@ -2184,6 +2184,10 @@ i 粒子。
 3. *ele_p
 軌道要素の構造体ポインタ。
 
+
+
+
+
 ```c:orbital_elements.c
 /*軌道要素計算*/
 void Calculate_OrbitalElements(int i, CONST double x_c[][4], CONST double v_c[][4], struct orbital_elements *ele_p, CONST double r_c[], CONST double v2_c[], CONST double r_dot_v[]
@@ -2848,11 +2852,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjkzODE5NzEwLDE1NzM3OTUwOTgsMTQwOD
-Y1MzYxNiwzMzI4NDc4MzgsLTE0MTc3NjkwNTMsLTY4NDA0ODY2
-MywxMDQ5MzU1MjU1LC05NDA4Njc2MTEsLTIwNzIxNjkzODcsMT
-k0ODM4OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1MzU4MSwxODQ4
-Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4ODUzLC0xMjY0NTkzNT
-IzLDExNzAyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUx
-OTM4NzAwMV19
+eyJoaXN0b3J5IjpbLTgyMDEwNjc2MiwxNTczNzk1MDk4LDE0MD
+g2NTM2MTYsMzMyODQ3ODM4LC0xNDE3NzY5MDUzLC02ODQwNDg2
+NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC0yMDcyMTY5Mzg3LD
+E5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMTg0
+ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2NDU5Mz
+UyMywxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1
+MTkzODcwMDFdfQ==
 -->
