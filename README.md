@@ -2185,7 +2185,136 @@ i 粒子。
 軌道要素の構造体ポインタ。
 
 
+```c:orbital_elements.c
+#if EJECTION
+void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[], double r_dot_v[], double r_0[], struct orbital_elements *ele_p, double x_col, double y_col, double z_col,double mass_p, double r_h_p){
+  static double x_eject[N_p+N_tr+1][4]={};
+  static double v_eject[N_p+N_tr+1][4]={};
+  int i,k;
+  double tmp_r=0.0, tmp_v=0.0, tmp_theta=0.0, tmp_phi=0.0, tmp_psi=0.0;
 
+  double x_G = x_0[0][1];  //衝突した2天体の重心.
+  double y_G = x_0[0][2];
+  double z_G = x_0[0][3];
+  double vx_G = v_0[0][1];
+  double vy_G = v_0[0][2];
+  double vz_G = v_0[0][3];
+
+
+  for(i=global_n_p+1;i<=global_n;++i){
+
+    sprintf((ele_p+i)->name,"tracer%06d",i-global_n_p);
+    (ele_p+i)->mass = 0.1 * mass_p / (double)N_tr;  //惑星質量の10%の破片.
+    (ele_p+i)->orinum = i;
+
+
+    //x軸を対象軸とするdiskを作る.
+    //位置.
+    tmp_r = (0.1 + 0.15 * rand_func()) * r_h_p;  //惑星のヒル半径の[0.1:0.25]倍の距離.
+    tmp_theta = - M_PI / 6.0 + M_PI / 3.0 * rand_func();  //[-pi/6:pi/6].
+    tmp_phi = 2.0 * M_PI * rand_func();  //[0:2pi].
+    x_eject[i][1] = tmp_r * sin(tmp_theta);  //破片のx座標.
+    x_eject[i][2] = tmp_r * cos(tmp_theta) * cos(tmp_phi);  //破片のy座標.
+    x_eject[i][3] = tmp_r * cos(tmp_theta) * sin(tmp_phi);  //破片のz座標.
+    //速度.
+    tmp_v = 1.1 * Escape_Velocity(mass_p,tmp_r);  //脱出速度の1.1倍.
+    v_eject[i][1] = tmp_v * sin(tmp_theta);  //破片の速度x成分.
+    v_eject[i][2] = tmp_v * cos(tmp_theta) * cos(tmp_phi);  //破片の速度y成分.
+    v_eject[i][3] = tmp_v * cos(tmp_theta) * sin(tmp_phi);  //破片の速度z成分.
+
+
+    //printf("%.15e\t%.15e\t%.15e\n",x_eject[i][1],x_eject[i][2],x_eject[i][3]);
+
+
+
+    //////////////////ここまでで、惑星中心、x軸はi_colとj_colを結ぶ直線、yz平面は重心速度ベクトルが乗っている平面/////////////////////
+
+    //i_colとj_colを結ぶ直線l
+    //惑星中心に平行移動した座標(x',y',z')
+    //直線lをx'y'平面に射影した直線l'
+
+    tmp_phi = atan2(y_col-y_G,x_col-x_G);  //直線l'とx'軸のなす角.
+
+    if(tmp_phi<0.0){
+      tmp_phi += 2.0 * M_PI;
+    }
+
+    tmp_theta = atan2(sqrt((x_col-x_G)*(x_col-x_G) + (y_col-y_G)*(y_col-y_G)),(z_col-z_G));  //直線lとz'軸のなす角.
+
+    if(tmp_theta<0.0){
+      tmp_theta += 2.0 * M_PI;
+    }
+
+    //座標(x',y',z')をz'軸周りにtmp_phiだけ回転した座標(x'',y'',z'').
+    //座標(x'',y'',z'')をy''軸周りにtmp_thetaだけ回転した座標(x''',y''',z''').
+    //座標(x''',y''',z''')における重心速度ベクトルv_G'''とy'''z'''平面のなす角tmp_psi.
+
+    //tmp_psiを計算する.
+
+
+    double tmp_vx_G=0.0,tmp_vy_G=0.0;
+
+    tmp_vx_G = vx_G * cos(tmp_theta) * cos(tmp_phi) + vy_G * cos(tmp_theta) * sin(tmp_phi) - vz_G * sin(tmp_theta);
+    tmp_vy_G = - vx_G * sin(tmp_phi) + vy_G * cos(tmp_phi);
+
+    tmp_psi = atan2(tmp_vx_G,tmp_vy_G);
+
+    if(tmp_psi<0.0){
+      tmp_psi += 2.0 * M_PI;
+    }
+
+    //printf("%.15e\t%.15e\t%.15e\n",x_eject[i][1],x_eject[i][2],x_eject[i][3]);
+
+
+
+    //x_eject, v_ejectを惑星中心に平行移動した座標(x',y',z')にする.
+
+    //z軸周りに-tmp_psiだけ回転.
+    Rotation_3D_zaxis(i,x_eject,-tmp_psi);
+    Rotation_3D_zaxis(i,v_eject,-tmp_psi);
+    //printf("%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",x_eject[i][1],x_eject[i][2],x_eject[i][3],v_eject[i][1],v_eject[i][2],v_eject[i][3]);
+
+    //y軸周りにtmp_thetaだけ回転.
+    Rotation_3D_yaxis(i,x_eject,tmp_theta);
+    Rotation_3D_yaxis(i,v_eject,tmp_theta);
+    //printf("%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",x_eject[i][1],x_eject[i][2],x_eject[i][3],v_eject[i][1],v_eject[i][2],v_eject[i][3]);
+
+    //z軸周りにtmp_phiだけ回転.
+    Rotation_3D_zaxis(i,x_eject,tmp_phi);
+    Rotation_3D_zaxis(i,v_eject,tmp_phi);
+    //printf("%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n",x_eject[i][1],x_eject[i][2],x_eject[i][3],v_eject[i][1],v_eject[i][2],v_eject[i][3]);
+
+
+    //////////////////ここまで、惑星中心に平行移動した座標(x',y',z')/////////////////////
+
+
+    //太陽中心の基準系に平行移動.
+    for(k=1;k<=3;++k){
+      x_0[i][k] = x_0[0][k] + x_eject[i][k];
+      v_0[i][k] = v_0[0][k] + v_eject[i][k];
+    }
+
+
+    //////////////////ここまで、基準系/////////////////////
+
+
+    r_0[i] = RadiusFromCenter(i,x_0);  //中心星からの距離.
+    v2_0[i] = SquareOfVelocity(i,v_0);  //速度の2乗.
+    r_dot_v[i] = InnerProduct(i,x_0,v_0);  //r_i,v_iの内積.
+
+  }
+
+  return;
+}
+#endif  /*EJECTION*/
+```
+
+
+1.  x_0[][4]
+位置。
+2. v_0[][4]
+速度。
+3. v2_0[], double r_dot_v[], double r_0[], struct orbital_elements *ele_p, double x_col, double y_col, double z_col,double mass_p, double r_h_p
 
 
 ```c:orbital_elements.c
@@ -2852,11 +2981,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTgyMDEwNjc2MiwxNTczNzk1MDk4LDE0MD
-g2NTM2MTYsMzMyODQ3ODM4LC0xNDE3NzY5MDUzLC02ODQwNDg2
-NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC0yMDcyMTY5Mzg3LD
-E5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMTg0
-ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2NDU5Mz
-UyMywxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1
-MTkzODcwMDFdfQ==
+eyJoaXN0b3J5IjpbOTUwMjkyNDIwLDE1NzM3OTUwOTgsMTQwOD
+Y1MzYxNiwzMzI4NDc4MzgsLTE0MTc3NjkwNTMsLTY4NDA0ODY2
+MywxMDQ5MzU1MjU1LC05NDA4Njc2MTEsLTIwNzIxNjkzODcsMT
+k0ODM4OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1MzU4MSwxODQ4
+Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4ODUzLC0xMjY0NTkzNT
+IzLDExNzAyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUx
+OTM4NzAwMV19
 -->
