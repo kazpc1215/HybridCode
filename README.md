@@ -197,16 +197,17 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 ```c
 //////////////////////////////////////////////////
 #define N_tr 100  //初期のトレーサーの数.
-#define N_p 1  //初期の原始惑星の数.
-#define ECC_RATIO 10.0  //ecc=0.01の何倍か. inc=ecc/2.
-#define STEP_INTERVAL 5.0E5  //何ステップごとに標準出力するか.
+#define N_p 25  //初期の原始惑星の数.
+#define ECC_RATIO 1.0  //ecc=0.01の何倍か. inc=ecc/2.
+#define STEP_INTERVAL 1.0E4  //何ステップごとに標準出力するか.
 //#define BREAK_TIME 100.0  //4h = 14400sec, 12h = 43200sec.
-#define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.
+//#define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.
 //#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.
+#define BREAK_TIME 864000.0  //10days = 864000sec.
 
-#define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.
+//#define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.
 
-#define FRAGMENTATION false  //破壊 近傍粒子探索と質量フラックス計算.
+#define FRAGMENTATION true  //破壊 近傍粒子探索と質量フラックス計算.
 #define COLLISION true  //衝突.
 #if COLLISION
 #define COALESCENCE true  //衝突後に合体.
@@ -237,7 +238,7 @@ EXTERN FILE *fplog;
 #define ORBITALELEMENTS_FILE true  //軌道要素計算&ファイル作成.
 #define POSI_VELO_FILE true  //位置速度ファイル作成.
 #define COLLISION_FILE true  //衝突直前の位置速度ファイル作成.
-#define TRACERLIST_FILE true  //トレーサーリストのファイル作成.
+#define TRACERLIST_FILE false  //トレーサーリストのファイル作成.
 #define EXECUTION_TIME true  //mainの実行時間測定.
 #define EXECUTION_TIME_FUNC false  //mainかつ関数ごとの実行時間測定.
 #if EXECUTION_TIME
@@ -254,11 +255,12 @@ true, falseはそれぞれ1, 0を意味しており、各関数の中で\#ifを�
 ```c
 //////////////////////////////////////////////////
 #define INTERACTION_ALL false  //全粒子同士の重力相互作用.
+#define INTERACTION_ALL false  //全粒子同士の重力相互作用.
 #define INTERACTION_PLANET_TRACER true  //惑星とトレーサー間の相互作用.
 #define INTERACTION_TEST_PARTICLE false  //トレーサーをテスト粒子として扱う.
 #define INDIRECT_TERM true  //中心星が動く効果を補正.
-#define EJECTION false  //初期に破片（トレーサー）を放出する.
-#define ORBITING_SMALL_PARTICLE true  //初期に微惑星をケプラー運動させておく.
+#define EJECTION true  //初期に破片（トレーサー）を放出する.
+#define ORBITING_SMALL_PARTICLE false  //初期に微惑星をケプラー運動させておく.
 #define ELIMINATE_PARTICLE false  //太陽に飲みこまれるか系外へ出て行くかで粒子を消す.
 //////////////////////////////////////////////////
 ```
@@ -2842,11 +2844,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyNzQ5MTcwOTQsMTU3Mzc5NTA5OCwxND
-A4NjUzNjE2LDMzMjg0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4
-NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4Ny
-wxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4
-NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OT
-M1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEs
-NTE5Mzg3MDAxXX0=
+eyJoaXN0b3J5IjpbLTk0MDkzNjYyOCwxNTczNzk1MDk4LDE0MD
+g2NTM2MTYsMzMyODQ3ODM4LC0xNDE3NzY5MDUzLC02ODQwNDg2
+NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC0yMDcyMTY5Mzg3LD
+E5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMTg0
+ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2NDU5Mz
+UyMywxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1
+MTkzODcwMDFdfQ==
 -->
