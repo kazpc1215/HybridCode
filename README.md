@@ -164,9 +164,13 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 データを書き出すファイルを置くディレクトリを指定する。
 
 ```c
+#define COLLISION_TEMPFILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_temp_020.dat
+#define COLLISION_FILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_020.dat
 
+#define INITIALIZATION false  //COLLISION_TEMPFILE_NAMEを惑星の初期条件とするため.
 ```
 
+巨大衝突の直前と直後の粒子配置のデータを読み込んでスタートさせる。
 
 
 ```c
@@ -2838,7 +2842,7 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwMTU2MjU3OTgsMTU3Mzc5NTA5OCwxND
+eyJoaXN0b3J5IjpbLTEyNzQ5MTcwOTQsMTU3Mzc5NTA5OCwxND
 A4NjUzNjE2LDMzMjg0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4
 NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4Ny
 wxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4
