@@ -118,7 +118,7 @@ Saturnを使う場合は"ISOYAforSaturn"
 #include <sys/stat.h>
 #include <time.h>
 #include <stdbool.h>
-#include <mpi.h>
+//#include <mpi.h>
 #include "SFMTdir/SFMT.h"
 
 #ifdef _OPENMP
@@ -157,11 +157,17 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 さらに、gccでは関数のインライン展開を強制的に行いたいときに、__attribute__((always_inline))を関数名の前につけるが、これも古いversionでは使えないため、ALWAYS_INLINEというマクロを変わりに書いている。
 
 ```c
-#define DIRECTORY ../data/Ntr1E2_t1E8_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-1_nofrag_acc/  //ディレクトリ.
+#define DIRECTORY ../data/N25_t1E5_dtlog_R0.1to0.25_Theta30_EscVelo1.1_Col020_Ntr100_Mmax7.2E-10/  //ディレクトリ.
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
 ```
 
 データを書き出すファイルを置くディレクトリを指定する。
+
+```c
+
+```
+
+
 
 ```c
 #define STR_(str) #str
@@ -2832,11 +2838,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTU3Mzc5NTA5OCwxNDA4NjUzNjE2LDMzMj
-g0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUy
-NTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC
-0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3
-NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMz
-AwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0x
-NTI5NjczNTZdfQ==
+eyJoaXN0b3J5IjpbLTIwMTU2MjU3OTgsMTU3Mzc5NTA5OCwxND
+A4NjUzNjE2LDMzMjg0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4
+NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4Ny
+wxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4
+NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OT
+M1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEs
+NTE5Mzg3MDAxXX0=
 -->
