@@ -149,8 +149,7 @@ void InitialOrbitalElements_Tracer(int i, double x_0[][4], struct orbital_elemen
 
 
 #if EJECTION
-/*
-void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[], double r_dot_v[], double r_0[], struct orbital_elements *ele_p, double x_col, double y_col, double z_col,double mass_p, double r_h_p){
+void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[], double r_dot_v[], double r_0[], struct orbital_elements *ele_p, double x_col, double y_col, double z_col, double mass_p, double r_h_p){
   static double x_eject[N_p+N_tr+1][4]={};
   static double v_eject[N_p+N_tr+1][4]={};
   int i,k;
@@ -269,7 +268,6 @@ void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[],
 
   return;
 }
-*/
 #endif  /*EJECTION*/
 
 
