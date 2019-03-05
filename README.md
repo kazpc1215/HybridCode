@@ -2314,7 +2314,17 @@ void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[],
 位置。
 2. v_0[][4]
 速度。
-3. v2_0[], double r_dot_v[], double r_0[], struct orbital_elements *ele_p, double x_col, double y_col, double z_col,double mass_p, double r_h_p
+3. v2_0[]
+速度の大きさの2乗。
+4. r_dot_v[]
+位置ベクトルと速度ベクトルの内積。
+5. r_0[]
+中心星からの距離。
+6. *ele_p
+軌道要素の構造体ポインタ。
+7. x_col
+
+, double y_col, double z_col,double mass_p, double r_h_p
 
 
 ```c:orbital_elements.c
@@ -2981,11 +2991,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTUwMjkyNDIwLDE1NzM3OTUwOTgsMTQwOD
-Y1MzYxNiwzMzI4NDc4MzgsLTE0MTc3NjkwNTMsLTY4NDA0ODY2
-MywxMDQ5MzU1MjU1LC05NDA4Njc2MTEsLTIwNzIxNjkzODcsMT
-k0ODM4OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1MzU4MSwxODQ4
-Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4ODUzLC0xMjY0NTkzNT
-IzLDExNzAyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUx
-OTM4NzAwMV19
+eyJoaXN0b3J5IjpbLTE4NjI0NzY5ODEsMTU3Mzc5NTA5OCwxND
+A4NjUzNjE2LDMzMjg0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4
+NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4Ny
+wxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4
+NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OT
+M1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEs
+NTE5Mzg3MDAxXX0=
 -->
