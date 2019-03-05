@@ -367,7 +367,7 @@ Mean Longitude (deg)               100.46435
 
 ```c
 //////////////////////////////////////////////////
-#define T_MAX (2.0*M_PI*1.0E8)  //10^8yr 全計算時間.
+#define T_MAX (2.0*M_PI*1.0E5)  //10^5yr 全計算時間.
 #define DT_LOG true  //true: t_eneをlogでとる. false: t_eneをlinearでとる.
 
 /* linear では 初項 DT_ENE，公差 DT_ENE の等差数列 */
@@ -2848,11 +2848,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE5MDM2MzY4MjksMTU3Mzc5NTA5OCwxND
-A4NjUzNjE2LDMzMjg0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4
-NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4Ny
-wxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4
-NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OT
-M1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEs
-NTE5Mzg3MDAxXX0=
+eyJoaXN0b3J5IjpbNjM2NTg1NDc1LDE1NzM3OTUwOTgsMTQwOD
+Y1MzYxNiwzMzI4NDc4MzgsLTE0MTc3NjkwNTMsLTY4NDA0ODY2
+MywxMDQ5MzU1MjU1LC05NDA4Njc2MTEsLTIwNzIxNjkzODcsMT
+k0ODM4OTE0NywtMTYyNTUyOTQzMCwtMjEwNDM1MzU4MSwxODQ4
+Nzg0MTM0LDEwNzQzNDc2MTcsMTA5NzA4ODUzLC0xMjY0NTkzNT
+IzLDExNzAyMjMwMDgsLTExNjY1MjQ3NSwxMzQyNzM5MDMxLDUx
+OTM4NzAwMV19
 -->
