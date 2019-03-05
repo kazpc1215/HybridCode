@@ -31,10 +31,8 @@
 #define SUBDIRECTORY rand  //子ディレクトリ. rand%02d
 
 
-#define COLLISION_TEMPFILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_temp_020.dat
-#define COLLISION_FILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_020.dat
-
-#define INITIALIZATION false  //COLLISION_TEMPFILE_NAMEを惑星の初期条件とするため.
+#define COLLISION_TEMPFILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_temp_020.dat  //巨大衝突直後の惑星（原始惑星）の配置.
+#define COLLISION_FILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_020.dat  //巨大衝突直前の2粒子の配置.
 
 
 #define STR_(str) #str

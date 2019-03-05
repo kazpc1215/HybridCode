@@ -654,6 +654,29 @@ int main(int argc, char **argv){
 
     ///////////////////////////////ここまで初期処理//////////////////////////////////
 
+
+    /////惑星の軌道要素を設定./////
+    /*
+#if N_p == 3
+    ele[1].axis = PLANET_AXIS / MutualHillRadius_to_SemimajorAxis(DELTA_HILL) ;  //惑星2を中心に相互DELTA_HILLヒル内側へ離す.
+    ele[2].axis = PLANET_AXIS;
+    ele[3].axis = PLANET_AXIS * MutualHillRadius_to_SemimajorAxis(DELTA_HILL);  //惑星2を中心に相互DELTA_HILLヒル外側へ離す.
+#elif N_p == 1
+    ele[1].axis = PLANET_AXIS;
+#endif
+
+    for(i=1;i<=global_n_p;++i){  //惑星.
+      InitialOrbitalElements_Planet(i,ele);  //初期軌道要素.
+      InitialCondition(i,x_0,v_0,v2_0,r_dot_v,r_0,ele);  //初期位置、速度計算.
+    }
+    */
+
+
+
+
+    /////巨大衝突直後の惑星（原始惑星）の配置を読み込み、初期条件とする./////
+
+
     sprintf(collisionfile,"%s",
 	    STR(COLLISION_TEMPFILE_NAME)
 	    );
