@@ -112,7 +112,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="pp">#include </span><span class="im">&lt;sys/stat.h&gt;</span>
 <span class="pp">#include </span><span class="im">&lt;time.h&gt;</span>
 <span class="pp">#include </span><span class="im">&lt;stdbool.h&gt;</span>
-<span class="pp">#include </span><span class="im">&lt;mpi.h&gt;</span>
+<span class="co">//#include &lt;mpi.h&gt;</span>
 <span class="pp">#include </span><span class="im">&quot;SFMTdir/SFMT.h&quot;</span>
 
 <span class="pp">#ifdef _OPENMP</span>
@@ -135,9 +135,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="pp">#endif</span></code></pre></div>
 <p>関数の引数としてポインタを渡しつつもそれを変更しない場合（配列とか）、型の前にconstをつけることが推奨されているが、gccがver4より古いときにエラーになるので、CONSTというマクロを変わりに書いている。この例ではgccのver7の場合のみCONSTをconstとして定義している。</p>
 <p>さらに、gccでは関数のインライン展開を強制的に行いたいときに、<strong>attribute</strong>((always_inline))を関数名の前につけるが、これも古いversionでは使えないため、ALWAYS_INLINEというマクロを変わりに書いている。</p>
-<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#define DIRECTORY ../data/Ntr1E2_t1E8_dtlog_Mtot3E-5_Mmax5E-15_ecc1E-1_nofrag_acc/  </span><span class="co">//ディレクトリ.</span>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#define DIRECTORY ../data/N25_t1E5_dtlog_R0.1to0.25_Theta30_EscVelo1.1_Col020_Ntr100_Mmax7.2E-10/  </span><span class="co">//ディレクトリ.</span>
 <span class="pp">#define SUBDIRECTORY rand  </span><span class="co">//子ディレクトリ. rand%02d</span></code></pre></div>
 <p>データを書き出すファイルを置くディレクトリを指定する。</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#define COLLISION_TEMPFILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_temp_020.dat</span>
+<span class="pp">#define COLLISION_FILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_020.dat</span>
+
+<span class="pp">#define INITIALIZATION false  </span><span class="co">//COLLISION_TEMPFILE_NAMEを惑星の初期条件とするため.</span></code></pre></div>
+<p>巨大衝突の直前と直後の粒子配置のデータを読み込んでスタートさせる。</p>
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#define STR_(str) #str</span>
 <span class="pp">#define STR(str) STR_(str)</span></code></pre></div>
 <p>マクロを文字列に変換するマクロ。</p>
@@ -149,16 +154,17 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>グローバル変数をこのヘッダーで宣言する際に、externを型の前につける。そして、グローバル変数を定義するファイル（hybrid_main.c）にてこのヘッダーを読み込む前にEXTERNマクロを定義するようにする。その他のファイルではEXTERNを定義しないようにしているため、定義が重複しない。</p>
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">//////////////////////////////////////////////////</span>
 <span class="pp">#define N_tr 100  </span><span class="co">//初期のトレーサーの数.</span>
-<span class="pp">#define N_p 1  </span><span class="co">//初期の原始惑星の数.</span>
-<span class="pp">#define ECC_RATIO 10.0  </span><span class="co">//ecc=0.01の何倍か. inc=ecc/2.</span>
-<span class="pp">#define STEP_INTERVAL 5.0E5  </span><span class="co">//何ステップごとに標準出力するか.</span>
+<span class="pp">#define N_p 25  </span><span class="co">//初期の原始惑星の数.</span>
+<span class="pp">#define ECC_RATIO 1.0  </span><span class="co">//ecc=0.01の何倍か. inc=ecc/2.</span>
+<span class="pp">#define STEP_INTERVAL 1.0E4  </span><span class="co">//何ステップごとに標準出力するか.</span>
 <span class="co">//#define BREAK_TIME 100.0  //4h = 14400sec, 12h = 43200sec.</span>
-<span class="pp">#define BREAK_TIME 14100.0  </span><span class="co">//4h = 14400sec, 12h = 43200sec.</span>
+<span class="co">//#define BREAK_TIME 14100.0  //4h = 14400sec, 12h = 43200sec.</span>
 <span class="co">//#define BREAK_TIME 42900.0  //4h = 14400sec, 12h = 43200sec.</span>
+<span class="pp">#define BREAK_TIME 864000.0  </span><span class="co">//10days = 864000sec.</span>
 
-<span class="pp">#define RAYLEIGH_DISTRIBUTION true  </span><span class="co">//離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.</span>
+<span class="co">//#define RAYLEIGH_DISTRIBUTION true  //離心率や軌道傾斜角の分布 true : Rayleigh, false : v_relが軌道長半径によらず一定.</span>
 
-<span class="pp">#define FRAGMENTATION false  </span><span class="co">//破壊 近傍粒子探索と質量フラックス計算.</span>
+<span class="pp">#define FRAGMENTATION true  </span><span class="co">//破壊 近傍粒子探索と質量フラックス計算.</span>
 <span class="pp">#define COLLISION true  </span><span class="co">//衝突.</span>
 <span class="pp">#if COLLISION</span>
 <span class="pp">#define COALESCENCE true  </span><span class="co">//衝突後に合体.</span>
@@ -180,7 +186,7 @@ EXTERN FILE *fplog;
 <span class="pp">#define ORBITALELEMENTS_FILE true  </span><span class="co">//軌道要素計算&amp;ファイル作成.</span>
 <span class="pp">#define POSI_VELO_FILE true  </span><span class="co">//位置速度ファイル作成.</span>
 <span class="pp">#define COLLISION_FILE true  </span><span class="co">//衝突直前の位置速度ファイル作成.</span>
-<span class="pp">#define TRACERLIST_FILE true  </span><span class="co">//トレーサーリストのファイル作成.</span>
+<span class="pp">#define TRACERLIST_FILE false  </span><span class="co">//トレーサーリストのファイル作成.</span>
 <span class="pp">#define EXECUTION_TIME true  </span><span class="co">//mainの実行時間測定.</span>
 <span class="pp">#define EXECUTION_TIME_FUNC false  </span><span class="co">//mainかつ関数ごとの実行時間測定.</span>
 <span class="pp">#if EXECUTION_TIME</span>
@@ -195,8 +201,8 @@ EXTERN FILE *fplog;
 <span class="pp">#define INTERACTION_PLANET_TRACER true  </span><span class="co">//惑星とトレーサー間の相互作用.</span>
 <span class="pp">#define INTERACTION_TEST_PARTICLE false  </span><span class="co">//トレーサーをテスト粒子として扱う.</span>
 <span class="pp">#define INDIRECT_TERM true  </span><span class="co">//中心星が動く効果を補正.</span>
-<span class="pp">#define EJECTION false  </span><span class="co">//初期に破片（トレーサー）を放出する.</span>
-<span class="pp">#define ORBITING_SMALL_PARTICLE true  </span><span class="co">//初期に微惑星をケプラー運動させておく.</span>
+<span class="pp">#define EJECTION true  </span><span class="co">//初期に破片（トレーサー）を放出する.</span>
+<span class="pp">#define ORBITING_SMALL_PARTICLE false  </span><span class="co">//初期に微惑星をケプラー運動させておく.</span>
 <span class="pp">#define ELIMINATE_PARTICLE false  </span><span class="co">//太陽に飲みこまれるか系外へ出て行くかで粒子を消す.</span>
 <span class="co">//////////////////////////////////////////////////</span></code></pre></div>
 <p>true, falseはそれぞれ1, 0を意味しており、各関数の中で#ifを使って場合分けしている。</p>
@@ -236,7 +242,7 @@ EXTERN FILE *fplog;
 <p>惑星の初期パラメータ。</p>
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#if N_tr != 0</span>
 <span class="co">//////////////////////////////////////////////////</span>
-<span class="pp">#define M_TOT (3.0E-7*N_p)  </span><span class="co">//0.1M_E * N_p  //トレーサーの総質量.</span></code></pre></div>
+<span class="co">//#define M_TOT (3.0E-7*N_p)  //0.1M_E * N_p  //トレーサーの総質量.</span></code></pre></div>
 <p>トレーサーの総質量。</p>
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="pp">#if EJECTION</span>
 <span class="pp">#define PLANET_OF_EJECTION 1</span>
@@ -257,21 +263,26 @@ EXTERN FILE *fplog;
 <span class="pp">#define DELTA_R 0.01  </span><span class="co">//Hill 近傍粒子探索用.</span>
 <span class="pp">#define DELTA_THETA 0.125*M_PI  </span><span class="co">//近傍粒子探索用.</span>
 <span class="co">//#define DELTA_THETA 1.0*M_PI  //近傍粒子探索用.</span>
-<span class="pp">#define NEIGHBOR_MAX 200  </span><span class="co">//近傍粒子リスト配列の最大値.</span>
+<span class="pp">#define NEIGHBOR_MAX (N_tr)  </span><span class="co">//近傍粒子リスト配列の最大値.</span>
 <span class="pp">#define RHO 3.0  </span><span class="co">// [g/cc]  微惑星の物質密度.</span>
 <span class="pp">#define EPSILON_FRAG 0.2</span>
 <span class="pp">#define B_FRAG (5.0/3.0)</span>
 <span class="pp">#define Q_0_FRAG 9.5E8 </span><span class="co">// [erg/g]  Q_D = Q_0*(rho/3[g/cc])^0.55*(m/10^21[g])^p</span>
 <span class="pp">#define P_FRAG 0.453</span>
 <span class="pp">#define XI 0.01 </span><span class="co">//面密度減少タイムスケールを自身のXI倍間隔で更新する.</span>
-<span class="pp">#define M_MAX 5.00E-15  </span><span class="co">//最大微惑星質量. 1E19 g ~10kmサイズ.</span>
+
+<span class="co">//#define M_MAX 3.50E-10  //最大微惑星質量. N25_Colliiosn_001 用.</span>
+<span class="pp">#define M_MAX 7.20E-10  </span><span class="co">//最大微惑星質量. N25_Colliiosn_020 用. </span>
+<span class="co">//#define M_MAX 1.20E-9  //最大微惑星質量. N18_Colliiosn_001 用.  </span>
+<span class="co">//#define M_MAX 1.50E-9  //最大微惑星質量. N18_Colliiosn_014 用.</span>
+<span class="co">//#define M_MAX 5.00E-15  //最大微惑星質量. 1E19 g ~10kmサイズ.</span>
 <span class="co">//#define M_MAX 5.00E-18  //最大微惑星質量. 1E16 g ~1kmサイズ.</span>
 <span class="pp">#endif  </span><span class="co">/*FRAGMENTATION*/</span>
 <span class="co">//////////////////////////////////////////////////</span>
 <span class="pp">#endif  </span><span class="co">/*N_tr != 0*/</span></code></pre></div>
 <p>破壊計算のパラメータ。</p>
 <div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">//////////////////////////////////////////////////</span>
-<span class="pp">#define T_MAX (2.0*M_PI*1.0E8)  </span><span class="co">//10^8yr 全計算時間.</span>
+<span class="pp">#define T_MAX (2.0*M_PI*1.0E5)  </span><span class="co">//10^5yr 全計算時間.</span>
 <span class="pp">#define DT_LOG true  </span><span class="co">//true: t_eneをlogでとる. false: t_eneをlinearでとる.</span>
 
 <span class="co">/* linear では 初項 DT_ENE，公差 DT_ENE の等差数列 */</span>
@@ -1701,7 +1712,7 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 <span class="dt">void</span> InitialOrbitalElements_Planet(<span class="dt">int</span> i,<span class="kw">struct</span> orbital_elements *ele_p){
 
   sprintf((ele_p+i)-&gt;name,<span class="st">&quot;Planet%02d&quot;</span>,i);
-  (ele_p+i)-&gt;mass = PLANET_MASS;
+  <span class="co">//(ele_p+i)-&gt;mass = PLANET_MASS;  //質量massはすでに求めてある.</span>
   <span class="co">//(ele_p+i)-&gt;axis = PLANET_AXIS;  //軌道長半径axisはすでに求めてある.</span>
   (ele_p+i)-&gt;ecc = PLANET_ECC;
   (ele_p+i)-&gt;inc = PLANET_INC;
@@ -1802,6 +1813,141 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 <li>i i 粒子。</li>
 <li>x_0[][4] 位置。惑星からある程度離れたところに粒子を配置するため、惑星からの距離を測定しながら軌道要素を決定する。</li>
 <li>*ele_p 軌道要素の構造体ポインタ。</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode c:orbital_elements.c"><code class="sourceCode c"><span class="pp">#if EJECTION</span>
+<span class="dt">void</span> EjectionOfTracerFromPlanet(<span class="dt">double</span> x_0[][<span class="dv">4</span>], <span class="dt">double</span> v_0[][<span class="dv">4</span>], <span class="dt">double</span> v2_0[], <span class="dt">double</span> r_dot_v[], <span class="dt">double</span> r_0[], <span class="kw">struct</span> orbital_elements *ele_p, <span class="dt">double</span> x_col, <span class="dt">double</span> y_col, <span class="dt">double</span> z_col,<span class="dt">double</span> mass_p, <span class="dt">double</span> r_h_p){
+  <span class="dt">static</span> <span class="dt">double</span> x_eject[N_p+N_tr+<span class="dv">1</span>][<span class="dv">4</span>]={};
+  <span class="dt">static</span> <span class="dt">double</span> v_eject[N_p+N_tr+<span class="dv">1</span>][<span class="dv">4</span>]={};
+  <span class="dt">int</span> i,k;
+  <span class="dt">double</span> tmp_r=<span class="fl">0.0</span>, tmp_v=<span class="fl">0.0</span>, tmp_theta=<span class="fl">0.0</span>, tmp_phi=<span class="fl">0.0</span>, tmp_psi=<span class="fl">0.0</span>;
+
+  <span class="dt">double</span> x_G = x_0[<span class="dv">0</span>][<span class="dv">1</span>];  <span class="co">//衝突した2天体の重心.</span>
+  <span class="dt">double</span> y_G = x_0[<span class="dv">0</span>][<span class="dv">2</span>];
+  <span class="dt">double</span> z_G = x_0[<span class="dv">0</span>][<span class="dv">3</span>];
+  <span class="dt">double</span> vx_G = v_0[<span class="dv">0</span>][<span class="dv">1</span>];
+  <span class="dt">double</span> vy_G = v_0[<span class="dv">0</span>][<span class="dv">2</span>];
+  <span class="dt">double</span> vz_G = v_0[<span class="dv">0</span>][<span class="dv">3</span>];
+
+
+  <span class="cf">for</span>(i=global_n_p+<span class="dv">1</span>;i&lt;=global_n;++i){
+
+    sprintf((ele_p+i)-&gt;name,<span class="st">&quot;tracer%06d&quot;</span>,i-global_n_p);
+    (ele_p+i)-&gt;mass = <span class="fl">0.1</span> * mass_p / (<span class="dt">double</span>)N_tr;  <span class="co">//惑星質量の10%の破片.</span>
+    (ele_p+i)-&gt;orinum = i;
+
+
+    <span class="co">//x軸を対象軸とするdiskを作る.</span>
+    <span class="co">//位置.</span>
+    tmp_r = (<span class="fl">0.1</span> + <span class="fl">0.15</span> * rand_func()) * r_h_p;  <span class="co">//惑星のヒル半径の[0.1:0.25]倍の距離.</span>
+    tmp_theta = - M_PI / <span class="fl">6.0</span> + M_PI / <span class="fl">3.0</span> * rand_func();  <span class="co">//[-pi/6:pi/6].</span>
+    tmp_phi = <span class="fl">2.0</span> * M_PI * rand_func();  <span class="co">//[0:2pi].</span>
+    x_eject[i][<span class="dv">1</span>] = tmp_r * sin(tmp_theta);  <span class="co">//破片のx座標.</span>
+    x_eject[i][<span class="dv">2</span>] = tmp_r * cos(tmp_theta) * cos(tmp_phi);  <span class="co">//破片のy座標.</span>
+    x_eject[i][<span class="dv">3</span>] = tmp_r * cos(tmp_theta) * sin(tmp_phi);  <span class="co">//破片のz座標.</span>
+    <span class="co">//速度.</span>
+    tmp_v = <span class="fl">1.1</span> * Escape_Velocity(mass_p,tmp_r);  <span class="co">//脱出速度の1.1倍.</span>
+    v_eject[i][<span class="dv">1</span>] = tmp_v * sin(tmp_theta);  <span class="co">//破片の速度x成分.</span>
+    v_eject[i][<span class="dv">2</span>] = tmp_v * cos(tmp_theta) * cos(tmp_phi);  <span class="co">//破片の速度y成分.</span>
+    v_eject[i][<span class="dv">3</span>] = tmp_v * cos(tmp_theta) * sin(tmp_phi);  <span class="co">//破片の速度z成分.</span>
+
+
+    <span class="co">//printf(&quot;%.15e\t%.15e\t%.15e\n&quot;,x_eject[i][1],x_eject[i][2],x_eject[i][3]);</span>
+
+
+
+    <span class="co">//////////////////ここまでで、惑星中心、x軸はi_colとj_colを結ぶ直線、yz平面は重心速度ベクトルが乗っている平面/////////////////////</span>
+
+    <span class="co">//i_colとj_colを結ぶ直線l</span>
+    <span class="co">//惑星中心に平行移動した座標(x&#39;,y&#39;,z&#39;)</span>
+    <span class="co">//直線lをx&#39;y&#39;平面に射影した直線l&#39;</span>
+
+    tmp_phi = atan2(y_col-y_G,x_col-x_G);  <span class="co">//直線l&#39;とx&#39;軸のなす角.</span>
+
+    <span class="cf">if</span>(tmp_phi&lt;<span class="fl">0.0</span>){
+      tmp_phi += <span class="fl">2.0</span> * M_PI;
+    }
+
+    tmp_theta = atan2(sqrt((x_col-x_G)*(x_col-x_G) + (y_col-y_G)*(y_col-y_G)),(z_col-z_G));  <span class="co">//直線lとz&#39;軸のなす角.</span>
+
+    <span class="cf">if</span>(tmp_theta&lt;<span class="fl">0.0</span>){
+      tmp_theta += <span class="fl">2.0</span> * M_PI;
+    }
+
+    <span class="co">//座標(x&#39;,y&#39;,z&#39;)をz&#39;軸周りにtmp_phiだけ回転した座標(x&#39;&#39;,y&#39;&#39;,z&#39;&#39;).</span>
+    <span class="co">//座標(x&#39;&#39;,y&#39;&#39;,z&#39;&#39;)をy&#39;&#39;軸周りにtmp_thetaだけ回転した座標(x&#39;&#39;&#39;,y&#39;&#39;&#39;,z&#39;&#39;&#39;).</span>
+    <span class="co">//座標(x&#39;&#39;&#39;,y&#39;&#39;&#39;,z&#39;&#39;&#39;)における重心速度ベクトルv_G&#39;&#39;&#39;とy&#39;&#39;&#39;z&#39;&#39;&#39;平面のなす角tmp_psi.</span>
+
+    <span class="co">//tmp_psiを計算する.</span>
+
+
+    <span class="dt">double</span> tmp_vx_G=<span class="fl">0.0</span>,tmp_vy_G=<span class="fl">0.0</span>;
+
+    tmp_vx_G = vx_G * cos(tmp_theta) * cos(tmp_phi) + vy_G * cos(tmp_theta) * sin(tmp_phi) - vz_G * sin(tmp_theta);
+    tmp_vy_G = - vx_G * sin(tmp_phi) + vy_G * cos(tmp_phi);
+
+    tmp_psi = atan2(tmp_vx_G,tmp_vy_G);
+
+    <span class="cf">if</span>(tmp_psi&lt;<span class="fl">0.0</span>){
+      tmp_psi += <span class="fl">2.0</span> * M_PI;
+    }
+
+    <span class="co">//printf(&quot;%.15e\t%.15e\t%.15e\n&quot;,x_eject[i][1],x_eject[i][2],x_eject[i][3]);</span>
+
+
+
+    <span class="co">//x_eject, v_ejectを惑星中心に平行移動した座標(x&#39;,y&#39;,z&#39;)にする.</span>
+
+    <span class="co">//z軸周りに-tmp_psiだけ回転.</span>
+    Rotation_3D_zaxis(i,x_eject,-tmp_psi);
+    Rotation_3D_zaxis(i,v_eject,-tmp_psi);
+    <span class="co">//printf(&quot;%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n&quot;,x_eject[i][1],x_eject[i][2],x_eject[i][3],v_eject[i][1],v_eject[i][2],v_eject[i][3]);</span>
+
+    <span class="co">//y軸周りにtmp_thetaだけ回転.</span>
+    Rotation_3D_yaxis(i,x_eject,tmp_theta);
+    Rotation_3D_yaxis(i,v_eject,tmp_theta);
+    <span class="co">//printf(&quot;%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n&quot;,x_eject[i][1],x_eject[i][2],x_eject[i][3],v_eject[i][1],v_eject[i][2],v_eject[i][3]);</span>
+
+    <span class="co">//z軸周りにtmp_phiだけ回転.</span>
+    Rotation_3D_zaxis(i,x_eject,tmp_phi);
+    Rotation_3D_zaxis(i,v_eject,tmp_phi);
+    <span class="co">//printf(&quot;%.15e\t%.15e\t%.15e\t%.15e\t%.15e\t%.15e\n&quot;,x_eject[i][1],x_eject[i][2],x_eject[i][3],v_eject[i][1],v_eject[i][2],v_eject[i][3]);</span>
+
+
+    <span class="co">//////////////////ここまで、惑星中心に平行移動した座標(x&#39;,y&#39;,z&#39;)/////////////////////</span>
+
+
+    <span class="co">//太陽中心の基準系に平行移動.</span>
+    <span class="cf">for</span>(k=<span class="dv">1</span>;k&lt;=<span class="dv">3</span>;++k){
+      x_0[i][k] = x_0[<span class="dv">0</span>][k] + x_eject[i][k];
+      v_0[i][k] = v_0[<span class="dv">0</span>][k] + v_eject[i][k];
+    }
+
+
+    <span class="co">//////////////////ここまで、基準系/////////////////////</span>
+
+
+    r_0[i] = RadiusFromCenter(i,x_0);  <span class="co">//中心星からの距離.</span>
+    v2_0[i] = SquareOfVelocity(i,v_0);  <span class="co">//速度の2乗.</span>
+    r_dot_v[i] = InnerProduct(i,x_0,v_0);  <span class="co">//r_i,v_iの内積.</span>
+
+  }
+
+  <span class="cf">return</span>;
+}
+<span class="pp">#endif  </span><span class="co">/*EJECTION*/</span></code></pre></div>
+<p>巨大衝突直前の2粒子の位置と相対速度をもとに、破片が円盤状に飛び出るような初期条件を設定する。</p>
+<ol type="1">
+<li>x_0[][4] 位置。0番目の要素に重心位置を格納済み。</li>
+<li>v_0[][4] 速度。0番目の要素に重心速度を格納済み。</li>
+<li>v2_0[] 速度の大きさの2乗。</li>
+<li>r_dot_v[] 位置ベクトルと速度ベクトルの内積。</li>
+<li>r_0[] 中心星からの距離。</li>
+<li>*ele_p 軌道要素の構造体ポインタ。</li>
+<li>x_col 巨大衝突直前の粒子のうち、番号が若い方のx座標。</li>
+<li>y_col 巨大衝突直前の粒子のうち、番号が若い方のy座標。</li>
+<li>z_col 巨大衝突直前の粒子のうち、番号が若い方のz座標。</li>
+<li>mass_p 巨大衝突合体後の粒子の質量。</li>
+<li>r_h_p 巨大衝突合体後の粒子のヒル半径。</li>
 </ol>
 <div class="sourceCode"><pre class="sourceCode c:orbital_elements.c"><code class="sourceCode c"><span class="co">/*軌道要素計算*/</span>
 <span class="dt">void</span> Calculate_OrbitalElements(<span class="dt">int</span> i, CONST <span class="dt">double</span> x_c[][<span class="dv">4</span>], CONST <span class="dt">double</span> v_c[][<span class="dv">4</span>], <span class="kw">struct</span> orbital_elements *ele_p, CONST <span class="dt">double</span> r_c[], CONST <span class="dt">double</span> v2_c[], CONST <span class="dt">double</span> r_dot_v[]
@@ -2333,13 +2479,13 @@ EXTERN <span class="kw">struct</span> execution_time exetime;  <span class="co">
 <li>dt_[] 各粒子のタイムステップ。</li>
 </ol>
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTU3Mzc5NTA5OCwxNDA4NjUzNjE2LDMzMj
-g0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUy
-NTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC
-0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3
-NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMz
-AwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEsNTE5Mzg3MDAxLC0x
-NTI5NjczNTZdfQ==
+eyJoaXN0b3J5IjpbLTEyNzAxNDM3ODIsMTU3Mzc5NTA5OCwxND
+A4NjUzNjE2LDMzMjg0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4
+NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4Ny
+wxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4
+NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OT
+M1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEs
+NTE5Mzg3MDAxXX0=
 -->
 </body>
 </html>
