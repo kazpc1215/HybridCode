@@ -2310,6 +2310,7 @@ void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[],
 ```
 
 
+
 1.  x_0[][4]
 位置。0番目の要素に重心位置を格納済み。
 2. v_0[][4]
@@ -2329,9 +2330,9 @@ void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[],
 9. z_col
 巨大衝突直前の粒子のうち、番号が若い方のz座標。
 10. mass_p
-巨大衝突直前の粒子のうち、番号が若い方の質量。
-, double r_h_p
-
+巨大衝突合体後の粒子の質量。
+11. r_h_p
+巨大衝突合体後の粒子のヒル半径。
 
 ```c:orbital_elements.c
 /*軌道要素計算*/
@@ -2997,7 +2998,7 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTc5NjY0MTMwMiwxNTczNzk1MDk4LDE0MD
+eyJoaXN0b3J5IjpbLTQ3MDg4MzY4OSwxNTczNzk1MDk4LDE0MD
 g2NTM2MTYsMzMyODQ3ODM4LC0xNDE3NzY5MDUzLC02ODQwNDg2
 NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC0yMDcyMTY5Mzg3LD
 E5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMTg0
