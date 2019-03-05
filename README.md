@@ -2323,7 +2323,7 @@ void EjectionOfTracerFromPlanet(double x_0[][4], double v_0[][4], double v2_0[],
 6. *ele_p
 軌道要素の構造体ポインタ。
 7. x_col
-
+巨大衝突直前の粒子のうち、若いの位置。
 , double y_col, double z_col,double mass_p, double r_h_p
 
 
@@ -2991,11 +2991,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE4NjI0NzY5ODEsMTU3Mzc5NTA5OCwxND
-A4NjUzNjE2LDMzMjg0NzgzOCwtMTQxNzc2OTA1MywtNjg0MDQ4
-NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMSwtMjA3MjE2OTM4Ny
-wxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0yMTA0MzUzNTgxLDE4
-NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MDg4NTMsLTEyNjQ1OT
-M1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1LDEzNDI3MzkwMzEs
-NTE5Mzg3MDAxXX0=
+eyJoaXN0b3J5IjpbLTc2NTA2NTU2NywxNTczNzk1MDk4LDE0MD
+g2NTM2MTYsMzMyODQ3ODM4LC0xNDE3NzY5MDUzLC02ODQwNDg2
+NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC0yMDcyMTY5Mzg3LD
+E5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIxMDQzNTM1ODEsMTg0
+ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcwODg1MywtMTI2NDU5Mz
+UyMywxMTcwMjIzMDA4LC0xMTY2NTI0NzUsMTM0MjczOTAzMSw1
+MTkzODcwMDFdfQ==
 -->
