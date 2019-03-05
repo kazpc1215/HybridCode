@@ -166,8 +166,6 @@ omp.h : OpenMP並列に使う。gccではコンパイルオプションに-fopen
 ```c
 #define COLLISION_TEMPFILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_temp_020.dat  //巨大衝突直後の惑星（原始惑星）の配置.
 #define COLLISION_FILE_NAME ../data/N25_t1E8_dtlog_10RHM_1MMSN_Miso_ecc1E-2_ColData/Collision_020.dat  //巨大衝突直前の2粒子の配置.
-
-#define INITIALIZATION false  //COLLISION_TEMPFILE_NAMEを惑星の初期条件とするため.
 ```
 
 巨大衝突の直前と直後の粒子配置のデータを読み込んでスタートさせる。
@@ -2998,11 +2996,11 @@ double Timestep_i_sys(int i_sys, CONST double a[][4], CONST double adot[][4], CO
 各粒子のタイムステップ。
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQxOTI3MDk2MCwtMTI3MDE0Mzc4MiwxNT
-czNzk1MDk4LDE0MDg2NTM2MTYsMzMyODQ3ODM4LC0xNDE3NzY5
-MDUzLC02ODQwNDg2NjMsMTA0OTM1NTI1NSwtOTQwODY3NjExLC
-0yMDcyMTY5Mzg3LDE5NDgzODkxNDcsLTE2MjU1Mjk0MzAsLTIx
-MDQzNTM1ODEsMTg0ODc4NDEzNCwxMDc0MzQ3NjE3LDEwOTcwOD
-g1MywtMTI2NDU5MzUyMywxMTcwMjIzMDA4LC0xMTY2NTI0NzUs
-MTM0MjczOTAzMV19
+eyJoaXN0b3J5IjpbLTE1NTQwMTM3NTEsLTEyNzAxNDM3ODIsMT
+U3Mzc5NTA5OCwxNDA4NjUzNjE2LDMzMjg0NzgzOCwtMTQxNzc2
+OTA1MywtNjg0MDQ4NjYzLDEwNDkzNTUyNTUsLTk0MDg2NzYxMS
+wtMjA3MjE2OTM4NywxOTQ4Mzg5MTQ3LC0xNjI1NTI5NDMwLC0y
+MTA0MzUzNTgxLDE4NDg3ODQxMzQsMTA3NDM0NzYxNywxMDk3MD
+g4NTMsLTEyNjQ1OTM1MjMsMTE3MDIyMzAwOCwtMTE2NjUyNDc1
+LDEzNDI3MzkwMzFdfQ==
 -->
